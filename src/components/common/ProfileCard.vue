@@ -1,9 +1,12 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="flex items-center justify-center min-h-screen ">
     <!-- Card Container -->
-    <div class="w-full max-w-md mx-4 bg-white rounded-xl shadow-lg overflow-hidden md:max-w-2xl">
+    <div
+      class="w-full max-w-md mx-4 bg-white rounded-xl shadow-lg overflow-hidden md:max-w-2xl dark:bg-gray-900 dark:text-white">
       <!-- Card Header with Gradient Background -->
-      <div class="h-2 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+      <div class="h-2 bg-gradient-to-r from-blue-500 to-cyan-400">
+
+      </div>
 
       <!-- Card Content -->
       <div class="p-8">
@@ -18,13 +21,13 @@
 
           <!-- Name and Title -->
           <div class="ml-4">
-            <h2 class="text-xl font-bold text-gray-800">Manuel Dala</h2>
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-300">Manuel Dala</h2>
             <p class="text-blue-600">Software Engineer</p>
           </div>
         </div>
 
         <!-- Divider -->
-        <div class="my-6 border-t border-gray-200"></div>
+        <div class="my-6 border-t border-gray-200 dark:border-gray-300"></div>
 
         <!-- Contact Information -->
         <div class="space-y-4">
@@ -38,8 +41,8 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-gray-500">Phone</p>
-              <p class="text-gray-700">+244 941 540 352</p>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-300">Phone</p>
+              <p class="text-gray-700 dark:text-white">+244 941 540 352</p>
             </div>
           </div>
 
@@ -53,8 +56,8 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-gray-500">Email</p>
-              <p class="text-gray-700">manueljosedala@hotmail.com</p>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-300">Email</p>
+              <p class="text-gray-700 dark:text-white">manueljosedala@hotmail.com</p>
             </div>
           </div>
         </div>
