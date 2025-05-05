@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-sm mx-auto">
+  <div class="max-w-sm ">
     <label class="block text-gray-700 font-bold mb-2" :for="props.name">
       {{ props.label }}
     </label>

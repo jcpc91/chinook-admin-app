@@ -25,7 +25,7 @@
 
 <script setup>
 // Importamos funciones reactivas desde Vue
-import { reactive, defineEmits } from 'vue';
+import { reactive, defineEmits, onMounted } from 'vue';
 
 // Definición de eventos emitidos hacia el componente padre
 const emit = defineEmits(['item-updated', 'item-added', 'item-deleted']);
@@ -41,6 +41,10 @@ const props = defineProps({
     required: true,
   },
   // El componente espera funciones externas para persistencia de datos en el store
+  fetch: {
+    type: Function,
+    required: true,
+  },
   onAdd: {
     type: Function,
     required: true,
@@ -57,6 +61,10 @@ const props = defineProps({
 
 // Creamos una copia reactiva de los items originales para evitar mutar directamente las props
 const items = reactive(props.links.map(link => ({ ...link })));
+
+onMounted(async () => {
+  await props.fetch()
+})
 
 // Funcón para añadir un nuevo item con un ID único basado en timestamp
 function addItem() {

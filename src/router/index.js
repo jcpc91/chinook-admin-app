@@ -8,7 +8,13 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-    }, {
+    },
+    {
+      path: '/albunes',
+      name: 'albunes',
+      component: () => import('../views/AlbunesView.vue')
+    },
+    {
       path: '/catalogos',
       redirect: { name: 'mediatypes' },
       children: [

@@ -1,35 +1,22 @@
 <template>
-  <h1>ArtistsView</h1>
-  <SimpleTable :columns="columns" :data="data" :isReadonly="false" />
-  <ListOfLinks :links="[
-    { title: 'Artists 1', path: '/catalogos/artists', id: '1' },
-    { title: 'Artists 2', path: '/catalogos/artists', id: '2' },
-    { title: 'Artists 3', path: '/catalogos/artists', id: '3' },
-  ]" />
+
+  <ListOfLinks title="Artistas" :links="store.items" :fetch="store.fetchItems" :on-add="store.addItem"
+    :on-update="store.updateItem" :on-delete="store.deleteItem" />
 
 
   <div>
-    <pre>{{ data }}</pre>
+    <pre>{{ store.items }}</pre>
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
-import SimpleTable from "../../components/SimpleTable.vue";
+import { onMounted } from "vue";
 import ListOfLinks from "@/components/common/ListOfItems.vue";
-const columns = [
-  {
+import { useartistsStore } from "@/store/artists";
 
-    label: "Nombre",
-    field: "name",
-    sortable: true
-  }
-]
-const data = ref([
-  {
-    name: "John Doe"
-  },
-  {
-    name: "Jane Doe"
-  }
-])
+const store = useartistsStore();
+
+onMounted(async () => {
+  console.log('onmounted');
+
+})
 </script>

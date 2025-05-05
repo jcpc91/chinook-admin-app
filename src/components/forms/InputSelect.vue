@@ -1,11 +1,11 @@
 <template>
-  <div class="max-w-sm mx-auto">
+  <div class="max-w-sm">
     <label :for="props.name" class="block text-gray-700 font-bold mb-2">{{ props.label }}</label>
     <select
       class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline "
       @change="updateValue" :value="props.modelValue" :name="props.name" :id="props.name">
-      <option v-for="option in props.options" :key="option.value" :value="option.value">
-        {{ option.label }}
+      <option v-for="option in props.options" :key="option.value" :value="option[props.itemValue]">
+        {{ option[props.itemTitle] }}
       </option>
     </select>
 
@@ -15,7 +15,10 @@
 const props = defineProps({
   label: String,
   name: String,
-  options: Array
+  options: Array,
+  itemValue: String,
+  itemTitle: String,
+  modelValue: String
 })
 
 const emit = defineEmits(['update:modelValue'])

@@ -17,7 +17,7 @@
 </template>
 <script setup>
 import { ref, reactive } from "vue";
-import InputText from "../../components/forms/inputText/index.vue";
+import InputText from "../../components/forms/InputText.vue";
 import InputSelect from "@/components/forms/InputSelect.vue";
 import Button from '@/components/forms/InputButton.vue'
 import ProfileCard from "@/components/common/ProfileCard.vue";
