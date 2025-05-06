@@ -16,8 +16,9 @@
         <!-- Input enlazado con v-model para edición directa y evento blur -->
         <input v-model="link.title" type="text" :name="'_' + link.id" :id="'_' + link.id" @blur="notifyChange(link)"
           class="w-full bg-transparent border-none outline-none text-sm">
-        <!-- Botón para eliminar el item actual -->
-        <button @click="removeItem(index, link)" class="text-red-500 ml-2">x</button>
+
+        <button @click="removeItem(index, link)" class="text-red-500 ml-2 mr-1">x</button>
+        <slot name="buttons" :index="index" :item="link"></slot>
       </li>
     </ul>
   </div>
@@ -43,7 +44,7 @@ const props = defineProps({
   // El componente espera funciones externas para persistencia de datos en el store
   fetch: {
     type: Function,
-    required: true,
+    required: false,
   },
   onAdd: {
     type: Function,
@@ -63,7 +64,8 @@ const props = defineProps({
 const items = reactive(props.links.map(link => ({ ...link })));
 
 onMounted(async () => {
-  await props.fetch()
+  if (props.fetch)
+    await props.fetch()
 })
 
 // Funcón para añadir un nuevo item con un ID único basado en timestamp

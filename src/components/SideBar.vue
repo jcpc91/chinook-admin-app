@@ -28,7 +28,7 @@
       <div class="space-y-4">
         <!-- Dashboard -->
         <a href="#"
-          class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-gray-800 text-white group transition-all duration-200 hover:bg-gray-700">
+          class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg group transition-all duration-200 hover:bg-gray-700">
           <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -37,7 +37,8 @@
           Dashboard
         </a>
         <router-link :to="{ name: 'albunes' }"
-          class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white">
+          class="flex items-center px-4 py-2.5 text-sm text-gray-300 font-medium rounded-lg group hover:bg-gray-700 hover:text-white"
+          active-class="bg-gray-800 text-white">
           <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -76,7 +77,8 @@
               Genres
             </router-link>
             <router-link :to="{ name: 'artists' }"
-              class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white">
+              class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
+              active-class="bg-gray-800 text-white">
               Artists
             </router-link>
           </div>

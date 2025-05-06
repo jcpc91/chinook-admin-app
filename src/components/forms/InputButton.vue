@@ -1,6 +1,6 @@
 <template>
   <button :type="props.type"
-    class="border rounded-md px-4 py-2 m-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+    class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
     :class="color">
     {{ props.label }}
   </button>

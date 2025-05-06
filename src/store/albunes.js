@@ -1,28 +1,29 @@
 // stores/crudStore.js
 import { defineStore } from 'pinia'
 
-export const useartistsStore = defineStore('artistsStore', {
+export const useAlbunesStore = defineStore('albunesStore', {
   state: () => ({
     items: [
 
     ]
   }),
   getters: {
-    getItems: (state) => {
-      return state.items
-    }
+    getItems: (state) => state.items,
+    getItemById: (state) => (id) => state.items.find(i => i.id === id)
   },
-
   actions: {
     fetchItems() {
 
 
     },
     addItem(item) {
+      item.id = new Date().getTime()
       this.items.push(item)
     },
 
     updateItem(updatedItem) {
+      console.log(updatedItem);
+
       const index = this.items.findIndex(i => i.id === updatedItem.id)
       if (index !== -1) {
         this.items[index] = { ...this.items[index], ...updatedItem }
@@ -30,14 +31,12 @@ export const useartistsStore = defineStore('artistsStore', {
     },
 
     deleteItem(itemToRemove) {
-      const index = this.items.findIndex(i => i.id === itemToRemove.id)
-      this.items.splice(index, 1)
+      this.items = this.items.filter(i => i.id !== itemToRemove.id)
 
     },
 
     setItems(newItems) {
       this.items = newItems
     }
-  },
-
+  }
 })
