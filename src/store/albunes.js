@@ -8,8 +8,7 @@ export const useAlbunesStore = defineStore('albunesStore', {
     ]
   }),
   getters: {
-    getItems: (state) => state.items,
-    getItemById: (state) => (id) => state.items.find(i => i.id === id)
+    getItems: (state) => state.items
   },
   actions: {
     fetchItems() {

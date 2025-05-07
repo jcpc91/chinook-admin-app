@@ -39,6 +39,13 @@ const router = createRouter({
           path: ':id/albunes',
           name: 'albunes-artist',
           component: () => import('../views/artists/AlbunesView.vue'),
+          children: [
+            {
+              path: ':idalbum/tracks',
+              name: 'tracks-albun',
+              component: () => import('../views/artists/TraksView.vue')
+            }
+          ]
         },
       ],
     },

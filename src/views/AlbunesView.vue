@@ -44,7 +44,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import DropDownArtist from "@/components/forms/ArtistsDropDown.vue";
 import InputText from "@/components/forms/InputText.vue";
 import Button from "@/components/forms/InputButton.vue";
