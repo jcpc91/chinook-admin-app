@@ -4,8 +4,7 @@ import { defineStore } from 'pinia'
 export const useMediaTypeStore = defineStore('medittypesstore', {
   state: () => ({
     items: [
-      { id: 1, title: 'Primer ítem' },
-      { id: 2, title: 'Segundo ítem' }
+
     ]
   }),
 
@@ -13,7 +12,6 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
     addItem(item) {
       this.items.push(item)
     },
-
     updateItem(updatedItem) {
       const index = this.items.findIndex(i => i.id === updatedItem.id)
       if (index !== -1) {
@@ -22,8 +20,8 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
     },
 
     deleteItem(itemToRemove) {
-      throw new Error('No se puede eliminar (escenario 0')
-      //this.items = this.items.filter(i => i.id !== itemToRemove.id)
+      const index = this.items.findIndex(i => i.id === itemToRemove.id)
+      this.items.splice(index, 1)
     },
 
     setItems(newItems) {
