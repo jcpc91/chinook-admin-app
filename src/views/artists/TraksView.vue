@@ -5,14 +5,14 @@
 
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-2xl">Artista: </span>
-      <div class="text-2xl">{{ route.params.id }}</div>
+      <div class="text-2xl">{{ artistItem.title }}</div>
     </div>
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-xl">Album:</span>
-      <div class="text-xl">{{ route.params.idalbum }}</div>
+      <div class="text-xl">{{ albumItem.title }}</div>
     </div>
 
-    <form>
+    <form @submit.prevent="on_submit">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3">
         <div class="lg:flex lg:flex-row gap-3">
           <Label label="Nombre del track" name="nombre" class="lg:w-2xs"></Label>
@@ -20,7 +20,7 @@
         </div>
         <div class="lg:flex lg:flex-row gap-3">
           <Label label="Compositores:" name="composer" class="lg:w-2xs"></Label>
-          <InputText name="composer" class="basis-full"></InputText>
+          <InputText v-model="track.compositores" name="composer" class="basis-full"></InputText>
         </div>
         <div class="lg:flex lg:flex-row gap-3">
           <Label label="Media type:" name="mediaType" class="lg:w-2xs"></Label>
@@ -35,11 +35,14 @@
           <InputText v-model="track.precio" name="nombre" class="basis-full"></InputText>
         </div>
       </div>
+      <div class="flex">
+        <InputButton type="submit" label="Aceptar" />
+      </div>
     </form>
+
     <div>
-      {{ route.params }}
+      <pre>{{ albumItem }}</pre>
     </div>
-    <div>{{ track }}</div>
   </div>
 </template>
 <script setup>
@@ -54,7 +57,15 @@ import MediaTypeDropDown from "@/components/forms/MediaTypeDropDown.vue";
 import InputText from "@/components/forms/InputText.vue";
 import Label from "@/components/forms/EtiquetaLabel.vue";
 
+const artistsStore = useartistsStore();
+const albunesStore = useAlbunesStore();
 const route = useRoute();
 const track = ref({})
-
+const artistItem = computed(() => artistsStore.getItems.find((item) => item.id == route.params.id));
+const albumItem = computed(() => albunesStore.getItems.find((item) => item.id == route.params.idalbum));
+//const nTracks = computed(() => albumItem.value.tracks.length)
+function on_submit() {
+  albumItem.value.tracks.push(track.value);
+  track.value = {};
+}
 </script>
