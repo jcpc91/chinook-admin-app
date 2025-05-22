@@ -104,11 +104,13 @@
                 clip-rule="evenodd" />
             </svg>
           </button>
-          <div class="hidden space-y-1 pl-11" id="team-dropdown">
-            <a href="#"
-              class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white">
-              Members
-            </a>
+          <div class="space-y-1 pl-11" id="team-dropdown">
+            <router-link :to="{ name: 'empleados' }"
+              class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
+              active-class="bg-gray-800 text-white">
+              Empleados
+            </router-link>
+
             <a href="#"
               class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white">
               Calendar
