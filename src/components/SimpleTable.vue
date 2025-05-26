@@ -4,14 +4,14 @@
       <thead>
         <tr>
           <th v-for="column in props.columns" :key="column"
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 bg-gray-100  tracking-wider">
             {{ column.label }}
           </th>
           <th v-if="!props.isReadonly">..</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="(row, index) in data" :key="index">
+        <tr v-for="(row, index) in data" :key="index" class="hover:bg-gray-100">
           <td v-for="column in columns" :key="column" class="px-6 py-4 whitespace-nowrap">
             <div v-if="props.isReadonly">
 
