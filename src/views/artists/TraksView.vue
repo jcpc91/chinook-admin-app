@@ -35,7 +35,7 @@
           <InputText v-model="track.precio" name="nombre" class="basis-full"></InputText>
         </div>
       </div>
-      <div class="flex">
+      <div class="flex justify-end">
         <InputButton type="submit" label="Aceptar" />
       </div>
     </form>
@@ -47,7 +47,7 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useAlbunesStore } from "@/store/albunes";
 import { useartistsStore } from "@/store/artists";
 import { computed } from "vue";
