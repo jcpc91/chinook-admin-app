@@ -1,8 +1,10 @@
+<!-- eslint-disable no-unused-vars -->
 <template>
-  <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="headers" :items="items" :table-class-name="tableClassName"
+  <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="props.headers" :items="props.items" :table-class-name="tableClassName"
     @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
     header-item-class-name="px-6 py-3 text-left text-xs font-medium text-gray-500 bg-gray-100 uppercase tracking-wider"
-    body-row-class-name="bg-white hover:bg-gray-100" body-item-class-name=" px-6 py-4 whitespace-nowrap">
+    body-row-class-name="bg-white hover:bg-gray-100"
+    body-item-class-name=" px-6 py-4 whitespace-nowrap">
     <template #item-actions="{ item }">
       <slot name="actions" :item="item"></slot>
     </template>
@@ -19,7 +21,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
       </a>
-      <a v-for="page in maxPaginationNumber" href="#" @click="updatePage(page)"
+      <a v-for="page in maxPaginationNumber" :key="page" href="#top" @click="updatePage(page)"
         class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">{{
           page }}</a>
 
@@ -88,6 +90,7 @@ const updatePage = (paginationNumber) => {
 const rowsPerPageOptions = computed(() => dataTable.value?.rowsPerPageOptions);
 const rowsPerPageActiveOption = computed(() => dataTable.value?.rowsPerPageActiveOption);
 
+// eslint-disable-next-line no-unused-vars
 const updateRowsPerPageSelect = (e) => {
   dataTable.value.updateRowsPerPageActiveOption(Number((e.target).value));
 };

@@ -57,7 +57,11 @@ const router = createRouter({
         {
           path: 'nuevo',
           name: 'nuevo-empleado',
-          component: () => import('../views/empleados/NuevoEmpleadoView.vue'),
+          components: {
+
+                formulario: () => import('../views/empleados/NuevoEmpleadoView.vue')
+
+              }
         }
       ]
     },

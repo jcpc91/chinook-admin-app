@@ -3,11 +3,13 @@
     <template #buttons>
       <Button label="Nuevo" @click="router.push({name: 'nuevo-empleado'})"></Button>
     </template>
-    <DataTable :headers="headers" :items="items" />
-    <div class="bg-white hover:bg-gray-100">
+    <div>
+      <RouterView name="formulario" />
     </div>
+    <DataTable :headers="headers" :items="items" />
+
   </Panel>
-  <RouterView />
+  <RouterView name="default"/>
 </template>
 
 <script setup>
@@ -19,51 +21,27 @@
 
   const router = useRouter()
   const itemSelected = ref(null);
+
   const headers = [
-    { text: "PLAYER", value: "player" },
-    { text: "TEAM", value: "team" },
-    { text: "NUMBER", value: "number" },
-    { text: "POSITION", value: "position" },
-    { text: "HEIGHT", value: "indicator.height" },
-    { text: "WEIGHT (lbs)", value: "indicator.weight", sortable: true },
-    { text: "LAST ATTENDED", value: "lastAttended", width: 200 },
-    { text: "COUNTRY", value: "country" },
+    { text: "Apellido", value: "LastName" },
+    { text: "Nombre", value: "FirstName" },
+    { text: "Título", value: "Title" },
+    { text: "Reporta a", value: "ReportsTo" },
+    { text: "Nacimiento", value: "BirthDate" },
+    { text: "Contratación", value: "HireDate" },
+    { text: "Ciudad", value: "City" },
+    { text: "Estado", value: "State" },
+    { text: "País", value: "Country" },
+    { text: "Código Postal", value: "PostalCode" },
+    { text: "Teléfono", value: "Phone" },
+    { text: "Email", value: "Email" }
   ];
-  
-const items = [
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-  { player: "Stephen Curry", team: "GSW", number: 30, position: 'G', indicator: { "height": '6-2', "weight": 185 }, lastAttended: "Davidson", country: "USA" },
-  { player: "Lebron James", team: "LAL", number: 6, position: 'F', indicator: { "height": '6-9', "weight": 250 }, lastAttended: "St. Vincent-St. Mary HS (OH)", country: "USA" },
-  { player: "Kevin Durant", team: "BKN", number: 7, position: 'F', indicator: { "height": '6-10', "weight": 240 }, lastAttended: "Texas-Austin", country: "USA" },
-  { player: "Giannis Antetokounmpo", team: "MIL", number: 34, position: 'F', indicator: { "height": '6-11', "weight": 242 }, lastAttended: "Filathlitikos", country: "Greece" },
-];
+
+  const items = [
+    { EmployeeId: 1, LastName: "Davolio", FirstName: "Nancy", Title: "Sales Representative", ReportsTo: 2, BirthDate: "1948-12-08", HireDate: "1992-05-01", Address: "507 - 20th Ave. E.\nApt. 2A", City: "Seattle", State: "WA", Country: "USA", PostalCode: "98122", Phone: "(206) 555-9857", Fax: null, Email: "nancy@northwindtraders.com" },
+    { EmployeeId: 2, LastName: "Fuller", FirstName: "Andrew", Title: "Vice President, Sales", ReportsTo: null, BirthDate: "1952-02-19", HireDate: "1992-08-14", Address: "908 W. Capital Way", City: "Tacoma", State: "WA", Country: "USA", PostalCode: "98401", Phone: "(206) 555-9482", Fax: null, Email: "andrew@northwindtraders.com" },
+    { EmployeeId: 3, LastName: "Leverling", FirstName: "Janet", Title: "Sales Representative", ReportsTo: 2, BirthDate: "1963-08-30", HireDate: "1992-04-01", Address: "722 Moss Bay Blvd.", City: "Kirkland", State: "WA", Country: "USA", PostalCode: "98033", Phone: "(206) 555-3412", Fax: null, Email: "janet@northwindtraders.com" }
+  ];
 
 
 function on_click_row(item) {
