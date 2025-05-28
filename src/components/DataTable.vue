@@ -1,6 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-  <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="props.headers" :items="props.items" :table-class-name="tableClassName"
+  <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="props.headers" :items="props.items" table-class-name="tableClassName"
     @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
     header-item-class-name="px-6 py-3 text-left text-xs font-medium text-gray-500 bg-gray-100 uppercase tracking-wider"
     body-row-class-name="bg-white hover:bg-gray-100"
@@ -55,15 +55,9 @@ const props = defineProps({
   items: {
     type: Array,
     required: true,
-  },
-  tableClassName: {
-    type: String,
-    default: "",
-  },
+  }
 });
-defineOptions({
-  name: 'ReusableDataTable'
-})
+
 const itemSelected = ref(null);
 const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
 const currentPageLastIndex = computed(() => dataTable.value?.currentPageLastIndex);
