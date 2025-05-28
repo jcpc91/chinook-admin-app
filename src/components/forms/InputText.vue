@@ -12,7 +12,6 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  label: String,
   type: {
     type: String,
     default: 'text'

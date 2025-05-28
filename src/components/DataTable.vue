@@ -62,7 +62,7 @@ const props = defineProps({
 defineOptions({
   name: 'ReusableDataTable'
 })
-
+const itemSelected = ref(null);
 const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
 const currentPageLastIndex = computed(() => dataTable.value?.currentPageLastIndex);
 const clientItemsLength = computed(() => dataTable.value?.clientItemsLength);

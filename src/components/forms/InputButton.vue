@@ -1,27 +1,32 @@
 <template>
   <button :type="props.type"
     class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-    :class="color">
+    :class="color"
+    @click="e => emit('click', e)"
+    >
     {{ props.label }}
   </button>
 </template>
 <script setup>
-import { computed } from 'vue';
-
-const props = defineProps({
-  type: {
-    type: String,
-    default: 'button',
-  },
-  label: {
-    type: String,
-  },
-  color: {
-    type: String,
-    default: 'primary',
-  },
-})
+  import { computed, defineEmits } from 'vue';
+  
+  const props = defineProps({
+    type: {
+      type: String,
+      default: 'button',
+    },
+    label: {
+      type: String,
+    },
+    color: {
+      type: String,
+      default: 'primary',
+    },
+  })
+  const emit =  defineEmits(['click'])
+    
 const color = computed(() => {
+  
   switch (props.color) {
     case 'primary':
       return 'bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-500'
