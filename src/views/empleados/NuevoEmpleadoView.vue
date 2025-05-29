@@ -1,6 +1,6 @@
 <template>
   <Panel title="Nuevo empleado">
-      <form class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <form @submit.prevent="on_submit" class="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <div class="lg:flex lg:flex-row gap-3">
           <Label label="Apellido" name="LastName" class="lg:w-2xs" />
           <!-- Apellido -->
@@ -151,42 +151,34 @@
         <div class="col-span-1 lg:col-span-2">
           <div class="flex justify-end">
             <Button label="Guardar" type="submit" class="mt-4" />
-            <Button label="Cancelar" type="button" class="mt-4 ml-2" @click="$router.back()" />
+            <Button label="Cancelar" type="button" class="mt-4 ml-2" @click="router.back()" />
           </div>
         </div>
       </form>
 
   </Panel>
+  <div class="text-xs">{{ form }}</div>
 </template>
 <script setup>
   import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
   import Panel from '@/components/common/PanelComponent.vue'
   import Button from '@/components/forms/InputButton.vue'
   import Label from "@/components/forms/EtiquetaLabel.vue";
   import InputText from '@/components/forms/InputText.vue'
   import InputSelect from '@/components/forms/InputSelect.vue'
 
-  const form = ref({
-    LastName: '',
-    FirstName: '',
-    Title: '',
-    ReportsTo: null,
-    BirthDate: '',
-    HireDate: '',
-    Address: '',
-    City: '',
-    State: '',
-    Country: '',
-    PostalCode: '',
-    Phone: '',
-    Fax: '',
-    Email: '',
-  })
-
+  const router = useRouter()
+  const form = ref({  })
   // Opciones de ejemplo para el select de ReportsTo
   const reportsToOptions = [
     { value: 1, label: 'Supervisor 1' },
     { value: 2, label: 'Supervisor 2' },
     // ...agrega más opciones según tus datos
   ]
+
+  function on_submit() {
+    console.log('Formulario enviado:', form.value)
+    router.back()
+  }
 </script>

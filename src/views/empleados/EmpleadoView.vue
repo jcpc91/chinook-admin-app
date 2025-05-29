@@ -6,14 +6,14 @@
     <div>
       <RouterView name="formulario" />
     </div>
-    <DataTable :headers="headers" :items="items" />
-
+    <DataTable v-model="itemSelected" :headers="headers" :items="items" />
+    <div>item:{{ itemSelected }}</div>
   </Panel>
   <RouterView name="default"/>
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref } from 'vue';
   import { useRouter } from 'vue-router'
   import Panel from "../../components/common/PanelComponent.vue";
   import DataTable from '@/components/DataTable.vue'
@@ -44,8 +44,4 @@
   ];
 
 
-function on_click_row(item) {
-  console.log(item)
-
-}
 </script>

@@ -3,7 +3,7 @@
   <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="props.headers" :items="props.items" table-class-name="tableClassName"
     @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
     header-item-class-name="px-6 py-3 text-left text-xs font-medium text-gray-500 bg-gray-100 uppercase tracking-wider"
-    body-row-class-name="bg-white hover:bg-gray-100"
+    body-row-class-name="bg-white hover:bg-gray-100 hover:cursor-pointer"
     body-item-class-name=" px-6 py-4 whitespace-nowrap">
     <template #item-actions="{ item }">
       <slot name="actions" :item="item"></slot>
@@ -37,16 +37,15 @@
 
     </nav>
   </div>
-  <div class="bg-white hover:bg-gray-100">
-    {{ itemSelected }}
-  </div>
+
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, defineModel } from 'vue';
 import Vue3EasyDataTable from "vue3-easy-data-table";
 //import "vue3-easy-data-table/dist/style.css";
 const dataTable = ref();
+const itemSelected = defineModel([]);
 const props = defineProps({
   headers: {
     type: Array,
@@ -58,16 +57,19 @@ const props = defineProps({
   }
 });
 
-const itemSelected = ref(null);
+
 const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
 const currentPageLastIndex = computed(() => dataTable.value?.currentPageLastIndex);
 const clientItemsLength = computed(() => dataTable.value?.clientItemsLength);
 
 // pagination related
 const maxPaginationNumber = computed(() => dataTable.value?.maxPaginationNumber);
+// eslint-disable-next-line no-unused-vars
 const currentPaginationNumber = computed(() => dataTable.value?.currentPaginationNumber);
 
+// eslint-disable-next-line no-unused-vars
 const isFirstPage = computed(() => dataTable.value?.isFirstPage);
+// eslint-disable-next-line no-unused-vars
 const isLastPage = computed(() => dataTable.value?.isLastPage);
 
 const nextPage = () => {
@@ -81,7 +83,9 @@ const updatePage = (paginationNumber) => {
 };
 
 // rows per page related
+// eslint-disable-next-line no-unused-vars
 const rowsPerPageOptions = computed(() => dataTable.value?.rowsPerPageOptions);
+// eslint-disable-next-line no-unused-vars
 const rowsPerPageActiveOption = computed(() => dataTable.value?.rowsPerPageActiveOption);
 
 // eslint-disable-next-line no-unused-vars
@@ -90,8 +94,7 @@ const updateRowsPerPageSelect = (e) => {
 };
 
 function on_click_row(item) {
-  console.log(item)
-
+  itemSelected.value = [item];
 }
 </script>
 <style >

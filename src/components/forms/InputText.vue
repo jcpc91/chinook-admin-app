@@ -2,7 +2,7 @@
   <div>
 
     <input
-      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline "
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline uppercase"
       :id="props.name" :type="props.type || 'text'" :placeholder="props.placeholder" @change="updateValue"
       :value="props.modelValue" :class="valid" />
 
