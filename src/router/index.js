@@ -59,7 +59,7 @@ const router = createRouter({
           name: 'nuevo-empleado',
           components: {
 
-                formulario: () => import('../views/empleados/NuevoEmpleadoView.vue')
+                top: () => import('../views/empleados/NuevoEmpleadoView.vue')
 
               }
         }

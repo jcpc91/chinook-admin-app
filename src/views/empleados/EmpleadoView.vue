@@ -4,12 +4,12 @@
       <Button label="Nuevo" @click="router.push({name: 'nuevo-empleado'})"></Button>
     </template>
     <div>
-      <RouterView name="formulario" />
+      <RouterView name="top" />
     </div>
-    <DataTable v-model="itemSelected" :headers="headers" :items="items" />
+    <DataTable v-model="itemSelected" :headers="headers" :items="empleadoStore.getEmpleados" />
     <div>item:{{ itemSelected }}</div>
   </Panel>
-  <RouterView name="default"/>
+  <RouterView name="bottom"/>
 </template>
 
 <script setup>
@@ -18,7 +18,9 @@
   import Panel from "../../components/common/PanelComponent.vue";
   import DataTable from '@/components/DataTable.vue'
   import Button from '@/components/forms/InputButton.vue'
+  import { useEmpleadosStore } from '@/store/empleados'; "@/store/empleados";
 
+  const empleadoStore = useEmpleadosStore()
   const router = useRouter()
   const itemSelected = ref(null);
 
@@ -37,11 +39,6 @@
     { text: "Email", value: "Email" }
   ];
 
-  const items = [
-    { EmployeeId: 1, LastName: "Davolio", FirstName: "Nancy", Title: "Sales Representative", ReportsTo: 2, BirthDate: "1948-12-08", HireDate: "1992-05-01", Address: "507 - 20th Ave. E.\nApt. 2A", City: "Seattle", State: "WA", Country: "USA", PostalCode: "98122", Phone: "(206) 555-9857", Fax: null, Email: "nancy@northwindtraders.com" },
-    { EmployeeId: 2, LastName: "Fuller", FirstName: "Andrew", Title: "Vice President, Sales", ReportsTo: null, BirthDate: "1952-02-19", HireDate: "1992-08-14", Address: "908 W. Capital Way", City: "Tacoma", State: "WA", Country: "USA", PostalCode: "98401", Phone: "(206) 555-9482", Fax: null, Email: "andrew@northwindtraders.com" },
-    { EmployeeId: 3, LastName: "Leverling", FirstName: "Janet", Title: "Sales Representative", ReportsTo: 2, BirthDate: "1963-08-30", HireDate: "1992-04-01", Address: "722 Moss Bay Blvd.", City: "Kirkland", State: "WA", Country: "USA", PostalCode: "98033", Phone: "(206) 555-3412", Fax: null, Email: "janet@northwindtraders.com" }
-  ];
 
 
 </script>
