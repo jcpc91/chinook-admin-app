@@ -4,8 +4,9 @@
 
     <Vue3EasyDataTable ref="dataTable" :headers="headers" :items="items" v-model:items-selected="itemSelected"
       @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
-      header-item-class-name="px-6 py-3 text-left text-xs font-medium text-gray-500 bg-gray-100 uppercase tracking-wider"
-      body-row-class-name="bg-white hover:bg-gray-100" body-item-class-name=" px-6 py-4 whitespace-nowrap" />
+      :header-item-class-name="headerItemClassNameFunction"
+      body-row-class-name="bg-white hover:bg-gray-100" 
+      :body-item-class-name="bodyItemClassNameFunction" />
     <div class="flex justify-center items-center mt-6">
       <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
         <a href="#" @click="prevPage"
@@ -17,7 +18,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </a>
-        <a v-for="page in maxPaginationNumber" href="#"
+        <a v-for="page in maxPaginationNumber" href="#" :key="page"
           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">{{
             page }}</a>
 
@@ -47,6 +48,28 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 //import 'vue3-easy-data-table/dist/style.css';
 
 const itemSelected = ref(null);
+
+const headerItemClassNameFunction = (header, columnNumber) => {
+  let classes = "px-6 py-3 text-left text-xs font-medium text-gray-500 bg-gray-100 uppercase tracking-wider ";
+  const value = header.value;
+  if (['number', 'indicator.height', 'indicator.weight'].includes(value)) {
+    classes += "hidden md:table-cell "; // Hidden below md, visible md and up
+  } else if (['lastAttended', 'country'].includes(value)) {
+    classes += "hidden lg:table-cell "; // Hidden below lg, visible lg and up
+  }
+  return classes.trim();
+};
+
+const bodyItemClassNameFunction = (columnValue, item) => {
+  let classes = "px-6 py-4 whitespace-nowrap ";
+  if (['number', 'indicator.height', 'indicator.weight'].includes(columnValue)) {
+    classes += "hidden md:table-cell "; // Hidden below md, visible md and up
+  } else if (['lastAttended', 'country'].includes(columnValue)) {
+    classes += "hidden lg:table-cell "; // Hidden below lg, visible lg and up
+  }
+  return classes.trim();
+};
+
 const headers = [
   { text: "PLAYER", value: "player" },
   { text: "TEAM", value: "team" },
@@ -95,18 +118,6 @@ const items = [
 
 // $ref dataTable
 const dataTable = ref();
-// const {
-//   currentPageFirstIndex,
-//   currentPageLastIndex,
-//   clientItemsLength,
-//   maxPaginationNumber,
-//   currentPaginationNumber,
-//   isFirstPage,
-//   isLastPage,
-//   nextPage,
-//   prevPage,
-//   updatePage,
-// } = usePagination(dataTable)
 
 // index related
 const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
