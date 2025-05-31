@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import EmpleadoDetalleView from '../views/empleados/EmpleadoDetalleView.vue'
-import FormEmpleadoView from '../views/empleados/FormEmpleadoView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,14 +67,20 @@ const router = createRouter({
         {
           path: 'detalle/:id',
           name: 'detalle-empleado',
-          component: EmpleadoDetalleView,
-          props: true
+          components: {
+
+                bottom: () => import('../views/empleados/EmpleadoDetalleView.vue')
+
+              }
         },
         {
           path: 'update/:id',
           name: 'update-empleado',
-          component: FormEmpleadoView,
-          props: true
+          components: {
+
+                bottom: () => import('../views/empleados/FormEmpleadoView.vue')
+
+              }
         }
       ]
     },

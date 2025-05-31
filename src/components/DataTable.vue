@@ -41,10 +41,11 @@
 </template>
 
 <script setup>
-import { ref, computed, defineModel } from 'vue';
+import { ref, computed, defineModel, defineEmits } from 'vue';
 import Vue3EasyDataTable from "vue3-easy-data-table";
 //import "vue3-easy-data-table/dist/style.css";
 const dataTable = ref();
+const emit = defineEmits(["clickRow"])
 const itemSelected = defineModel([]);
 const props = defineProps({
   headers: {
@@ -58,8 +59,11 @@ const props = defineProps({
 });
 
 
+// eslint-disable-next-line no-unused-vars
 const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
+// eslint-disable-next-line no-unused-vars
 const currentPageLastIndex = computed(() => dataTable.value?.currentPageLastIndex);
+// eslint-disable-next-line no-unused-vars
 const clientItemsLength = computed(() => dataTable.value?.clientItemsLength);
 
 // pagination related
@@ -94,7 +98,7 @@ const updateRowsPerPageSelect = (e) => {
 };
 
 function on_click_row(item) {
-  itemSelected.value = [item];
+  emit("clickRow", item)
 }
 </script>
 <style >

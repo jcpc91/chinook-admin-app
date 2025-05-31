@@ -10,7 +10,7 @@ export const useEmpleadosStore = defineStore('empleados', {
   }),
   getters: {
     getEmpleados: (state) => state.empleados,
-    getEmpleadoById: (state) => (id) => state.empleados.find(emp => emp.id === id),
+    getEmpleadoById: (state) => (id) => state.empleados.find(emp => emp.EmployeeId == id),
   },
   actions: {
     createEmpleado(empleado) {

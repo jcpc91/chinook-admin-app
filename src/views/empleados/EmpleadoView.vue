@@ -6,10 +6,10 @@
     <div>
       <RouterView name="top" />
     </div>
-    <DataTable v-model="itemSelected" :headers="headers" :items="empleadoStore.getEmpleados" />
-    <div>item:{{ itemSelected }}</div>
+    <DataTable @click-row="on_clickrow" :headers="headers" :items="empleadoStore.getEmpleados" />
+
+    <RouterView name="bottom"/>
   </Panel>
-  <RouterView name="bottom"/>
 </template>
 
 <script setup>
@@ -39,6 +39,9 @@
     { text: "Email", value: "Email" }
   ];
 
-
+  function on_clickrow(item) {
+    itemSelected.value = item;
+    router.push({ name: 'detalle-empleado', params: { id: item.EmployeeId } });
+  }
 
 </script>
