@@ -58,9 +58,10 @@ const router = createRouter({
         {
           path: 'nuevo',
           name: 'nuevo-empleado',
+          meta: {type: 'insert'},
           components: {
 
-                top: () => import('../views/empleados/NuevoEmpleadoView.vue')
+                top: () => import('../views/empleados/FormEmpleadoView.vue')
 
               }
         },
@@ -76,6 +77,7 @@ const router = createRouter({
         {
           path: 'update/:id',
           name: 'update-empleado',
+          meta: {type: 'update'},
           components: {
 
                 bottom: () => import('../views/empleados/FormEmpleadoView.vue')

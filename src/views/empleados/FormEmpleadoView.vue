@@ -155,7 +155,7 @@
           </div>
         </div>
       </form>
-
+      <div>{{ form }}</div>
   </Panel>
 </template>
 
@@ -167,11 +167,32 @@
   import InputText from '@/components/forms/InputText.vue'
   import InputSelect from '@/components/forms/InputSelect.vue'
   import { useRouter, useRoute } from 'vue-router';
+  import { useEmpleadosStore } from "@/store/empleados";
 
-
+  const empleadosStore = useEmpleadosStore()
   const router = useRouter();
   const route = useRoute();
-
+  const reportsToOptions = [
+    { value: 1, label: 'Supervisor 1' },
+    { value: 2, label: 'Supervisor 2' },
+    // ...agrega más opciones según tus datos
+  ]
+  const defaultform = {
+    LastName: '',
+    FirstName: '',
+    Title: '',
+    ReportsTo: null,
+    BirthDate: '',
+    HireDate: '',
+    Address: '',
+    City: '',
+    State: '',
+    Country: '',
+    PostalCode: '',
+    Phone: '',
+    Fax: '',
+    Email: ''
+  }
   const form = ref({
     LastName: '',
     FirstName: '',
@@ -189,17 +210,22 @@
     Email: ''
   });
 
-  const reportsToOptions = ref([]); // Populate as needed
+
 
   const on_submit = () => {
-    // Logic to save employee data
-    console.log('Saving employee data:', form.value);
-    router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
+    if (route.meta.type == 'insert') {
+      empleadosStore.createEmpleado(form.value)
+      form.value = {... defaultform}
+      //router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
+    }
   };
 
   onMounted(() => {
-    // Fetch employee data if editing, or leave empty for new
-    console.log('FormEmpleadoView created for employee ID:', route.params.id);
+    if(route.meta.type == 'update') {
+      const data = empleadosStore.getEmpleadoById(route.params.id)
+      form.value = data
+    }
+
   });
 
 </script>

@@ -14,6 +14,7 @@ export const useEmpleadosStore = defineStore('empleados', {
   },
   actions: {
     createEmpleado(empleado) {
+      empleado.EmployeeId = this.empleados.length + 1;
       this.empleados.push(empleado);
     },
     updateEmpleado(updatedEmpleado) {

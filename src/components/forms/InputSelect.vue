@@ -12,11 +12,18 @@
   </div>
 </template>
 <script setup>
+//{ value: 2, label: 'Supervisor 2' },
 const props = defineProps({
   name: String,
   options: Array,
-  itemValue: String,
-  itemTitle: String,
+  itemValue: {
+    type: String,
+    default: 'value'
+  },
+  itemTitle: {
+    type: String,
+    default: 'label'
+  },
   modelValue: String
 })
 

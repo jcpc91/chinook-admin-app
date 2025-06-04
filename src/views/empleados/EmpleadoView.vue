@@ -6,7 +6,7 @@
     <div>
       <RouterView name="top" />
     </div>
-    <DataTable @click-row="on_clickrow" :headers="headers" :items="empleadoStore.getEmpleados" />
+    <EmpleadosDataTable @click-row="on_clickrow"  :items="empleadoStore.getEmpleados"  />
 
     <RouterView name="bottom"/>
   </Panel>
@@ -16,7 +16,7 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router'
   import Panel from "../../components/common/PanelComponent.vue";
-  import DataTable from '@/components/DataTable.vue'
+  import EmpleadosDataTable from '@/components/EmpleadosDataTable.vue'
   import Button from '@/components/forms/InputButton.vue'
   import { useEmpleadosStore } from '@/store/empleados'; "@/store/empleados";
 
@@ -24,20 +24,7 @@
   const router = useRouter()
   const itemSelected = ref(null);
 
-  const headers = [
-    { text: "Apellido", value: "LastName" },
-    { text: "Nombre", value: "FirstName" },
-    { text: "Título", value: "Title" },
-    { text: "Reporta a", value: "ReportsTo" },
-    { text: "Nacimiento", value: "BirthDate" },
-    { text: "Contratación", value: "HireDate" },
-    { text: "Ciudad", value: "City" },
-    { text: "Estado", value: "State" },
-    { text: "País", value: "Country" },
-    { text: "Código Postal", value: "PostalCode" },
-    { text: "Teléfono", value: "Phone" },
-    { text: "Email", value: "Email" }
-  ];
+
 
   function on_clickrow(item) {
     itemSelected.value = item;
