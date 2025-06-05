@@ -89,7 +89,26 @@ const router = createRouter({
     {
       path: '/clientes',
       name: 'clientes',
-      component: () => import('../views/clientes/ClientesView.vue')
+      component: () => import('../views/clientes/ClientesView.vue'),
+      children: [
+        {
+          path: 'nuevo',
+          name: 'nuevo-cliente',
+          components: {
+            top: () => import('../views/clientes/FormClienteView.vue')
+          },
+          meta: { mode: 'create' }
+        },
+        {
+          path: 'editar/:id', // Route for editing a customer, takes customer ID as a parameter
+          name: 'editar-cliente',
+          components: {
+            bottom: () => import('../views/clientes/FormClienteView.vue')
+          },
+          props: true, // Passes route.params as props to the component
+          meta: { mode: 'edit' } // Optional: using meta to distinguish modes
+        }
+      ]
     },
     {
       path: '/about',

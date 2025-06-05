@@ -1,5 +1,5 @@
 <template>
-  <div class="w-lg border-red-500 border">lorem</div>
+  
   <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="headers" :items="props.items"
   table-class-name="tableClassName"
     @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
