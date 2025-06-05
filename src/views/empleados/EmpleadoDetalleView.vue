@@ -10,30 +10,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
 import config from "@/common/config";
 import Details from "@/components/DetailsComponent.vue";
 import { useEmpleadosStore } from '@/store/empleados';
 const empleadoStore = useEmpleadosStore();
 const router = useRouter();
 const route = useRoute();
-const employee = ref(null);
+const employee = ref({});
 
 
 const editEmployee = () => {
   router.push({ name: 'update-empleado', params: { id: employee.value.EmployeeId } });
 };
 
-watch(() => route.params.id, (newId) => {
-  console.log("watching id", newId);
-  const emp = empleadoStore.getEmpleadoById(newId);
-  console.log(emp);
-  employee.value = emp;
-}, { immediate: true });
 
 onMounted(() => {
-
+  const emp = empleadoStore.getEmpleadoById(route.params.id);
+  employee.value = emp;
 });
+
+onBeforeRouteUpdate(async (to, from, next) => {
+  const emp = empleadoStore.getEmpleadoById(to.params.id);
+  employee.value = emp;
+  next()
+})
+
 </script>
 

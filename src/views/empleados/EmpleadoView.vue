@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router'
   import Panel from "../../components/common/PanelComponent.vue";
   import EmpleadosDataTable from '@/components/EmpleadosDataTable.vue'
@@ -30,5 +30,10 @@
     itemSelected.value = item;
     router.push({ name: 'detalle-empleado', params: { id: item.EmployeeId } });
   }
+
+  onMounted(() => {
+    empleadoStore.fetchEmpleados()
+  })
+
 
 </script>

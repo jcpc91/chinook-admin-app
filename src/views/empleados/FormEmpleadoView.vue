@@ -217,13 +217,16 @@
       empleadosStore.createEmpleado(form.value)
       form.value = {... defaultform}
       //router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
+    } else if(route.meta.type == 'update') {
+      empleadosStore.updateEmpleado(form.value)
+      router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
     }
   };
 
   onMounted(() => {
     if(route.meta.type == 'update') {
       const data = empleadosStore.getEmpleadoById(route.params.id)
-      form.value = data
+      form.value = { ...data }
     }
 
   });

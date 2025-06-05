@@ -54,7 +54,7 @@ const props = defineProps({
 });
 
 const headers = [
-  { text: "Id2", value: "EmployeeId" },
+  //{ text: "Id2", value: "EmployeeId" },
   { text: "Apellido", value: "LastName" },
   { text: "Nombre", value: "FirstName" },
   //{ text: "Título", value: "Title" },
