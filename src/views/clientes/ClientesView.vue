@@ -1,15 +1,17 @@
 <template>
-  <div class="clientes">
-    <h1>This is the clientes page</h1>
-  </div>
-</template>
+  <Panel title="Clientes">
+    <template #buttons>
+      <Button label="Nuevo" @click="router.push({name: 'nuevo-cliente'})"></Button>
+    </template>
+    <div>
+      <RouterView name="top" />
+    </div>
 
-<style>
-@media (min-width: 1024px) {
-  .clientes {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-</style>
+    <RouterView name="bottom"/>
+  </Panel>
+</template>
+<script setup>
+  import { ref, onMounted } from 'vue';
+  import Panel from "../../components/common/PanelComponent.vue";
+  import Button from '@/components/forms/InputButton.vue'
+</script>

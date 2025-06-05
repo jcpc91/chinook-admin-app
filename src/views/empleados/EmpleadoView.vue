@@ -14,11 +14,11 @@
 
 <script setup>
   import { ref, onMounted } from 'vue';
-  import { useRouter } from 'vue-router'
   import Panel from "../../components/common/PanelComponent.vue";
-  import EmpleadosDataTable from '@/components/EmpleadosDataTable.vue'
   import Button from '@/components/forms/InputButton.vue'
-  import { useEmpleadosStore } from '@/store/empleados'; "@/store/empleados";
+  import EmpleadosDataTable from '@/components/EmpleadosDataTable.vue'
+  import { useRouter } from 'vue-router'
+  import { useEmpleadosStore } from '@/store/empleados';
 
   const empleadoStore = useEmpleadosStore()
   const router = useRouter()
