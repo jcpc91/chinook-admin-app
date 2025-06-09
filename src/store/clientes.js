@@ -48,16 +48,12 @@ export const useClientesStore = defineStore('clientes', {
   }),
   getters: {
     getAllCustomers: (state) => state.customers,
-    getCustomerById: (state) => (id) => state.customers.find(c => c.CustomerId === id),
+    getCustomerById: (state) => (id) => state.customers.find(c => c.CustomerId == id),
   },
   actions: {
     async fetchCustomers() {
       try {
-        // const response = await apiClient.get('/customers');
-        // this.customers = response.data;
-        // For now, using placeholder data similar to empleados.js
-        // In a real app, this would be an API call
-        console.log('Fetching customers...');
+        
         return new Promise((resolve) => {
           setTimeout(() => {
             const c = [

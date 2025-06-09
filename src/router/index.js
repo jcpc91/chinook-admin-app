@@ -107,6 +107,13 @@ const router = createRouter({
           },
           props: true, // Passes route.params as props to the component
           meta: { mode: 'edit' } // Optional: using meta to distinguish modes
+        },
+        {
+          path: 'detalle/:id',
+          name: 'detalle-cliente',
+          components:{
+            bottom:() => import('../views/clientes/ClientesDetalleView.vue')
+          }
         }
       ]
     },

@@ -127,30 +127,26 @@ const defaultForm = {
 
 const form = ref({ ...defaultForm });
 
-// Placeholder options for SupportRepId - this should ideally come from a store or API
-// These are based on EmployeeId from the empleados.js example data
+  
 const supportRepOptions = ref([
-  { value: 1, label: 'Nancy Davolio (Rep ID: 1)' }, // Assuming EmployeeId 1 from example
-  { value: 2, label: 'Andrew Fuller (Rep ID: 2)' }, // Assuming EmployeeId 2 from example
-  { value: 3, label: 'Janet Leverling (Rep ID: 3)' }  // Assuming EmployeeId 3 from example
+  { value: 1, label: 'Nancy Davolio (Rep ID: 1)' }, 
+  { value: 2, label: 'Andrew Fuller (Rep ID: 2)' },
+  { value: 3, label: 'Janet Leverling (Rep ID: 3)' }  
   // Add more representatives as needed
 ]);
 
-const isEditMode = computed(() => route.name === 'editar-cliente' && route.params.id);
-// const isEditMode = computed(() => route.meta.type === 'update');
+//const isEditMode = computed(() => route.name === 'editar-cliente' && route.params.id);
+ const isEditMode = computed(() => route.meta.mode === 'edit');
 
 
 const on_submit = async () => {
   if (isEditMode.value) {
-    // Include CustomerId for updates
     await clientesStore.updateCustomer({ ...form.value, CustomerId: parseInt(route.params.id) });
-    // Optionally, navigate away or show a success message
-    router.push({ name: 'clientes' }); // Assuming a route named 'clientes' for the list view
+    router.push({ name: 'clientes' }); 
   } else {
     await clientesStore.createCustomer(form.value);
-    form.value = { ...defaultForm }; // Reset form after creation
-    // Optionally, navigate away or show a success message
-     router.push({ name: 'clientes' }); // Assuming a route named 'clientes'
+    form.value = { ...defaultForm }; 
+     router.push({ name: 'clientes' }); 
   }
 };
 
@@ -159,21 +155,14 @@ const cancelForm = () => {
 };
 
 onMounted(async () => {
-  // If there's an ID in the route, it's an edit operation, so fetch the customer
   if (isEditMode.value) {
     const customerId = parseInt(route.params.id);
     // Ensure customers are loaded if not already
     if (clientesStore.customers.length === 0) {
         await clientesStore.fetchCustomers(); // Make sure we have customers to find from
     }
-    const customerData = await clientesStore.fetchCustomer(customerId); // Use fetchCustomer to load into currentCustomer and get data
-    if (customerData) {
-      form.value = { ...customerData };
-    } else {
-      console.error(`Customer with ID ${customerId} not found.`);
-      // Optionally, redirect or show an error message
-      // router.push({ name: 'clientes' }); // Or some error page
-    }
+    const customerData = await clientesStore.fetchCustomer(customerId); 
+    form.value = { ...customerData };
   } else {
     // For new customer, reset form to default values
     form.value = { ...defaultForm };
