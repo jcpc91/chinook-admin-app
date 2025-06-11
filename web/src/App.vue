@@ -21,9 +21,13 @@ const handleLogout = () => {
 
 <template>
   <div class="app-container flex h-screen">
-    <SideBar v-if="isLoggedIn && !isLoginPage" />
+    <div class="flex-none">
 
-    <main class="flex-1 p-6 bg-gray-100 overflow-auto">
+      <SideBar v-if="isLoggedIn && !isLoginPage" />
+
+    </div>
+
+    <main class="grow p-6 bg-gray-100 overflow-auto">
       <div v-if="isLoggedIn && !isLoginPage" class="logout-button-container text-right mb-4">
         <button @click="handleLogout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">
           Logout
@@ -35,19 +39,5 @@ const handleLogout = () => {
 </template>
 
 <style scoped>
-/* Basic styling for layout */
-.app-container {
-  display: flex;
-  height: 100vh;
-}
 
-.logout-button-container {
-  /* Styles for positioning if needed, e.g., float right */
-}
-
-/* Ensure main content takes remaining space and scrolls if necessary */
-main {
-  flex-grow: 1;
-  overflow-y: auto;
-}
 </style>
