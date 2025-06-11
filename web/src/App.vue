@@ -1,14 +1,53 @@
 <script setup>
+import { computed } from 'vue';
+import { RouterView, useRouter, useRoute } from 'vue-router';
 import SideBar from "./components/SideBar.vue";
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
+
+const isLoggedIn = computed(() => authStore.isLoggedIn);
+
+// Determine if the current route is the login page
+const isLoginPage = computed(() => route.name === 'login');
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push({ name: 'login' });
+};
 </script>
 
 <template>
-  <SideBar />
+  <div class="app-container flex h-screen">
+    <SideBar v-if="isLoggedIn && !isLoginPage" />
 
-  <main class="flex-1 p-6 bg-gray-100">
-
-    <RouterView />
-  </main>
+    <main class="flex-1 p-6 bg-gray-100 overflow-auto">
+      <div v-if="isLoggedIn && !isLoginPage" class="logout-button-container text-right mb-4">
+        <button @click="handleLogout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">
+          Logout
+        </button>
+      </div>
+      <RouterView />
+    </main>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Basic styling for layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.logout-button-container {
+  /* Styles for positioning if needed, e.g., float right */
+}
+
+/* Ensure main content takes remaining space and scrolls if necessary */
+main {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+</style>
