@@ -1,5 +1,10 @@
 <script setup>
+import { onMounted } from "vue";
 import SideBar from "./components/SideBar.vue";
+onMounted(() =>{
+  console.log(import.meta.env);
+
+})
 </script>
 
 <template>
@@ -11,4 +16,3 @@ import SideBar from "./components/SideBar.vue";
   </main>
 </template>
 
-<style scoped></style>
