@@ -21,12 +21,13 @@
         <slot name="buttons" :index="index" :item="link"></slot>
       </li>
     </ul>
+    
   </div>
 </template>
 
 <script setup>
 // Importamos funciones reactivas desde Vue
-import { reactive, defineEmits, onMounted } from 'vue';
+import { reactive, defineEmits, watchEffect } from 'vue';
 
 // Definición de eventos emitidos hacia el componente padre
 const emit = defineEmits(['item-updated', 'item-added', 'item-deleted']);
@@ -41,11 +42,7 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  // El componente espera funciones externas para persistencia de datos en el store
-  fetch: {
-    type: Function,
-    required: false,
-  },
+
   onAdd: {
     type: Function,
     required: true,
@@ -61,16 +58,16 @@ const props = defineProps({
 });
 
 // Creamos una copia reactiva de los items originales para evitar mutar directamente las props
-const items = reactive(props.links.map(link => ({ ...link })));
+const items = reactive([]);
 
-onMounted(async () => {
-  if (props.fetch)
-    await props.fetch()
+watchEffect(() => {
+  console.log('watchEffect called')
+  items.splice(0, items.length, ...props.links.map(link => ({ ...link })));
 })
 
 // Funcón para añadir un nuevo item con un ID único basado en timestamp
 function addItem() {
-  const newItem = { id: Date.now(), title: '', isnew: true };
+  const newItem = { id: Date.now().toString(), title: '' };
   const clonedItem = { ...newItem }; // Clonamos el objeto antes de enviarlo
   items.push(newItem);
   props.onAdd(clonedItem); // llamada a la función externa
