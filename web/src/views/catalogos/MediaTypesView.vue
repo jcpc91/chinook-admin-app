@@ -3,12 +3,17 @@
   <ListOfItems title="Media types" :links="store.items" :onAdd="store.addItem" :onUpdate="store.updateItem"
     :onDelete="store.deleteItem">
   </ListOfItems>
-  <pre>{{ store.items }}</pre>
+  
 </template>
 <script setup>
-import ListOfItems from "@/components/common/ListOfItems.vue";
-import { useMediaTypeStore } from "@/store/mediaTypes";
+  import { onMounted } from "vue";
+  import ListOfItems from "@/components/common/ListOfItems.vue";
+  import { useMediaTypeStore } from "@/store/mediaTypes";
 
-const store = useMediaTypeStore();
+  const store = useMediaTypeStore();
+
+  onMounted(() =>{
+    store.fetch()
+  })
 
 </script>

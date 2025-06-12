@@ -3,6 +3,10 @@ import { defineStore } from 'pinia'
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const apiclient = {
+  fetchItems: () => {
+    const url = new URL("mediatypes", BASE_URL)
+    return fetch(url)
+  },
   postItem: (item) => {
     const url = new URL("mediatypes", BASE_URL)
     return fetch(url, {
@@ -22,10 +26,14 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
   }),
 
   actions: {
-    /**
-     * POST /mediatypes
-     * @param {any} item
-     */
+    fetch() {
+      return apiclient.fetchItems()
+      .then(response => response.json())
+      .then(data => {
+        this.items = [...data]
+        return data
+      })
+    },
     addItem(item) {
       return apiclient.postItem(item)
       .then(response => response.json())
