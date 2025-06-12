@@ -16,6 +16,26 @@ const apiclient = {
       },
       body: JSON.stringify(item)
     })
+  },
+  putItem: (item)  => {
+    const url = new URL(`mediatypes/${item.id}`, BASE_URL)
+    return fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(item)
+    })
+  },
+  deleteItem: (item) => {
+    const url = new URL(`mediatypes/${item.id}`, BASE_URL)
+    return fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(item)
+    })
   }
 }
 export const useMediaTypeStore = defineStore('medittypesstore', {
@@ -42,14 +62,19 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
         return data
       })
     },
-    /**
-     * PUT /mediatypes
-     * @param {any} updatedItem
-     */
+
     updateItem(updatedItem) {
+      
       const index = this.items.findIndex(i => i.id === updatedItem.id)
       if (index !== -1) {
-        this.items[index] = { ...this.items[index], ...updatedItem }
+        return apiclient.putItem(updatedItem)
+        .then(response => response.json())
+        .then(data => {
+          this.items[index] = { ...this.items[index], ...data }
+          return data
+        })
+      } else {
+        return Promise.resolve()
       }
     },
     /**
@@ -58,7 +83,16 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
      */
     deleteItem(itemToRemove) {
       const index = this.items.findIndex(i => i.id === itemToRemove.id)
-      this.items.splice(index, 1)
+      if (index !== -1) {
+        return apiclient.deleteItem(itemToRemove)
+        .then(response => response.json())
+        .then(data => {
+          this.items.splice(index, 1)
+          return data
+        })
+      } else {
+        return Promise.resolve()
+      }
     },
 
     setItems(newItems) {
