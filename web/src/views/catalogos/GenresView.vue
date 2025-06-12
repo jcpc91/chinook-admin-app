@@ -1,13 +1,17 @@
 <template>
-  <ListOfItems title="Generos" :links="store.Generos" :onAdd="store.addGenero" :onUpdate="store.updateGenero"
-    :onDelete="store.deleteGenero">
+  <ListOfItems title="Generos" :links="store.items" :onAdd="store.addItem" :onUpdate="store.updateItem" :onDelete="store.deleteItem">
   </ListOfItems>
   <pre>{{ store.Generos }}</pre>
 </template>
 <script setup>
-import ListOfItems from "@/components/common/ListOfItems.vue";
-import { useCatalogosStore } from "@/store/catalogos";
+  import { onMounted } from "vue";
+  import ListOfItems from "@/components/common/ListOfItems.vue";
+  import { useGenerosStore } from "@/store/generos";
+  
+  const store = useGenerosStore();
 
-const store = useCatalogosStore();
+  onMounted(() =>{
+    store.fetch()
+  })
 
 </script>

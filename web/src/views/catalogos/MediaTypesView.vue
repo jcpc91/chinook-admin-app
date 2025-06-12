@@ -1,7 +1,5 @@
 <template>
-
-  <ListOfItems title="Media types" :links="store.items" :onAdd="store.addItem" :onUpdate="store.updateItem"
-    :onDelete="store.deleteItem">
+  <ListOfItems title="Media types" :links="store.items" :onAdd="store.addItem" :onUpdate="store.updateItem" :onDelete="store.deleteItem">
   </ListOfItems>
   
 </template>

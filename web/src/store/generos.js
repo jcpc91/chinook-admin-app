@@ -4,11 +4,11 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const apiclient = {
   fetchItems: () => {
-    const url = new URL("mediatypes", BASE_URL)
+    const url = new URL("generos", BASE_URL)
     return fetch(url)
   },
   postItem: (item) => {
-    const url = new URL("mediatypes", BASE_URL)
+    const url = new URL("generos", BASE_URL)
     return fetch(url, {
       method: 'POST',
       headers: {
@@ -18,7 +18,7 @@ const apiclient = {
     })
   },
   putItem: (item)  => {
-    const url = new URL(`mediatypes/${item.id}`, BASE_URL)
+    const url = new URL(`generos/${item.id}`, BASE_URL)
     return fetch(url, {
       method: 'PUT',
       headers: {
@@ -28,7 +28,7 @@ const apiclient = {
     })
   },
   deleteItem: (item) => {
-    const url = new URL(`mediatypes/${item.id}`, BASE_URL)
+    const url = new URL(`generos/${item.id}`, BASE_URL)
     return fetch(url, {
       method: 'DELETE',
       headers: {
@@ -38,7 +38,7 @@ const apiclient = {
     })
   }
 }
-export const useMediaTypeStore = defineStore('medittypesstore', {
+export const useGenerosStore = defineStore('generosStore', {
   state: () => ({
     items: [
 
@@ -64,7 +64,7 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
     },
 
     updateItem(updatedItem) {
-      
+
       const index = this.items.findIndex(i => i.id === updatedItem.id)
       if (index !== -1) {
         return apiclient.putItem(updatedItem)
@@ -77,10 +77,6 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
         return Promise.resolve()
       }
     },
-    /**
-     * DELETE /mediatypes/:id
-     * @param {any} itemToRemove
-     */
     deleteItem(itemToRemove) {
       const index = this.items.findIndex(i => i.id === itemToRemove.id)
       if (index !== -1) {
