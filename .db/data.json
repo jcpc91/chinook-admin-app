@@ -100,5 +100,15 @@
       "artistid": "1749857435985"
     }
   ],
-  "traks": []
+  "traks": [
+    {
+      "id": "cd74",
+      "albumId": "1749859557217",
+      "nombre": "Aenean elit tellus vendor aenean",
+      "compositores": "Nisi ipsum sed nisi ipsum",
+      "mediatype": "1749857351575",
+      "genero": "1749857400464",
+      "precio": "33"
+    }
+  ]
 }
