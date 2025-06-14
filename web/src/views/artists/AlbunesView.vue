@@ -1,7 +1,7 @@
 <template>
 
   <ListOfLinks :links="albunesStore.getItems" :title="`Albunes de ${artist?.title}`" :onAdd="on_add"
-    :onUpdate="albunesStore.updateItem" >
+    :onUpdate="albunesStore.updateItem" :on-delete="albunesStore.deleteItem">
     <template #buttons="{item}">
     <button @click="router.push({ name: 'tracks-albun', params: { idalbum: item.id } })"
         class="text-teal-600 font-bold">💽</button>
