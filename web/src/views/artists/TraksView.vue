@@ -1,15 +1,14 @@
 <template>
-
   <div class="bg-white rounded-xl shadow-lg px-6 py-4 w-full">
 
 
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-2xl">Artista: </span>
-      <div class="text-2xl">{{ artistItem.title }}</div>
+      <div class="text-2xl">{{ artistItem?.title }}</div>
     </div>
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-xl">Album:</span>
-      <div class="text-xl">{{ albumItem.title }}</div>
+      <div class="text-xl">{{ albumItem?.title }}</div>
     </div>
 
     <form @submit.prevent="on_submit">
@@ -41,13 +40,13 @@
     </form>
 
     <div>
-      <pre>{{ albumItem }}</pre>
+      <pre>{{ track }}</pre>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useAlbunesStore } from "@/store/albunes";
 import { useartistsStore } from "@/store/artists";
 import { computed } from "vue";
@@ -61,7 +60,7 @@ const artistsStore = useartistsStore();
 const albunesStore = useAlbunesStore();
 const route = useRoute();
 const track = ref({})
-const artistItem = computed(() => artistsStore.getItems.find((item) => item.id == route.params.id));
+const artistItem = computed(() => artistsStore.getItems.find((item) => item.id == route.params.id) || artistsStore.getItem(route.params.id));
 const albumItem = computed(() => albunesStore.getItems.find((item) => item.id == route.params.idalbum));
 //const nTracks = computed(() => albumItem.value.tracks.length)
 function on_submit() {

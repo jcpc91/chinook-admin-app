@@ -8,7 +8,6 @@
     </template>
   </ListOfLinks>
   <div class="p-3">
-    <div>{{ albunesStore.getItems }}</div>
     <RouterView />
   </div>
 </template>
