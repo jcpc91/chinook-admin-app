@@ -1,8 +1,13 @@
 // stores/crudStore.js
 import { defineStore } from 'pinia'
+const BASE_URL = import.meta.env.VITE_BASE_URL
 const apiclient = {
   fetchItems: () => {
-    const url = new URL('artistas', import.meta.env.VITE_BASE_URL)
+    const url = new URL('artistas', BASE_URL)
+    return fetch(url)
+  },
+  getItemById: (id) => {
+    const url = new URL(`artistas/${id}`, BASE_URL)
     return fetch(url)
   },
   postItem: (item) => {
@@ -65,7 +70,14 @@ export const useartistsStore = defineStore('artistsStore', {
           return data
         })
     },
-
+    getItem(id) {
+      return apiclient
+        .getItemById(id)
+        .then((response) => response.json())
+        .then((data) => {
+          return data
+        })
+    },
     updateItem(updatedItem) {
       const index = this.items.findIndex((i) => i.id === updatedItem.id)
       if (index !== -1) {

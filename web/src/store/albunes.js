@@ -1,7 +1,23 @@
 // stores/crudStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
+const BASE_URL = import.meta.env.VITE_BASE_URL
+const apiclient = {
+  fetchItemsByArtistId: (artistId) => {
+    const url = new URL(`albunes?artistid=${artistId}`, BASE_URL)
+    return fetch(url)
+  },
+  postItem: (item) => {
+    const url = new URL('albunes', import.meta.env.VITE_BASE_URL)
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(item),
+    })
+  }
+}
 export const useAlbunesStore = defineStore('albunesStore', () => {
   const items = ref([])
 
@@ -11,10 +27,23 @@ export const useAlbunesStore = defineStore('albunesStore', () => {
     // Fetch logic here
   }
 
+  const fetchItemsByArtistId = (artistId) => {
+    return apiclient.fetchItemsByArtistId(artistId)
+    .then(response => response.json())
+    .then(data => {
+      items.value = [...data]
+      return data
+    })
+  }
+
   const addItem = (item) => {
-    item.id = new Date().getTime()
-    item.tracks = []
-    items.value.push(item)
+    return apiclient.postItem(item)
+    .then(response => response.json())
+    .then(data => {
+      items.value.push(data)
+      return data
+    })
+
   }
 
   const updateItem = (updatedItem) => {
@@ -35,6 +64,7 @@ export const useAlbunesStore = defineStore('albunesStore', () => {
     fetchItems,
     addItem,
     updateItem,
-    deleteItem
+    deleteItem,
+    fetchItemsByArtistId
   }
 });

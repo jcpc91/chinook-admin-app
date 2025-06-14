@@ -1,6 +1,6 @@
 <template>
 
-  <ListOfLinks :links="albunes" :title="'Albunes ' + artist ? artist.title : ''" :onAdd="on_add"
+  <ListOfLinks :links="albunesStore.getItems" :title="`Albunes de ${artist?.title}`" :onAdd="on_add"
     :onUpdate="albunesStore.updateItem" >
     <template #buttons="{item}">
     <button @click="router.push({ name: 'tracks-albun', params: { idalbum: item.id } })"
@@ -8,6 +8,7 @@
     </template>
   </ListOfLinks>
   <div class="p-3">
+    <div>{{ albunesStore.getItems }}</div>
     <RouterView />
   </div>
 </template>
@@ -15,7 +16,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { useAlbunesStore } from "@/store/albunes";
 import { useartistsStore } from "@/store/artists";
-import { computed } from "vue";
+import { onMounted, ref } from "vue";
 import ListOfLinks from "@/components/common/ListOfItems.vue";
 
 const albunesStore = useAlbunesStore();
@@ -23,11 +24,17 @@ const artistsStore = useartistsStore();
 
 const router = useRouter()
 const route = useRoute();
-const artist = computed(() => artistsStore.getItems.find(f => f.id == route.params.id))
-const albunes = computed(() => albunesStore.getItems.filter(f => f.artistid === route.params.id))
+const artist = ref()
 
-function on_add(item) {
+
+onMounted(async () => {
+
+  artist.value = await artistsStore.getItem(route.params.id)
+  await albunesStore.fetchItemsByArtistId(route.params.id)
+})
+
+async function on_add(item) {
   item.artistid = route.params.id
-  albunesStore.addItem(item)
+  await albunesStore.addItem(item)
 }
 </script>

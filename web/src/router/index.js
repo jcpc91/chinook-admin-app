@@ -39,7 +39,7 @@ const router = createRouter({
         {
           path: ':id/albunes',
           name: 'albunes-artist',
-          component: () => import('../views/catalogos/AlbunesView.vue'),
+          component: () => import('../views/artists/AlbunesView.vue'),
           children: [
             {
               path: ':idalbum/tracks',

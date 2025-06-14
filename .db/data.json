@@ -1,5 +1,103 @@
 {
-    "mediatypes": [],
-    "generos": [],
-    "artistas": []
+  "mediatypes": [
+    {
+      "id": "1749857350008",
+      "title": "Protected AAC audio file"
+    },
+    {
+      "id": "1749857350767",
+      "title": "Protected MPEG-4 video file"
+    },
+    {
+      "id": "1749857351575",
+      "title": "Purchased AAC audio file"
+    },
+    {
+      "id": "1749857352192",
+      "title": "AAC audio file"
+    }
+  ],
+  "generos": [
+    {
+      "id": "1749857399497",
+      "title": "Rock"
+    },
+    {
+      "id": "1749857400089",
+      "title": "Jazz"
+    },
+    {
+      "id": "1749857400272",
+      "title": "Metal"
+    },
+    {
+      "id": "1749857400464",
+      "title": "Alternative & Punk"
+    },
+    {
+      "id": "1749857400648",
+      "title": "Rock And Roll"
+    },
+    {
+      "id": "1749857400824",
+      "title": "Blues"
+    },
+    {
+      "id": "1749857400985",
+      "title": "Latin"
+    }
+  ],
+  "artistas": [
+    {
+      "id": "1749857435745",
+      "title": "AC/DC"
+    },
+    {
+      "id": "1749857435985",
+      "title": "Accept"
+    },
+    {
+      "id": "1749857436274",
+      "title": "Aerosmith"
+    },
+    {
+      "id": "1749857436450",
+      "title": "Alanis Morissette"
+    },
+    {
+      "id": "1749857437034",
+      "title": "Alice In Chains"
+    },
+    {
+      "id": "1749857437274",
+      "title": "Antônio Carlos Jobim"
+    }
+  ],
+  "albunes": [
+    {
+      "id": "1749859557217",
+      "title": "",
+      "artistid": "1749857435745"
+    },
+    {
+      "id": "1749859568801",
+      "title": "",
+      "artistid": "1749857435745"
+    },
+    {
+      "id": "1749859593921",
+      "title": "",
+      "artistid": "1749857435985"
+    },
+    {
+      "id": "1749859603961",
+      "title": "",
+      "artistid": "1749857435985"
+    },
+    {
+      "id": "1749859610008",
+      "title": "",
+      "artistid": "1749857435985"
+    }
+  ]
 }
