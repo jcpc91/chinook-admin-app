@@ -1,15 +1,14 @@
 <template>
-
   <div class="bg-white rounded-xl shadow-lg px-6 py-4 w-full">
 
 
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-2xl">Artista: </span>
-      <div class="text-2xl">{{ artistItem.title }}</div>
+      <div class="text-2xl">{{ artistname(artisState.state) }}</div>
     </div>
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-xl">Album:</span>
-      <div class="text-xl">{{ albumItem.title }}</div>
+      <div class="text-xl">{{ albumItem?.title }}</div>
     </div>
 
     <form @submit.prevent="on_submit">
@@ -40,32 +39,44 @@
       </div>
     </form>
 
-    <div>
-      <pre>{{ albumItem }}</pre>
+    <div class="flex">
+      <pre>traks: {{ traksStore.getTraks }}</pre>
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
-import { useRoute } from "vue-router";
-import { useAlbunesStore } from "@/store/albunes";
-import { useartistsStore } from "@/store/artists";
-import { computed } from "vue";
-import InputButton from "@/components/forms/InputButton.vue";
-import GeneroDropDown from "@/components/forms/GenerosDropDown.vue";
-import MediaTypeDropDown from "@/components/forms/MediaTypeDropDown.vue";
-import InputText from "@/components/forms/InputText.vue";
-import Label from "@/components/forms/EtiquetaLabel.vue";
-
-const artistsStore = useartistsStore();
-const albunesStore = useAlbunesStore();
-const route = useRoute();
-const track = ref({})
-const artistItem = computed(() => artistsStore.getItems.find((item) => item.id == route.params.id));
-const albumItem = computed(() => albunesStore.getItems.find((item) => item.id == route.params.idalbum));
-//const nTracks = computed(() => albumItem.value.tracks.length)
-function on_submit() {
-  albumItem.value.tracks.push(track.value);
-  track.value = {};
-}
+  import { ref, onMounted } from "vue";
+  import { useRoute, onBeforeRouteUpdate } from "vue-router";
+  import { useAsyncState, reactify } from '@vueuse/core'
+  import { useAlbunesStore } from "@/store/albunes";
+  import { useartistsStore } from "@/store/artists";
+  import { useTraksStore } from "@/store/traks";
+  import { computed } from "vue";
+  import InputButton from "@/components/forms/InputButton.vue";
+  import GeneroDropDown from "@/components/forms/GenerosDropDown.vue";
+  import MediaTypeDropDown from "@/components/forms/MediaTypeDropDown.vue";
+  import InputText from "@/components/forms/InputText.vue";
+  import Label from "@/components/forms/EtiquetaLabel.vue";
+  
+  const artistsStore = useartistsStore();
+  const albunesStore = useAlbunesStore();
+  const traksStore = useTraksStore();
+  const route = useRoute();
+  const track = ref({
+    albumId: route.params.idalbum,
+  })
+  const artisState = useAsyncState(artistsStore.getItem(route.params.id), {})
+  const artistname = reactify((input) => input?.title)
+  const albumItem = computed(() => albunesStore.getItems.find((item) => item.id == route.params.idalbum));
+  onMounted(async () =>{
+    await traksStore.fetchTraks(route.params.idalbum)
+  })
+  onBeforeRouteUpdate(async (to, from) => {
+    await traksStore.fetchTraks(to.params.idalbum)
+  })
+  
+  function on_submit() {
+    traksStore.createTrak(track.value)
+    track.value = {};
+  }
 </script>
