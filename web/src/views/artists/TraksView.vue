@@ -39,8 +39,8 @@
       </div>
     </form>
 
-    <div class="flex">
-      <pre>traks: {{ traksStore.getTraks }}</pre>
+    <div >
+      <TracksDataTable :items="traksStore.getTraks"></TracksDataTable>
     </div>
   </div>
 </template>
@@ -57,7 +57,8 @@
   import MediaTypeDropDown from "@/components/forms/MediaTypeDropDown.vue";
   import InputText from "@/components/forms/InputText.vue";
   import Label from "@/components/forms/EtiquetaLabel.vue";
-  
+  import TracksDataTable from "@/components/TracksDataTable.vue";
+
   const artistsStore = useartistsStore();
   const albunesStore = useAlbunesStore();
   const traksStore = useTraksStore();
@@ -71,10 +72,10 @@
   onMounted(async () =>{
     await traksStore.fetchTraks(route.params.idalbum)
   })
-  onBeforeRouteUpdate(async (to, from) => {
+  onBeforeRouteUpdate(async (to) => {
     await traksStore.fetchTraks(to.params.idalbum)
   })
-  
+
   function on_submit() {
     traksStore.createTrak(track.value)
     track.value = {};

@@ -10,6 +10,7 @@
   <div class="p-3">
     <RouterView />
   </div>
+
 </template>
 <script setup>
 import { useRoute, useRouter } from "vue-router";

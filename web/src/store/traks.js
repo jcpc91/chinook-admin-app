@@ -3,7 +3,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 const api = {
   fetchItemsByAlbums: (idalbum) => {
     const url = new URL("traks", BASE_URL)
-    url.searchParams.append("idalbum", idalbum)
+    url.searchParams.append("albumId", idalbum)
     return fetch(url)
     .then((response) => response.json())
   },
@@ -61,12 +61,12 @@ export const useTraksStore = defineStore('traks', {
 
     async updateTrak(trak) {
       this.loading = true
-      
+
     },
 
     async deleteTrak(id) {
       this.loading = true
-      
+
     },
   },
 })
