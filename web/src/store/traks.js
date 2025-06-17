@@ -38,7 +38,6 @@ export const useTraksStore = defineStore('traks', {
       this.loading = true
       try {
         const data = await api.fetchItemsByAlbums(albumid)
-        console.log(data)
         this.traks = [...data]
       } catch (error) {
         this.error = error
