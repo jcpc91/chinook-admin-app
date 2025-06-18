@@ -6,7 +6,10 @@
     :header-item-class-name="headerItemClassNameFunction"
     body-row-class-name="bg-white hover:bg-gray-100 hover:cursor-pointer"
     body-item-class-name=" px-3 py-2 whitespace-nowrap">
+    <template #item-id="{id}">
+        <router-link :to="{ name: 'detalle-track', params: { id: id } }"> {{ id }} </router-link>
 
+    </template>
   </vue3-easy-data-table>
   <div class="flex justify-center items-center mt-6">
     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">

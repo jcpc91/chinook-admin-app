@@ -44,7 +44,21 @@ const router = createRouter({
             {
               path: ':idalbum/tracks',
               name: 'tracks-albun',
-              component: () => import('../views/artists/TraksView.vue')
+              component: () => import('../views/artists/TraksView.vue'),
+              children: [
+                {
+                    path: 'nuevo',
+                    name: 'nuevo-track',
+                    meta: {type: 'insert'},
+                    component: () => import('../views/artists/TraksFormView.vue')
+                },
+                {
+                  path: 'detalle/:id',
+                  name: 'detalle-track',
+                  meta: {type: 'update'},
+                  component: () => import('../views/artists/TraksFormView.vue')
+                }
+              ]
             }
           ]
         },
