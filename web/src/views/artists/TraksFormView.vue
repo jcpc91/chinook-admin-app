@@ -1,35 +1,38 @@
 <template>
-    <form @submit.prevent="on_submit">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3">
-        <div class="lg:flex lg:flex-row gap-3">
-          <Label label="Nombre del track" name="nombre" class="lg:w-2xs"></Label>
-          <InputText v-model="track.nombre" name="nombre" class="basis-full"></InputText>
-        </div>
-        <div class="lg:flex lg:flex-row gap-3">
-          <Label label="Compositores:" name="composer" class="lg:w-2xs"></Label>
-          <InputText v-model="track.compositores" name="composer" class="basis-full"></InputText>
-        </div>
-        <div class="lg:flex lg:flex-row gap-3">
-          <Label label="Media type:" name="mediaType" class="lg:w-2xs"></Label>
-          <MediaTypeDropDown v-model="track.mediatype" class="basis-full" />
-        </div>
-        <div class="lg:flex lg:flex-row gap-3">
-          <Label label="Generos:" name="generos" class="lg:w-2xs"></Label>
-          <GeneroDropDown v-model="track.genero" class="basis-full"></GeneroDropDown>
-        </div>
-        <div class="lg:flex lg:flex-row gap-3">
-          <Label label="Precio unitario:" name="nombre" class="lg:w-2xs"></Label>
-          <InputText v-model="track.precio" name="nombre" class="basis-full"></InputText>
-        </div>
+  <form @submit.prevent="on_submit">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3">
+      <div class="lg:flex lg:flex-row gap-3">
+        <Label label="Nombre del track" name="nombre" class="lg:w-2xs"></Label>
+        <InputText v-model="track.nombre" name="nombre" class="basis-full"></InputText>
       </div>
-      <div class="flex justify-end">
-        <InputButton type="submit" label="Aceptar" />
+      <div class="lg:flex lg:flex-row gap-3">
+        <Label label="Compositores:" name="composer" class="lg:w-2xs"></Label>
+        <InputText v-model="track.compositores" name="composer" class="basis-full"></InputText>
       </div>
-    </form>
+      <div class="lg:flex lg:flex-row gap-3">
+        <Label label="Media type:" name="mediaType" class="lg:w-2xs"></Label>
+        <MediaTypeDropDown v-model="track.mediatype" class="basis-full" />
+      </div>
+      <div class="lg:flex lg:flex-row gap-3">
+        <Label label="Generos:" name="generos" class="lg:w-2xs"></Label>
+        <GeneroDropDown v-model="track.genero" class="basis-full"></GeneroDropDown>
+      </div>
+      <div class="lg:flex lg:flex-row gap-3">
+        <Label label="Precio unitario:" name="nombre" class="lg:w-2xs"></Label>
+        <InputText v-model="track.precio" name="nombre" class="basis-full"></InputText>
+      </div>
+    </div>
+    <div class="flex justify-end">
+      <InputButton type="submit" label="Aceptar" />
+    </div>
+    <div>{{ track }}</div>
+    <div>{{ route.meta }}</div>
+    <div>{{ route.params }}</div>
+  </form>
 </template>
 <script setup>
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import InputButton from "@/components/forms/InputButton.vue";
 import GeneroDropDown from "@/components/forms/GenerosDropDown.vue";
 import MediaTypeDropDown from "@/components/forms/MediaTypeDropDown.vue";
@@ -41,13 +44,21 @@ const route = useRoute();
 const traksStore = useTraksStore();
 
 const track = ref({
-    albumId: route.params.idalbum,
-  })
+  albumId: route.params.idalbum,
+})
 
+onMounted(async () => {
+  if (route.meta.type == 'update') {
+    
+    const data = traksStore.getTraks.find(f => f.TrackId == route.params.id)
+    console.log('onmounted',data)
+    track.value = { ...data }
+  }
+})
 async function on_submit() {
-    if (route.meta.type == 'insert') {
-        await traksStore.createTrak(track.value)
-        track.value = {};
-    }
+  if (route.meta.type == 'insert') {
+    await traksStore.createTrak(track.value)
+    track.value = {};
+  }
 }
 </script>

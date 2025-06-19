@@ -86,18 +86,38 @@
     },
     {
       "id": "1749859593921",
-      "title": "",
+      "title": "Afrociberdelia",
       "artistid": "1749857435985"
     },
     {
       "id": "1749859603961",
-      "title": "",
+      "title": "Angel Dust",
       "artistid": "1749857435985"
     },
     {
       "id": "1749859610008",
       "title": "",
       "artistid": "1749857435985"
+    },
+    {
+      "id": "1750372320224",
+      "title": "Ace Of Spades",
+      "artistid": "1749857436274"
+    },
+    {
+      "id": "1750372329815",
+      "title": "Acústico",
+      "artistid": "1749857436274"
+    },
+    {
+      "id": "1750372346520",
+      "title": "Acústico MTV [Live]",
+      "artistid": "1749857436274"
+    },
+    {
+      "id": "1750374306904",
+      "title": "Aquaman",
+      "artistid": "1749857436450"
     }
   ],
   "traks": [
@@ -109,6 +129,32 @@
       "mediatype": "1749857351575",
       "genero": "1749857400464",
       "precio": "33"
+    },
+    {
+      "id": "8ead",
+      "albumId": "1750372329815",
+      "nombre": "Consectetur tellus nisi dolor vendor",
+      "compositores": "Emily Davis",
+      "mediatype": "1749857350767",
+      "genero": "1749857400648",
+      "precio": "2"
+    },
+    {
+      "id": "c388",
+      "nombre": "Elit tellus vivamus sit eiusmod",
+      "compositores": "Linda Williams",
+      "mediatype": "1749857352192",
+      "genero": "1749857400985",
+      "precio": "32"
+    },
+    {
+      "id": "0294",
+      "albumId": "1750374306904",
+      "nombre": "Tellus aenean tellus porttitor sed",
+      "compositores": "Emily Johnson",
+      "mediatype": "1749857350767",
+      "genero": "1749857400272",
+      "precio": "32"
     }
   ]
 }

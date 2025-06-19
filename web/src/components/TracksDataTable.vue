@@ -7,7 +7,7 @@
     body-row-class-name="bg-white hover:bg-gray-100 hover:cursor-pointer"
     body-item-class-name=" px-3 py-2 whitespace-nowrap">
     <template #item-id="{id}">
-        <router-link :to="{ name: 'detalle-track', params: { id: id } }"> {{ id }} </router-link>
+        <router-link :to="{ name: 'detalle-track', params: { idTrack: id } }"> {{ id }} </router-link>
 
     </template>
   </vue3-easy-data-table>

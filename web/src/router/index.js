@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -13,7 +12,7 @@ const router = createRouter({
     {
       path: '/albunes',
       name: 'albunes',
-      component: () => import('../views/AlbunesView.vue')
+      component: () => import('../views/AlbunesView.vue'),
     },
     {
       path: '/catalogos',
@@ -33,8 +32,7 @@ const router = createRouter({
           path: 'artists',
           name: 'artists',
           component: () => import('../views/catalogos/ArtistsView.vue'),
-          children: [
-          ],
+          children: [],
         },
         {
           path: ':id/albunes',
@@ -47,20 +45,20 @@ const router = createRouter({
               component: () => import('../views/artists/TraksView.vue'),
               children: [
                 {
-                    path: 'nuevo',
-                    name: 'nuevo-track',
-                    meta: {type: 'insert'},
-                    component: () => import('../views/artists/TraksFormView.vue')
+                  path: 'nuevo',
+                  name: 'nuevo-track',
+                  meta: { type: 'insert' },
+                  component: () => import('../views/artists/TraksFormView.vue'),
                 },
                 {
-                  path: 'detalle/:id',
+                  path: 'detalle/:idTrack',
                   name: 'detalle-track',
-                  meta: {type: 'update'},
-                  component: () => import('../views/artists/TraksFormView.vue')
-                }
-              ]
-            }
-          ]
+                  meta: { type: 'update' },
+                  component: () => import('../views/artists/TraksFormView.vue'),
+                },
+              ],
+            },
+          ],
         },
       ],
     },
@@ -72,33 +70,27 @@ const router = createRouter({
         {
           path: 'nuevo',
           name: 'nuevo-empleado',
-          meta: {type: 'insert'},
+          meta: { type: 'insert' },
           components: {
-
-                top: () => import('../views/empleados/FormEmpleadoView.vue')
-
-              }
+            top: () => import('../views/empleados/FormEmpleadoView.vue'),
+          },
         },
         {
           path: 'detalle/:id',
           name: 'detalle-empleado',
           components: {
-
-                bottom: () => import('../views/empleados/EmpleadoDetalleView.vue')
-
-              }
+            bottom: () => import('../views/empleados/EmpleadoDetalleView.vue'),
+          },
         },
         {
           path: 'update/:id',
           name: 'update-empleado',
-          meta: {type: 'update'},
+          meta: { type: 'update' },
           components: {
-
-                bottom: () => import('../views/empleados/FormEmpleadoView.vue')
-
-              }
-        }
-      ]
+            bottom: () => import('../views/empleados/FormEmpleadoView.vue'),
+          },
+        },
+      ],
     },
     {
       path: '/clientes',
@@ -109,27 +101,27 @@ const router = createRouter({
           path: 'nuevo',
           name: 'nuevo-cliente',
           components: {
-            top: () => import('../views/clientes/FormClienteView.vue')
+            top: () => import('../views/clientes/FormClienteView.vue'),
           },
-          meta: { mode: 'create' }
+          meta: { mode: 'create' },
         },
         {
           path: 'editar/:id', // Route for editing a customer, takes customer ID as a parameter
           name: 'editar-cliente',
           components: {
-            bottom: () => import('../views/clientes/FormClienteView.vue')
+            bottom: () => import('../views/clientes/FormClienteView.vue'),
           },
           props: true, // Passes route.params as props to the component
-          meta: { mode: 'edit' } // Optional: using meta to distinguish modes
+          meta: { mode: 'edit' }, // Optional: using meta to distinguish modes
         },
         {
           path: 'detalle/:id',
           name: 'detalle-cliente',
-          components:{
-            bottom:() => import('../views/clientes/ClientesDetalleView.vue')
-          }
-        }
-      ]
+          components: {
+            bottom: () => import('../views/clientes/ClientesDetalleView.vue'),
+          },
+        },
+      ],
     },
     {
       path: '/about',
