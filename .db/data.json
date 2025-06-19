@@ -87,16 +87,22 @@
     {
       "id": "1749859593921",
       "title": "Afrociberdelia",
+    },
+    {
+      "title": "A Real Dead One",
       "artistid": "1749857435985"
     },
     {
       "id": "1749859603961",
       "title": "Angel Dust",
+    },
+{
+      "title": "A Real Live One",
       "artistid": "1749857435985"
     },
     {
       "id": "1749859610008",
-      "title": "",
+      "title": "A Soprano Inspired",
       "artistid": "1749857435985"
     },
     {
@@ -155,6 +161,50 @@
       "mediatype": "1749857350767",
       "genero": "1749857400272",
       "precio": "32"
+{
+      "id": "f8b4",
+      "albumId": "1749859593921",
+      "nombre": "Elit dolor eiusmod lorem ipsum.",
+      "compositores": "Elit dolor nisi vendor sed",
+      "mediatype": "1749857351575",
+      "genero": "1749857400272",
+      "precio": "3"
+    }
+  ],
+  "employees": [
+    {
+      "id": "e570",
+      "LastName": "Emily Brown",
+      "FirstName": "Linda Brown",
+      "Title": "Porttitor aenean vivamus aenean dolor",
+      "ReportsTo": "2",
+      "BirthDate": "2025-06-04",
+      "HireDate": "2025-06-05",
+      "Address": "75 Main Ln",
+      "City": "LOREM",
+      "State": "LOREM",
+      "Country": "LOREM",
+      "PostalCode": "99942",
+      "Phone": "817293994",
+      "Fax": "",
+      "Email": "wsmith@gmail.com"
+    },
+    {
+      "id": "5aa2",
+      "LastName": "Emily Davis",
+      "FirstName": "Jane Smith",
+      "Title": "Sit semper ipsum tellus lorem",
+      "ReportsTo": "2",
+      "BirthDate": "2025-06-05",
+      "HireDate": "2025-06-12",
+      "Address": "1554 Main Ln",
+      "City": "lorem",
+      "State": "lorem",
+      "Country": "lorem",
+      "PostalCode": "399932",
+      "Phone": "8439381983",
+      "Fax": "",
+      "Email": "lbrown@gmail.com" 
     }
   ]
 }
