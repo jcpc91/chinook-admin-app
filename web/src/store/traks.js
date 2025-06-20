@@ -7,6 +7,11 @@ const api = {
     return fetch(url)
     .then((response) => response.json())
   },
+  fetchItemId: (id) => {
+    const url = new URL(`traks/${id}`, BASE_URL)
+    return fetch(url)
+    .then((response) => response.json())
+  },
   postItem: (data) => {
     const url = new URL("traks", BASE_URL)
     return fetch(url, {
@@ -45,7 +50,16 @@ export const useTraksStore = defineStore('traks', {
         this.loading = false
       }
     },
-
+    async fetchTrak(id) {
+      this.loading = true
+      try {
+        const data = await api.fetchItemId(id)
+        return data
+      } catch (e) {}
+      finally {
+        this.loading = false
+      }
+    },
     async createTrak(trak) {
       this.loading = true
       try {

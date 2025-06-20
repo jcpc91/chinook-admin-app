@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white rounded-xl shadow-lg px-6 py-4 w-full">
-
+  <h6>Traksview.vue</h6>
 
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-2xl">Artista: </span>

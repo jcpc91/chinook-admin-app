@@ -86,19 +86,21 @@
     },
     {
       "id": "1749859593921",
-      "title": "Afrociberdelia",
+      "title": "Afrociberdelia"
     },
     {
       "title": "A Real Dead One",
-      "artistid": "1749857435985"
+      "artistid": "1749857435985",
+      "id": "b539"
     },
     {
       "id": "1749859603961",
-      "title": "Angel Dust",
+      "title": "Angel Dust"
     },
-{
+    {
       "title": "A Real Live One",
-      "artistid": "1749857435985"
+      "artistid": "1749857435985",
+      "id": "352c"
     },
     {
       "id": "1749859610008",
@@ -161,7 +163,8 @@
       "mediatype": "1749857350767",
       "genero": "1749857400272",
       "precio": "32"
-{
+    },
+    {
       "id": "f8b4",
       "albumId": "1749859593921",
       "nombre": "Elit dolor eiusmod lorem ipsum.",
@@ -169,6 +172,14 @@
       "mediatype": "1749857351575",
       "genero": "1749857400272",
       "precio": "3"
+    },
+    {
+      "id": "78a3",
+      "nombre": "Sed elementum aenean ipsum semper",
+      "compositores": "John Davis",
+      "mediatype": "1749857350767",
+      "genero": "1749857399497",
+      "precio": "31"
     }
   ],
   "employees": [
@@ -204,7 +215,7 @@
       "PostalCode": "399932",
       "Phone": "8439381983",
       "Fax": "",
-      "Email": "lbrown@gmail.com" 
+      "Email": "lbrown@gmail.com"
     }
   ]
 }
