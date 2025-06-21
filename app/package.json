@@ -11,5 +11,8 @@
   "description": "",
   "dependencies": {
     "json-server": "^1.0.0-beta.3"
+  },
+  "devDependencies": {
+    "jest": "^30.0.2"
   }
 }
