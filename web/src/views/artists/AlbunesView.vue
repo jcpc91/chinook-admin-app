@@ -1,10 +1,10 @@
 <template>
-
+  <h6>albunes</h6>
   <ListOfLinks :links="albunesStore.getItems" :title="`Albunes de ${artist?.title}`" :onAdd="on_add"
     :onUpdate="albunesStore.updateItem" :on-delete="albunesStore.deleteItem">
     <template #buttons="{item}">
     <button @click="router.push({ name: 'tracks-albun', params: { idalbum: item.id } })"
-        class="text-teal-600 font-bold">💽</button>
+        class="text-teal-600 font-bold">📀</button>
     </template>
   </ListOfLinks>
   <div>
@@ -32,12 +32,12 @@ const artist = ref()
 
 onMounted(async () => {
 
-  artist.value = await artistsStore.getItem(route.params.id)
-  await albunesStore.fetchItemsByArtistId(route.params.id)
+  artist.value = await artistsStore.getItem(route.params.idartist)
+  await albunesStore.fetchItemsByArtistId(route.params.idartist)
 })
 
 async function on_add(item) {
-  item.artistid = route.params.id
+  item.artistid = route.params.idartist
   await albunesStore.addItem(item)
 }
 </script>

@@ -17,8 +17,8 @@
         <input v-model="link.title" type="text" :name="'_' + link.id" :id="'_' + link.id" @blur="notifyChange(link)"
           class="w-full bg-transparent border-none outline-none text-sm">
 
-        <button @click="removeItem(index, link)" class="text-red-500 ml-2 mr-1">x</button>
         <slot name="buttons" :index="index" :item="link"></slot>
+        <button @click="removeItem(index, link)" class="text-red-500 ml-2 mr-1">❌</button>
       </li>
     </ul>
     

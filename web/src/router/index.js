@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useTraksStore } from "@/store/traks";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,15 +33,15 @@ const router = createRouter({
           path: 'artists',
           name: 'artists',
           component: () => import('../views/catalogos/ArtistsView.vue'),
-          children: [],
+          
         },
         {
-          path: ':id/albunes',
+          path: 'albunes/:idartist',
           name: 'albunes-artist',
           component: () => import('../views/artists/AlbunesView.vue'),
           children: [
             {
-              path: ':idalbum/tracks',
+              path: 'tracks/:idalbum',
               name: 'tracks-albun',
               component: () => import('../views/artists/TraksView.vue'),
               children: [
@@ -54,9 +55,16 @@ const router = createRouter({
                   path: 'detalle/:idTrack',
                   name: 'detalle-track',
                   meta: { type: 'update' },
-                  component: () => import('../views/artists/TraksFormView.vue'),
+                  component: () => import('../views/artists/TraksDetalleView.vue')
+                },
+                {
+                  path: 'edit/:idTrack',
+                  name: 'edit-track',
+                  meta: { type: 'update' },
+                  component: () => import('../views/artists/TraksFormView.vue')
                 },
               ],
+              
             },
           ],
         },

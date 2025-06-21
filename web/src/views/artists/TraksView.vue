@@ -1,7 +1,6 @@
 <template>
   <div class="bg-white rounded-xl shadow-lg px-6 py-4 w-full">
-  <h6>Traksview.vue</h6>
-
+    
     <div class="lg:flex lg:flex-row gap-3 mb-3">
       <span class="text-gray-700 font-bold text-2xl">Artista: </span>
       <div class="text-2xl">{{ artistname(artisState.state) }}</div>
@@ -47,8 +46,10 @@
   onMounted(async () =>{
     await traksStore.fetchTraks(route.params.idalbum)
   })
-  onBeforeRouteUpdate(async (to) => {
-    await traksStore.fetchTraks(to.params.idalbum)
+  onBeforeRouteUpdate(async (to, from, next) => {
+    if (to.params.idalbum != route.params.idalbum)
+      await traksStore.fetchTraks(to.params.idalbum)
+    next()
   })
 
 

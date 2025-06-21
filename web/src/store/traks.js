@@ -23,7 +23,17 @@ const api = {
     })
     .then((response) => response.json())
   },
-  put: (url, data) => {}
+  putItem: (data) => {
+    const url = new URL(`traks/${data.id}`, BASE_URL)
+    return fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then((response) => response.json())
+  }
 }
 export const useTraksStore = defineStore('traks', {
   state: () => ({
@@ -74,7 +84,17 @@ export const useTraksStore = defineStore('traks', {
 
     async updateTrak(trak) {
       this.loading = true
-
+      try {
+        const data = await api.putItem(trak)
+        const index = this.traks.findIndex((item) => item.id === data.id)
+        if (index !== -1) {
+          this.traks.splice(index, 1, data)
+        }
+      } catch (error) {
+        this.error = error
+      } finally {
+        this.loading = false
+      }
     },
 
     async deleteTrak(id) {

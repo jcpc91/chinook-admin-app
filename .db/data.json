@@ -149,6 +149,7 @@
     },
     {
       "id": "c388",
+      "albumId": "1750374306904",
       "nombre": "Elit tellus vivamus sit eiusmod",
       "compositores": "Linda Williams",
       "mediatype": "1749857352192",
@@ -175,11 +176,147 @@
     },
     {
       "id": "78a3",
+      "albumId": "1750374306904",
       "nombre": "Sed elementum aenean ipsum semper",
       "compositores": "John Davis",
       "mediatype": "1749857350767",
       "genero": "1749857399497",
       "precio": "31"
+    },
+    {
+      "id": "28c1",
+      "albumId": "1750374306904",
+      "nombre": "Elementum elit vendor semper ipsum.",
+      "compositores": "Emily Williams",
+      "mediatype": "1749857351575",
+      "genero": "1749857400985",
+      "precio": "3"
+    },
+    {
+      "id": "e42e",
+      "albumId": "1750374306904",
+      "nombre": "Tellus vendor ipsum porttitor vendor",
+      "compositores": "John Brown",
+      "mediatype": "1749857351575",
+      "genero": "1749857400824",
+      "precio": "23"
+    },
+    {
+      "id": "2584",
+      "albumId": "1749859557217",
+      "nombre": "Vendor sed vendor vivamus leo",
+      "compositores": "Michael Johnson",
+      "mediatype": "1749857350008",
+      "genero": "1749857400464",
+      "precio": "32"
+    },
+    {
+      "id": "79b3",
+      "albumId": "1749859568801",
+      "nombre": "Sed vivamus lorem consectetur eiusmod",
+      "compositores": "William Johnson",
+      "mediatype": "1749857350008",
+      "genero": "1749857400648",
+      "precio": "12"
+    },
+    {
+      "id": "2769",
+      "albumId": "1749859568801",
+      "nombre": "Tellus semper lorem leo elementum.",
+      "compositores": "William Jones",
+      "mediatype": "1749857350008",
+      "genero": "1749857400648",
+      "precio": "43"
+    },
+    {
+      "id": "13b8",
+      "albumId": "1749859603961",
+      "nombre": "Eiusmod nisi sed tellus sed",
+      "compositores": "Michael Williams",
+      "mediatype": "1749857350008",
+      "genero": "1749857400089",
+      "precio": "12"
+    },
+    {
+      "id": "f349",
+      "albumId": "b539",
+      "nombre": "Porttitor tellus vivamus dolor porttitor",
+      "compositores": "Linda Johnson",
+      "mediatype": "1749857350767",
+      "genero": "1749857400272",
+      "precio": "32"
+    },
+    {
+      "id": "e038",
+      "albumId": "1749859603961",
+      "nombre": "Elementum tellus ipsum elementum nisi",
+      "compositores": "Michael Davis",
+      "mediatype": "1749857350008",
+      "genero": "1749857400648",
+      "precio": "13"
+    },
+    {
+      "id": "a4d9",
+      "albumId": "1749859593921",
+      "nombre": "Vivamus semper porttitor leo ipsum.",
+      "compositores": "Emily Brown",
+      "mediatype": "1749857350008",
+      "genero": "1749857400824",
+      "precio": "77"
+    },
+    {
+      "id": "1241",
+      "albumId": "1749859557217",
+      "nombre": "Porttitor consectetur porttitor lorem elit",
+      "compositores": "Linda Johnson",
+      "mediatype": "1749857350767",
+      "genero": "1749857399497",
+      "precio": "22"
+    },
+    {
+      "id": "a87f",
+      "albumId": "1749859593921",
+      "nombre": "Lorem semper elit ipsum elit",
+      "compositores": "Jane Davis",
+      "mediatype": "1749857350767",
+      "genero": "1749857400648",
+      "precio": "16"
+    },
+    {
+      "id": "e4ec",
+      "albumId": "1749859593921",
+      "nombre": "Elementum consectetur vivamus porttitor consectetur",
+      "compositores": "Michael Jones",
+      "mediatype": "1749857351575",
+      "genero": "1749857400648",
+      "precio": "74"
+    },
+    {
+      "id": "6bd7",
+      "albumId": "1749859610008",
+      "nombre": "Eiusmod leo nisi vivamus tellus",
+      "compositores": "Michael Jones",
+      "mediatype": "1749857351575",
+      "genero": "1749857400824",
+      "precio": "10"
+    },
+    {
+      "id": "f4ec",
+      "albumId": "1750372320224",
+      "nombre": "Leo aenean leo elit nisi.",
+      "compositores": "John Davis",
+      "mediatype": "1749857350008",
+      "genero": "1749857399497",
+      "precio": "14"
+    },
+    {
+      "id": "019e",
+      "albumId": "1749859603961",
+      "nombre": "Leo aenean leo vendor aenean.",
+      "compositores": "Linda Brown",
+      "mediatype": "1749857350767",
+      "genero": "1749857400648",
+      "precio": "12"
     }
   ],
   "employees": [
@@ -216,6 +353,24 @@
       "Phone": "8439381983",
       "Fax": "",
       "Email": "lbrown@gmail.com"
+    },
+    {
+      "id": "4f0a",
+      "LastName": "Jane Brown",
+      "FirstName": "Emily Brown",
+      "Title": "Elit elementum vendor elit elementum.",
+      "ReportsTo": "1",
+      "BirthDate": "2025-06-05",
+      "HireDate": "2025-06-05",
+      "Address": "3734 Oak Ln",
+      "City": "lorem",
+      "State": "lorem",
+      "Country": "lorem",
+      "PostalCode": "93299",
+      "Phone": "961239488",
+      "Fax": "97248388",
+      "Email": "wjones@gmail.com"
     }
-  ]
+  ],
+  "clientes": []
 }

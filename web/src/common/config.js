@@ -28,6 +28,15 @@ const config = {
     { text: 'Email', value: 'Email' },
     { text: 'Soporte', value: 'SupportRepId' },
   ],
+  traksHeaders: [
+    { text: "Id", value: "id" },
+    { text: "Album", value: "albumId" },
+    { text: "Nombre", value: "nombre" },
+    { text: "Compositores", value: "compositores" },
+    { text: "Tipo", value: "mediatype" },
+    { text: "Genero", value: "genero" },
+    { text: "Precio", value: "precio" },
+  ]
 }
 
 export default config
