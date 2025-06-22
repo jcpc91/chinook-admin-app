@@ -1,0 +1,17 @@
+{
+  "albums": [
+    {
+      "title": "Test Album",
+      "artist": "Test Artist",
+      "price": 9.99,
+      "image_url": "test_image_url",
+      "id": 1
+    }
+  ],
+  "mediatypes": [
+    {
+      "title": "Protected AAC audio file",
+      "id": 1
+    }
+  ]
+}

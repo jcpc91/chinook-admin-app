@@ -31,5 +31,34 @@ describe('JsonFileAlbumRepository tests', () => {
         expect(albums).toEqual([]);
       }
     });
+
+    it('create album and return it', async () => {
+      const album = { title: 'Test Album', artist: 'Test Artist', price: 9.99, image_url: 'test_image_url' };
+      const createdAlbum = await repository.create(album);
+      console.log(createdAlbum, album);
+      
+      expect(createdAlbum).toEqual(album);
+    });
+
+    it('should return the correct album by ID', async () => {
+      const existingAlbums = await repository.getAll();
+      if (existingAlbums.length > 0) {
+        const albumId = existingAlbums[0].id;
+        const album = await repository.getById(albumId);
+        expect(album).toHaveProperty('id', albumId);
+      } else {
+        // If no albums, we can create one for the test
+        const newAlbum = await repository.create({ title: 'Test Album', artist: 'Test Artist', price: 9.99, image_url: 'test_image_url' });
+        const album = await repository.getById(newAlbum.id);
+        expect(album).toHaveProperty('id', newAlbum.id);
+      }
+    });
+  
+    it('should return null if no album with the given ID exists', async () => {
+      const album = await repository.getById(-1); // Assuming -1 is an invalid ID
+      expect(album).toBeNull();
+    });
+
+
   });
 });
