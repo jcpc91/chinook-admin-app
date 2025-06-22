@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "../.db/data.json",
+    "repositories/jsonRepository/db.json"
+    ]
+}

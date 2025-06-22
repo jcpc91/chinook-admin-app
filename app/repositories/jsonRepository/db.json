@@ -12,6 +12,26 @@
     {
       "title": "Protected AAC audio file",
       "id": 1
+    },
+    {
+      "title": "Protected AAC audio file 5",
+      "id": 2
+    }
+  ],
+  "generos": [
+    {
+      "title": "Rock 3",
+      "id": 1
+    },
+    {
+      "title": "AC/DC",
+      "id": 2
+    }
+  ],
+  "artistas": [
+    {
+      "title": "AC/DC 2",
+      "id": 1
     }
   ]
 }

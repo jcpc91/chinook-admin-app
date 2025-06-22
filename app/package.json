@@ -4,7 +4,9 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "jsonserver": "npx json-server ../.db/data.json --port 3000"
+    "jsonserver": "npx json-server ../.db/data.json --port 3000",
+    "devexpress": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +16,7 @@
     "json-server": "^1.0.0-beta.3"
   },
   "devDependencies": {
-    "jest": "^30.0.2"
+    "jest": "^30.0.2",
+    "nodemon": "^3.1.10"
   }
 }
