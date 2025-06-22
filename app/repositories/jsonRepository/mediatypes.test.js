@@ -19,4 +19,12 @@ describe('JsonFileMediaTypeRepository', () => {
         const addedMediaType = await repository.create(newMediaType);
         expect(addedMediaType).toEqual(newMediaType);
     });
+
+    it("update media type id 2", async () => {
+        const newMediaType = {
+            "title": "Protected AAC audio file"
+        };
+        const updatedMediaType = await repository.update(2, newMediaType);
+        expect(updatedMediaType).toEqual(newMediaType);
+    });
 });
