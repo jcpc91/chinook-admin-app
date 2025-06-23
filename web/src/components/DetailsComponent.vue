@@ -41,7 +41,7 @@
   const props = defineProps({
     value: {
       type: Object,
-      required: true
+      default: () => ({})
     },
     headers: {
       type: Array,

@@ -17,6 +17,7 @@ const handleLogout = () => {
   authStore.logout();
   router.push({ name: 'login' });
 };
+
 </script>
 
 <template>
@@ -38,6 +39,3 @@ const handleLogout = () => {
   </div>
 </template>
 
-<style scoped>
-
-</style>

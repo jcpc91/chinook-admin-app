@@ -1,5 +1,6 @@
 modules = ["vue-node-20", "nodejs-20", "web"]
-run = "npm run dev"
+
+run = "./run.sh"
 
 [nix]
 channel = "stable-24_05"
@@ -8,5 +9,29 @@ channel = "stable-24_05"
 run = ["sh", "-c", "npm run dev"]
 
 [[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
 localPort = 5173
 externalPort = 80
+
+[[ports]]
+localPort = 5174
+externalPort = 3001
+
+[workflows]
+runButton = "Full Stack Dev"
+
+[[workflows.workflow]]
+name = "Full Stack Dev"
+author = 24863620
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd web && npm run dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd app && node src/app.js"

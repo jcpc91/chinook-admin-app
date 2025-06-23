@@ -4,9 +4,22 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "jsonserver": "npx json-server ../.db/data.json --port 3000",
+    "devexpress": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  },
+  "devDependencies": {
+    "jest": "^30.0.2",
+    "json-server": "^1.0.0-beta.3",
+    "nodemon": "^3.1.10"
+  }
 }

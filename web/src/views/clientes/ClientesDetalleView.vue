@@ -36,7 +36,6 @@
   });
   
   onBeforeRouteUpdate(async (to, from, next) => {
-    console.log('onBeforeRouteUpdate')
     const c = store.getCustomerById(to.params.id);
     cliente.value = c;
     next()

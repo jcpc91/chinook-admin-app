@@ -45,21 +45,46 @@ const router = createRouter({
           path: 'artists',
           name: 'artists',
           component: () => import('../views/catalogos/ArtistsView.vue'),
-          // meta: { requiresAuth: true }
+          meta: { requiresAuth: true }
         },
         {
-          path: ':id/albunes',
+          path: 'albunes/:idartist',
           name: 'albunes-artist',
           component: () => import('../views/artists/AlbunesView.vue'),
           // meta: { requiresAuth: true }
           children: [
             {
-              path: ':idalbum/tracks',
+              path: 'tracks/:idalbum',
               name: 'tracks-albun',
               component: () => import('../views/artists/TraksView.vue'),
-              // meta: { requiresAuth: true }
+
+              meta: { requiresAuth: true }
             }
           ]
+
+              children: [
+                {
+                  path: 'nuevo',
+                  name: 'nuevo-track',
+                  meta: { type: 'insert' },
+                  component: () => import('../views/artists/TraksFormView.vue'),
+                },
+                {
+                  path: 'detalle/:idTrack',
+                  name: 'detalle-track',
+                  meta: { type: 'update' },
+                  component: () => import('../views/artists/TraksDetalleView.vue')
+                },
+                {
+                  path: 'edit/:idTrack',
+                  name: 'edit-track',
+                  meta: { type: 'update' },
+                  component: () => import('../views/artists/TraksFormView.vue')
+                },
+              ],
+              
+            },
+          ],
         },
       ],
     },
@@ -82,12 +107,14 @@ const router = createRouter({
           name: 'detalle-empleado',
           meta: { requiresAuth: true },
           components: {
+
                 bottom: () => import('../views/empleados/EmpleadoDetalleView.vue')
               }
         },
         {
           path: 'update/:id',
           name: 'update-empleado',
+
           meta: {type: 'update', requiresAuth: true},
           components: {
                 bottom: () => import('../views/empleados/FormEmpleadoView.vue')
@@ -105,18 +132,21 @@ const router = createRouter({
           path: 'nuevo',
           name: 'nuevo-cliente',
           components: {
-            top: () => import('../views/clientes/FormClienteView.vue')
+            top: () => import('../views/clientes/FormClienteView.vue'),
           },
           meta: { mode: 'create', requiresAuth: true }
+
         },
         {
           path: 'editar/:id',
           name: 'editar-cliente',
           components: {
-            bottom: () => import('../views/clientes/FormClienteView.vue')
+            bottom: () => import('../views/clientes/FormClienteView.vue'),
           },
+
           props: true,
           meta: { mode: 'edit', requiresAuth: true }
+
         },
         {
           path: 'detalle/:id',

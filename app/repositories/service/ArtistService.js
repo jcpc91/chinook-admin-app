@@ -7,7 +7,7 @@
  */
 class ArtistService {
     /**
-     * @param {IBaseRepository} artistRepository Una instancia de un repositorio de artistas.
+     * @param {import('../IBaseRepository')} artistRepository Una instancia de un repositorio de artistas.
      */
     constructor(artistRepository) {
         this.artistRepository = artistRepository;

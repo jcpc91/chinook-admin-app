@@ -28,7 +28,7 @@
 
   function on_clickrow(item) {
     itemSelected.value = item;
-    router.push({ name: 'detalle-empleado', params: { id: item.EmployeeId } });
+    router.push({ name: 'detalle-empleado', params: { id: item.id } });
   }
 
   onMounted(() => {
