@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 
 const passport = require("passport");
@@ -6,6 +7,11 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const jwt = require("jsonwebtoken");
+
+app.use(cors({
+  origin: "https://a9d7b8d7-5663-4079-ba59-894a635ed946-00-37o6ps7olmswx.picard.replit.dev",
+  credentials: true
+}));
 
 app.use(express.json());
 

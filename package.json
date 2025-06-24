@@ -1,0 +1,35 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "se reestructura el proyecto para incluir la app que contendrá el backend y web para el front",
+  "main": "index.js",
+  "dependencies": {
+    "buffer-equal-constant-time": "^1.0.1",
+    "cors": "^2.8.5",
+    "ecdsa-sig-formatter": "^1.0.11",
+    "jsonwebtoken": "^9.0.2",
+    "jwa": "^1.4.2",
+    "jws": "^3.2.2",
+    "lodash.includes": "^4.3.0",
+    "lodash.isboolean": "^3.0.3",
+    "lodash.isinteger": "^4.0.4",
+    "lodash.isnumber": "^3.0.3",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.isstring": "^4.0.1",
+    "lodash.once": "^4.1.1",
+    "ms": "^2.1.3",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-strategy": "^1.0.0",
+    "pause": "^0.0.1",
+    "safe-buffer": "^5.2.1",
+    "semver": "^7.7.2",
+    "utils-merge": "^1.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
