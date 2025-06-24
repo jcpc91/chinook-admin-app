@@ -1,5 +1,18 @@
 import { defineStore } from 'pinia';
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
+const apiclient = {
+  login: async (username, password) => {
+    // Fake authentication logic
+    if (username === 'admin' && password === 'password') {
+      const url = new URL('generate-token', BASE_URL)
+      const response = await fetch(url)
+      return response.json
+    } else {
+      return Promise.reject(new Error('Invalid username or password.'))
+    }
+  }
+}
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: false,
@@ -13,23 +26,13 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async login(username, password) {
-      this.error = null; // Reset error before attempting login
-
-      // Fake authentication logic
-      return new Promise((resolve, reject) => {
-        setTimeout(() => { // Simulate API call delay
-          if (username === 'admin' && password === 'password') {
-            this.isAuthenticated = true;
-            this.user = { username: username };
-            console.log('Login successful for user:', username);
-            resolve();
-          } else {
-            this.error = 'Invalid username or password.';
-            console.log('Login failed for user:', username);
-            reject(new Error('Invalid username or password.'));
-          }
-        }, 500);
-      });
+      try {
+        this.error = null; // Reset error before attempting login
+        this.user = await apiclient.login(username, password)
+      }catch (error) {
+        this.error = error.message || 'Failed to login. Please check your credentials.';
+      }
+      
     },
     logout() {
       this.isAuthenticated = false;
