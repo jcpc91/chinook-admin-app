@@ -7,7 +7,7 @@ const apiclient = {
     if (username === 'admin' && password === 'password') {
       const url = new URL('generate-token', BASE_URL)
       const response = await fetch(url)
-      return response.json
+      return response.json()
     } else {
       return Promise.reject(new Error('Invalid username or password.'))
     }
@@ -20,6 +20,7 @@ export const useAuthStore = defineStore('auth', {
     error: null, // For storing login error messages
   }),
   getters: {
+    getState: (state) => {isAuthenticated: state.isAuthenticated},
     isLoggedIn: (state) => state.isAuthenticated,
     currentUser: (state) => state.user,
     authError: (state) => state.error,
@@ -29,6 +30,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         this.error = null; // Reset error before attempting login
         this.user = await apiclient.login(username, password)
+        this.isAuthenticated = true;
       }catch (error) {
         this.error = error.message || 'Failed to login. Please check your credentials.';
       }

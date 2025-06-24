@@ -12,6 +12,7 @@
       </div>
       <div v-if="error" class="error-message">{{ error }}</div>
       <button type="submit">Login</button>
+      <div>isLoggedIn:{{authStore.isLoggedIn}},currentUser:{{authStore.currentUser}},authError:{{authStore.authError}}</div>
     </form>
   </div>
 </template>
@@ -33,6 +34,7 @@ const handleLogin = async () => {
     await authStore.login(username.value, password.value);
     // Redirect to home or originally intended route
     const redirectPath = router.currentRoute.value.query.redirect || '/';
+    console.log('Redirecting to:', redirectPath);
     router.push(redirectPath);
   } catch (err) {
     error.value = err.message || 'Failed to login. Please check your credentials.';
