@@ -58,10 +58,7 @@ const router = createRouter({
               name: 'tracks-albun',
               component: () => import('../views/artists/TraksView.vue'),
 
-              meta: { requiresAuth: true }
-            }
-          ]
-
+              meta: { requiresAuth: true },
               children: [
                 {
                   path: 'nuevo',
@@ -82,11 +79,15 @@ const router = createRouter({
                   component: () => import('../views/artists/TraksFormView.vue')
                 },
               ],
+            }
+          ]
+
+              
               
             },
           ],
-        },
-      ],
+        
+      
     },
     {
       path: '/empleados',
