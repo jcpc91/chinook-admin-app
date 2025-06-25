@@ -1,43 +1,8 @@
 // stores/crudStore.js
+import { useMyFetch } from "@/stores/api";
 import { defineStore } from 'pinia'
-const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-const apiclient = {
-  fetchItems: () => {
-    const url = new URL("mediatypes", BASE_URL)
-    return fetch(url)
-  },
-  postItem: (item) => {
-    const url = new URL("mediatypes", BASE_URL)
-    return fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(item)
-    })
-  },
-  putItem: (item)  => {
-    const url = new URL(`mediatypes/${item.id}`, BASE_URL)
-    return fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(item)
-    })
-  },
-  deleteItem: (item) => {
-    const url = new URL(`mediatypes/${item.id}`, BASE_URL)
-    return fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(item)
-    })
-  }
-}
+
 export const useMediaTypeStore = defineStore('medittypesstore', {
   state: () => ({
     items: [
@@ -47,31 +12,26 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
 
   actions: {
     fetch() {
-      return apiclient.fetchItems()
-      .then(response => response.json())
-      .then(data => {
-        this.items = [...data]
-        return data
-      })
+      return useMyFetch('mediatypes').get().json()
+      .then(({data}) => this.items = [...data.value])
     },
+
     addItem(item) {
-      return apiclient.postItem(item)
-      .then(response => response.json())
-      .then(data => {
-        this.items.push(data)
-        return data
-      })
+        return useMyFetch('mediatypes').post(item).json()
+        .then(({data}) => {
+            this.items.push(data.value)
+            return data.value
+        })
     },
 
     updateItem(updatedItem) {
-      
+
       const index = this.items.findIndex(i => i.id === updatedItem.id)
       if (index !== -1) {
-        return apiclient.putItem(updatedItem)
-        .then(response => response.json())
-        .then(data => {
-          this.items[index] = { ...this.items[index], ...data }
-          return data
+        return useMyFetch(`mediatypes/${updatedItem.id}`).put(updatedItem).json()
+        .then(({data}) => {
+          this.items[index] = { ...this.items[index], ...data.value }
+          return data.value
         })
       } else {
         return Promise.resolve()
@@ -84,16 +44,16 @@ export const useMediaTypeStore = defineStore('medittypesstore', {
     deleteItem(itemToRemove) {
       const index = this.items.findIndex(i => i.id === itemToRemove.id)
       if (index !== -1) {
-        return apiclient.deleteItem(itemToRemove)
-        .then(response => response.json())
-        .then(data => {
+        return useMyFetch(`mediatypes/${itemToRemove.id}`).delete().json()
+        .then(({data}) => {
+            console.log('delete', data)
           this.items.splice(index, 1)
-          return data
+          return data.value
         })
       } else {
         return Promise.resolve()
       }
     },
-    
+
   }
 })

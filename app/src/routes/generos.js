@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const passport = require("passport");
 const GenerosService = require('../../repositories/service/GenerosService.js');
 const JsonFileGenreRepository = require('../../repositories/jsonRepository/generos.js');
 
 const repository = new GenerosService( new JsonFileGenreRepository())
 // GET all genres
-router.get('/', (req, res) => {
+router.get('/', passport.authenticate("jwt", { session: false }), (req, res) => {
     repository.getGeneros().then(generos => {
         res.json(generos);
     })
@@ -14,7 +15,7 @@ router.get('/', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+router.post('/', passport.authenticate("jwt", { session: false }), (req, res) => {
     // Implementation for creating a new genre
     repository.createGenero(req.body)
     .then(genre => {
@@ -24,7 +25,7 @@ router.post('/', (req, res) => {
     })
 })
 
-router.put('/:id', (req, res) => {
+router.put('/:id', passport.authenticate("jwt", { session: false }), (req, res) => {
     repository.updateGenero(parseInt(req.params.id), req.body)
     .then(genre => {
         res.json(genre);

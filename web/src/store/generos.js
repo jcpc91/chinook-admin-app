@@ -1,43 +1,7 @@
 // stores/crudStore.js
 import { defineStore } from 'pinia'
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+import { useMyFetch } from "@/stores/api";
 
-const apiclient = {
-  fetchItems: () => {
-    const url = new URL("generos", BASE_URL)
-    return fetch(url)
-  },
-  postItem: (item) => {
-    const url = new URL("generos", BASE_URL)
-    return fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(item)
-    })
-  },
-  putItem: (item)  => {
-    const url = new URL(`generos/${item.id}`, BASE_URL)
-    return fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(item)
-    })
-  },
-  deleteItem: (item) => {
-    const url = new URL(`generos/${item.id}`, BASE_URL)
-    return fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(item)
-    })
-  }
-}
 export const useGenerosStore = defineStore('generosStore', {
   state: () => ({
     items: [
@@ -47,19 +11,17 @@ export const useGenerosStore = defineStore('generosStore', {
 
   actions: {
     fetch() {
-      return apiclient.fetchItems()
-      .then(response => response.json())
-      .then(data => {
-        this.items = [...data]
-        return data
+      return useMyFetch('generos').get().json()
+      .then(({data}) => {
+        this.items = [...data.value]
+        return data.value
       })
     },
     addItem(item) {
-      return apiclient.postItem(item)
-      .then(response => response.json())
-      .then(data => {
-        this.items.push(data)
-        return data
+      return useMyFetch('generos').post(item).json()
+      .then(({data}) => {
+        this.items.push(data.value)
+        return data.value
       })
     },
 
@@ -67,11 +29,10 @@ export const useGenerosStore = defineStore('generosStore', {
 
       const index = this.items.findIndex(i => i.id === updatedItem.id)
       if (index !== -1) {
-        return apiclient.putItem(updatedItem)
-        .then(response => response.json())
-        .then(data => {
-          this.items[index] = { ...this.items[index], ...data }
-          return data
+        return useMyFetch(`generos/${updatedItem.id}`).put(updatedItem).json()
+        .then(({data}) => {
+          this.items[index] = { ...this.items[index], ...data.value }
+          return data.value
         })
       } else {
         return Promise.resolve()
@@ -80,16 +41,15 @@ export const useGenerosStore = defineStore('generosStore', {
     deleteItem(itemToRemove) {
       const index = this.items.findIndex(i => i.id === itemToRemove.id)
       if (index !== -1) {
-        return apiclient.deleteItem(itemToRemove)
-        .then(response => response.json())
-        .then(data => {
+        return useMyFetch(`generos/${itemToRemove.id}`).delete()
+        .then(({data}) => {
           this.items.splice(index, 1)
-          return data
+          return data.value
         })
       } else {
         return Promise.resolve()
       }
     },
-    
+
   }
 })
