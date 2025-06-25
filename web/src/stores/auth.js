@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', {
     error: null, // For storing login error messages
   }),
   getters: {
-    getState: (state) => {isAuthenticated: state.isAuthenticated},
+
     isLoggedIn: (state) => state.isAuthenticated,
     currentUser: (state) => state.user,
     authError: (state) => state.error,
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
       }catch (error) {
         this.error = error.message || 'Failed to login. Please check your credentials.';
       }
-      
+
     },
     logout() {
       this.isAuthenticated = false;

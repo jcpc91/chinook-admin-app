@@ -5,11 +5,12 @@ const app = express();
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-
 const jwt = require("jsonwebtoken");
 
+require('dotenv').config();
+console.log('env: ', process.env.CORS_ORIGIN);
 app.use(cors({
-  origin: "https://a9d7b8d7-5663-4079-ba59-894a635ed946-00-37o6ps7olmswx.picard.replit.dev",
+  origin: process.env.CORS_ORIGIN,
   credentials: true
 }));
 
