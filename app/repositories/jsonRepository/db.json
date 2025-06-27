@@ -1,11 +1,70 @@
 {
+  "tracks": [],
   "albums": [
     {
-      "title": "Test Album",
-      "artist": "Test Artist",
-      "price": 9.99,
-      "image_url": "test_image_url",
-      "id": 1
+      "id": 1,
+      "title": "A Copland Celebration, Vol. I",
+      "artistid": "1"
+    },
+    {
+      "id": 2,
+      "title": "A Matter of Life and Death",
+      "artistid": "1"
+    },
+    {
+      "id": 3,
+      "title": "A Real Dead One",
+      "artistid": "1"
+    },
+    {
+      "id": 4,
+      "title": "A Real Dead One",
+      "artistid": "2"
+    },
+    {
+      "id": 5,
+      "title": "A-Sides",
+      "artistid": "2"
+    },
+    {
+      "id": 6,
+      "title": "Ace Of Spades",
+      "artistid": "2"
+    },
+    {
+      "id": 7,
+      "title": "A Real Dead One",
+      "artistid": "3"
+    },
+    {
+      "id": 8,
+      "title": "A Soprano Inspired",
+      "artistid": "3"
+    },
+    {
+      "id": 9,
+      "title": "Acústico",
+      "artistid": "3"
+    },
+    {
+      "id": 10,
+      "title": "Achtung Baby",
+      "artistid": "2"
+    },
+    {
+      "id": 11,
+      "title": "A TempestadeTempestade Ou O Livro Dos Dias",
+      "artistid": "2"
+    },
+    {
+      "id": 12,
+      "title": "Acústico MTV",
+      "artistid": "3"
+    },
+    {
+      "id": 13,
+      "title": "Acústico MTV [Live]",
+      "artistid": "4"
     }
   ],
   "mediatypes": [
@@ -14,7 +73,7 @@
       "id": 1
     },
     {
-      "title": "Protected AAC audio file 5",
+      "title": "AAC audio file",
       "id": 2
     },
     {
@@ -23,7 +82,7 @@
     },
     {
       "id": 4,
-      "title": "xxxxx"
+      "title": "Purchased AAC audio file"
     }
   ],
   "generos": [
@@ -44,6 +103,26 @@
     {
       "title": "AC/DC 2",
       "id": 1
+    },
+    {
+      "id": 2,
+      "title": "Accept"
+    },
+    {
+      "id": 3,
+      "title": "Aerosmith"
+    },
+    {
+      "id": 4,
+      "title": "Alanis Morissette"
+    },
+    {
+      "id": 5,
+      "title": "Alice In Chains"
+    },
+    {
+      "id": 6,
+      "title": "Antônio Carlos Jobim"
     }
   ]
 }

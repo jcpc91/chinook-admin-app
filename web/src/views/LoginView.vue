@@ -12,7 +12,8 @@
       </div>
       <div v-if="error" class="error-message">{{ error }}</div>
       <button type="submit">Login</button>
-      <div>isLoggedIn:{{authStore.isLoggedIn}},currentUser:{{authStore.currentUser}},authError:{{authStore.authError}}</div>
+      <div>isLoggedIn:{{ authStore.isLoggedIn }},currentUser:{{ authStore.currentUser }},authError:{{ authStore.authError }}
+      </div>
     </form>
   </div>
 </template>
@@ -22,8 +23,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth'; // Assuming auth store will be at @/stores/auth
 
-const username = ref('');
-const password = ref('');
+const username = ref('admin');
+const password = ref('password');
 const error = ref('');
 const router = useRouter();
 const authStore = useAuthStore();

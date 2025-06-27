@@ -32,6 +32,11 @@ class AlbumService {
         return this.albumRepository.getById(id);
     }
 
+    async getAlbumByArtistId(artistId) {
+        console.log(`👉 Servicio de Álbumes: Solicitando álbumes con artistid: ${artistId}.`);
+        return this.albumRepository.getAlbumsByArtistId(artistId);
+    }
+
     /**
      * Crea un nuevo álbum.
      * @param {Object} albumData Los datos del álbum a crear.

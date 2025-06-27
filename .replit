@@ -34,4 +34,4 @@ args = "cd web && npm run dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && node src/app.js"
+args = "cd app && npm run devexpress"

@@ -29,7 +29,7 @@ class JsonFileGenreRepository extends IBaseRepository {
 
     async getById(id) {
         const data = await this._readData();
-        const t = (data.generos || []).find(a => a.id === id);
+        const t = (data.generos || []).find(a => a.id == id);
         return t || null;
     }
 
@@ -51,7 +51,7 @@ class JsonFileGenreRepository extends IBaseRepository {
         if (!data.generos) {
             return null; // Or throw an error
         }
-        const index = data.generos.findIndex(a => a.id === id);
+        const index = data.generos.findIndex(a => a.id == id);
         if (index === -1) {
             return null;
         }
@@ -67,7 +67,7 @@ class JsonFileGenreRepository extends IBaseRepository {
             return false;
         }
         const initialLength = data.generos.length;
-        data.generos = data.generos.filter(a => a.id !== id);
+        data.generos = data.generos.filter(a => a.id != id);
         if (data.generos.length < initialLength) {
             await this._writeData(data);
             return true;

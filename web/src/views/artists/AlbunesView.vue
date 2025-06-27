@@ -7,9 +7,7 @@
         class="text-teal-600 font-bold">📀</button>
     </template>
   </ListOfLinks>
-  <div>
-    {{ route.params }}
-  </div>
+  
   <div class="p-3">
     <RouterView />
   </div>

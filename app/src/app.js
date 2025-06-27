@@ -7,12 +7,14 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
 
-require('dotenv').config();
-console.log('env: ', process.env.CORS_ORIGIN);
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
-  credentials: true
-}));
+require("dotenv").config();
+console.log("env: ", process.env.CORS_ORIGIN);
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
@@ -66,6 +68,7 @@ app.use(passport.initialize());
 const mediaTypesRouter = require("./routes/mediatypes");
 const generosRouter = require("./routes/generos");
 const artistasRouter = require("./routes/artistas");
+const albunesRouter = require("./routes/albunes");
 
 app.get("/generate-token", (req, res) => {
   const payload = { sub: "someUserId123", username: "testuser" };
@@ -77,6 +80,7 @@ app.get("/generate-token", (req, res) => {
 app.use("/mediatypes", mediaTypesRouter);
 app.use("/generos", generosRouter);
 app.use("/artistas", artistasRouter);
+app.use("/albunes", albunesRouter);
 
 const PORT = process.env.PORT || 3000;
 

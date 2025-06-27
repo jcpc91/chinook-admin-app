@@ -1,8 +1,8 @@
-const fs = require('fs/promises');
-const path = require('path');
-const IBaseRepository = require('../IBaseRepository');
+const fs = require("fs/promises");
+const path = require("path");
+const IBaseRepository = require("../IBaseRepository");
 
-const dbPath = path.join(__dirname, 'db.json');
+const dbPath = path.join(__dirname, "db.json");
 
 class JsonFileAlbumRepository extends IBaseRepository {
     constructor() {
@@ -11,10 +11,10 @@ class JsonFileAlbumRepository extends IBaseRepository {
 
     async _readData() {
         try {
-            const rawData = await fs.readFile(dbPath, 'utf-8');
+            const rawData = await fs.readFile(dbPath, "utf-8");
             return JSON.parse(rawData);
         } catch (error) {
-            if (error.code === 'ENOENT') {
+            if (error.code === "ENOENT") {
                 // File doesn't exist, return initial structure
                 return { albums: [] };
             }
@@ -23,7 +23,7 @@ class JsonFileAlbumRepository extends IBaseRepository {
     }
 
     async _writeData(data) {
-        await fs.writeFile(dbPath, JSON.stringify(data, null, 2), 'utf-8');
+        await fs.writeFile(dbPath, JSON.stringify(data, null, 2), "utf-8");
     }
 
     async getAll() {
@@ -33,8 +33,16 @@ class JsonFileAlbumRepository extends IBaseRepository {
 
     async getById(id) {
         const data = await this._readData();
-        const album = (data.albums || []).find(a => a.id === id);
+        const album = (data.albums || []).find((a) => a.id == id);
         return album || null;
+    }
+
+    async getAlbumsByArtistId(artistId) {
+        const data = await this._readData();
+        const albums = (data.albums || []).filter(
+            (a) => a.artistid == artistId,
+        );
+        return albums || [];
     }
 
     async create(entity) {
@@ -43,7 +51,10 @@ class JsonFileAlbumRepository extends IBaseRepository {
             data.albums = [];
         }
         // Simple ID generation (can be improved)
-        const newId = data.albums.length > 0 ? Math.max(...data.albums.map(a => a.id)) + 1 : 1;
+        const newId =
+            data.albums.length > 0
+                ? Math.max(...data.albums.map((a) => a.id)) + 1
+                : 1;
         const newAlbum = { ...entity, id: newId };
         data.albums.push(newAlbum);
         await this._writeData(data);
@@ -55,7 +66,7 @@ class JsonFileAlbumRepository extends IBaseRepository {
         if (!data.albums) {
             return null; // Or throw an error
         }
-        const albumIndex = data.albums.findIndex(a => a.id === id);
+        const albumIndex = data.albums.findIndex((a) => a.id == id);
         if (albumIndex === -1) {
             return null;
         }
@@ -71,7 +82,7 @@ class JsonFileAlbumRepository extends IBaseRepository {
             return false;
         }
         const initialLength = data.albums.length;
-        data.albums = data.albums.filter(a => a.id !== id);
+        data.albums = data.albums.filter((a) => a.id != id);
         if (data.albums.length < initialLength) {
             await this._writeData(data);
             return true;
