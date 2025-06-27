@@ -4,6 +4,8 @@ const app = express();
 
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
+const OAuth2Strategy = require("passport-oauth2").Strategy
+const BearerStrategy = require("passport-http-bearer").Strategy
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
 
@@ -60,7 +62,19 @@ passport.use(
     }
   }),
 );
-
+passport.use(new OAuth2Strategy({
+  authorizationURL: 'http://localhost:3001/authorize',
+  tokenURL: 'http://localhost:3001/token',
+  clientID: 'doeclient',
+  clientSecret: 'foobarbaz'  
+}, function(accessToken, refreshToken, profile, done) {
+  console.log(accessToken, refreshToken, profile, done)
+  return done(null, profile);
+}))
+passport.use(new BearerStrategy(function(token, done) {
+  console.log(token)
+  return done(null, token);
+}))
 // This middleware initializes Passport within the Express application.
 app.use(passport.initialize());
 

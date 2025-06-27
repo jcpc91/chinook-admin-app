@@ -9,7 +9,7 @@ const repository = new MediaTypeService(new JsonFileMediaTypeRepository());
 // GET all media types
 router.get(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("bearer", { session: false }),
   (req, res) => {
     repository.getMediaTypes().then((mediatypes) => {
       res.json(mediatypes);
