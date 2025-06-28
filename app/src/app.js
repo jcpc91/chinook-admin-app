@@ -8,7 +8,7 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
-console.log("env: ", process.env.CORS_ORIGIN);
+console.log("env: ", process.env.CORS_ORIGIN || 'http://localhost:3000');
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -18,7 +18,7 @@ app.use(
 
 app.use(express.json());
 
-const jwtSecret = "supersecretjwtkeythatshouldbemorecomplexandfromenv";
+const jwtSecret = process.env.JWT_SECREAT_KEY;
 const jwtOptions = {
   // Tells the strategy how to extract the JWT from the request
   // We expect it in the Authorization header as a Bearer token

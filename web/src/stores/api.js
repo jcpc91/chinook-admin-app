@@ -10,8 +10,9 @@ export const useMyFetch = createFetch({
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${authStore.user.token}`
             }
-            console.log(options.headers)
             return { options }
         }
     },
 });
+
+

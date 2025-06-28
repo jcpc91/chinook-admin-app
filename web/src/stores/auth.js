@@ -1,16 +1,18 @@
 import { defineStore } from 'pinia';
-const BASE_URL = import.meta.env.VITE_BASE_URL
+import { useServerAuth } from "@/services/authserver";
+
 
 const apiclient = {
   login: async (username, password) => {
     // Fake authentication logic
-    if (username === 'admin' && password === 'password') {
-      const url = new URL('generate-token', BASE_URL)
-      const response = await fetch(url)
-      return response.json()
-    } else {
-      return Promise.reject(new Error('Invalid username or password.'))
+    const payload = {
+        'username': username,
+        'password': password,
+
     }
+    console.log(payload);
+    return useServerAuth().post(payload).json();
+
   }
 }
 export const useAuthStore = defineStore('auth', {
@@ -29,9 +31,29 @@ export const useAuthStore = defineStore('auth', {
     async login(username, password) {
       try {
         this.error = null; // Reset error before attempting login
-        this.user = await apiclient.login(username, password)
+        const payload = {
+            'username': username,
+            'password': password,
+
+        }
+        console.log(payload);
+        const url = 'https://8080-cs-337107985405-default.cs-us-central1-pits.cloudshell.dev'
+        const data = await fetch(url,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+
+        }).then((response) => response.json())
+
+        // const data = await useServerAuth().post(payload)
+        console.log(data);
+        this.user = {}
         this.isAuthenticated = true;
       }catch (error) {
+
+        console.table(error)
         this.error = error.message || 'Failed to login. Please check your credentials.';
       }
 
