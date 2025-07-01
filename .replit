@@ -20,6 +20,10 @@ externalPort = 80
 localPort = 5174
 externalPort = 3001
 
+[[ports]]
+localPort = 5175
+externalPort = 3002
+
 [workflows]
 runButton = "Full Stack Dev"
 
@@ -35,3 +39,7 @@ args = "cd web && npm run dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd app && npm run devexpress"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd auth && npm run start"

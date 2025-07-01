@@ -1,7 +1,7 @@
 import { createFetch } from '@vueuse/core';
-
+const base = import.meta.env.VITE_URL_AUTH
 export const useServerAuth = createFetch({
-    baseUrl: 'https://8080-cs-337107985405-default.cs-us-central1-pits.cloudshell.dev',
+    baseUrl: base,
     options: {
         beforeFetch: ({ options }) => {
             options.headers = {
