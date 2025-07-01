@@ -14,26 +14,27 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async login(username, password) {
-      
       this.error = null // Reset error before attempting login
       const payload = {
         username: username,
         password: password,
       }
 
-      const { isFetching, error, data } = await useServerAuth("").post(payload).json()
-      if (error.value) {
-        this.error = error.value
-      } else {
-        this.user = data.value
-        this.isAuthenticated = true
-      }
-      
-      return {
-        isFetching,
-        error,
-        data
-      }
+      return useServerAuth('')
+        .post(payload)
+        .json()
+        .then(({data, error}) => {
+          
+          if (error.value) {
+            throw error.value
+          }
+          this.user = data.value
+          this.isAuthenticated = true
+        })
+        .catch((err) => {
+          console.error('Login failed:', err)
+          this.error = err
+        })
     },
     logout() {
       this.isAuthenticated = false

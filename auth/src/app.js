@@ -26,12 +26,12 @@ app.get("/", (req, res) => {
 });
 // Login route
 app.post("/", async (req, res) => {
-  const { user, password } = req.body;
-
+  const { username, password } = req.body;
+  console.log("body: ", req.body);
   await simulateLongIOProcess(5000);
   console.log("Process completed.");
   // Validate credentials
-  if (user === "admin" && password === "admin") {
+  if (username === "admin" && password === "admin") {
     // Generate JWT token
     const token = jwt.sign({ user: "admin" }, process.env.JWT_SECREAT_KEY, {
       expiresIn: "2h",
