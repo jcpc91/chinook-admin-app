@@ -5,7 +5,6 @@ const app = express();
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 console.log("env: ", process.env.CORS_ORIGIN || 'http://localhost:3000');
@@ -69,18 +68,13 @@ const mediaTypesRouter = require("./routes/mediatypes");
 const generosRouter = require("./routes/generos");
 const artistasRouter = require("./routes/artistas");
 const albunesRouter = require("./routes/albunes");
-
-app.get("/generate-token", (req, res) => {
-  const payload = { sub: "someUserId123", username: "testuser" };
-  // Sign the token with the secret and set an expiration (e.g., 1 hour)
-  const token = jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
-  res.json({ message: "Token generated (for testing)", token: token });
-});
+const traksRouter = require("./routes/traks");
 // Use routes
 app.use("/mediatypes", mediaTypesRouter);
 app.use("/generos", generosRouter);
 app.use("/artistas", artistasRouter);
 app.use("/albunes", albunesRouter);
+app.use("/traks", traksRouter);
 
 const PORT = process.env.PORT || 3000;
 

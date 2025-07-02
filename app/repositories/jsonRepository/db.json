@@ -124,5 +124,16 @@
       "id": 6,
       "title": "Antônio Carlos Jobim"
     }
+  ],
+  "traks": [
+    {
+      "albumId": "1",
+      "nombre": "Eiusmod porttitor consectetur porttitor aenean.",
+      "compositores": "John Williams",
+      "mediatype": "1",
+      "genero": "3",
+      "precio": "7",
+      "id": 1
+    }
   ]
 }

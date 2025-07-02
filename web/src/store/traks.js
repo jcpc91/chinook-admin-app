@@ -1,11 +1,9 @@
 import { defineStore } from 'pinia'
+import { useMyFetch } from "@/stores/api";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const api = {
   fetchItemsByAlbums: (idalbum) => {
-    const url = new URL("traks", BASE_URL)
-    url.searchParams.append("albumId", idalbum)
-    return fetch(url)
-    .then((response) => response.json())
+    return useMyFetch(`traks?albumid=${idalbum}`).get().json()
   },
   fetchItemId: (id) => {
     const url = new URL(`traks/${id}`, BASE_URL)
@@ -13,15 +11,7 @@ const api = {
     .then((response) => response.json())
   },
   postItem: (data) => {
-    const url = new URL("traks", BASE_URL)
-    return fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then((response) => response.json())
+    return useMyFetch('traks').post(data).json()
   },
   putItem: (data) => {
     const url = new URL(`traks/${data.id}`, BASE_URL)
@@ -51,35 +41,27 @@ export const useTraksStore = defineStore('traks', {
   actions: {
     async fetchTraks(albumid) {
       this.loading = true
-      try {
-        const data = await api.fetchItemsByAlbums(albumid)
+        const { data, error, execute, statusCode } = await api.fetchItemsByAlbums(albumid)
         this.traks = [...data]
-      } catch (error) {
-        this.error = error
-      } finally {
-        this.loading = false
-      }
+        return { data, error, execute, statusCode }
     },
     async fetchTrak(id) {
       this.loading = true
       try {
         const data = await api.fetchItemId(id)
         return data
-      } catch (e) {}
+      } catch (e) {
+        console.log(e)
+      }
       finally {
         this.loading = false
       }
     },
     async createTrak(trak) {
-      this.loading = true
-      try {
-        const data = await api.postItem(trak)
-        this.traks.push(data)
-      } catch (error) {
-        this.error = error
-      } finally {
-        this.loading = false
-      }
+        const { data, error, execute, statusCode } = await api.postItem(trak)
+        console.log(data)
+        this.traks.push(data.value)
+        return { data, error, execute, statusCode }
     },
 
     async updateTrak(trak) {
