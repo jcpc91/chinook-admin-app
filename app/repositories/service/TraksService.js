@@ -12,6 +12,10 @@ class TraksService {
   getTrakById(id) {
     return this.baseRepoository.getById(id);
   }
+
+  getTrakByIdAlbum(id) {
+    return this.baseRepoository.getByIdAlbum(id);
+  }
   createTrak(trakData) {
     return this.baseRepoository.create(trakData);
   }

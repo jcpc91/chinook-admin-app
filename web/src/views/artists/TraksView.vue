@@ -20,6 +20,7 @@
     <div>
         <RouterView></RouterView>
     </div>
+    <div>state:{{ state }}</div>
   </div>
 </template>
 <script setup>
@@ -40,15 +41,20 @@
   const router = useRouter();
   const route = useRoute();
 
-  const artisState = useAsyncState(artistsStore.getItem(route.params.id), {})
+  const { state, execute, executeImmediate } = useAsyncState(action, {}, { immediate: false })
+
+  async function action(event) {
+    return await traksStore.fetchTraks(event.idalbum)
+  }
+  const artisState = useAsyncState(artistsStore.getItem(route.params.idartist), {})
   const artistname = reactify((input) => input?.title)
   const albumItem = computed(() => albunesStore.getItems.find((item) => item.id == route.params.idalbum));
   onMounted(async () =>{
-    await traksStore.fetchTraks(route.params.idalbum)
+    execute(0, {idalbum: route.params.idalbum})
   })
   onBeforeRouteUpdate(async (to, from, next) => {
     if (to.params.idalbum != route.params.idalbum)
-      await traksStore.fetchTraks(to.params.idalbum)
+      execute(0, {idalbum: to.params.idalbum })
     next()
   })
 

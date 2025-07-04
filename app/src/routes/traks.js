@@ -8,14 +8,23 @@ const JsonFileTrakRepository = require("../../repositories/jsonRepository/traks.
 const repository = new TrakService(new JsonFileTrakRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
-    repository
-        .getAll()
+    if (req.query.albumId) {
+        repository.getTrakByIdAlbum(req.query.albumId)
+        .then((traks) => {
+            res.json(traks);
+        }).catch((error) => {
+            res.status(500).json({ error: error.message });
+        })
+    }else {
+        repository
+        .getTraks()
         .then((traks) => {
             res.json(traks);
         })
         .catch((error) => {
             res.status(500).json({ error: error.message });
         });
+    }
 });
 
 router.get("/:id", passport.authenticate("jwt", { session: false }), (req, res) => {

@@ -134,6 +134,24 @@
       "genero": "3",
       "precio": "7",
       "id": 1
+    },
+    {
+      "albumId": "1",
+      "mediatype": "3",
+      "genero": "3",
+      "nombre": "Aenean eiusmod sit tellus semper",
+      "compositores": "William Williams",
+      "precio": "12",
+      "id": 2
+    },
+    {
+      "id": 3
+    },
+    {
+      "id": 4
+    },
+    {
+      "id": 5
     }
   ]
 }

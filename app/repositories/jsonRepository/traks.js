@@ -33,6 +33,12 @@ class JsonFileTrackRepository extends IBaseRepository {
     return t || null;
   }
 
+  async getByIdAlbum(id) {
+    const data = await this._readData();
+    const t = (data.traks || []).filter((a) => a.albumId == id);
+    return t || null;
+  }
+
   async create(entity) {
     const data = await this._readData();
     if (!data.traks) {

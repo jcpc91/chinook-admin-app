@@ -26,9 +26,11 @@
     <div class="flex justify-end">
       <InputButton type="submit" label="Aceptar" />
     </div>
-
-    <div><strong>track:</strong> {{ track }}</div>
-    <div>{{route.meta}}</div>
+    <hr>
+    <div><strong>state:</strong> {{ state }}</div>
+    <div>isReady:{{ isReady }}</div>
+    <div>isloading:{{ isLoading }}</div>
+    <div>error:{{ error }}</div>
   </form>
 </template>
 <script setup>
@@ -46,7 +48,7 @@ const router = useRouter()
 const route = useRoute();
 const traksStore = useTraksStore();
 const track = ref({})
-
+const { state, isReady, isLoading, error, execute } = useAsyncState(action, {})
 
 
 onMounted(async () => {
@@ -73,13 +75,17 @@ onBeforeRouteUpdate(async (to, from, next) => {
 
 async function on_submit() {
   if (route.meta.type == 'insert') {
-    await traksStore.createTrak(track.value)
+    execute(track.value)
     track.value = {
       albumId: route.params.idalbum
     }
   } else {
     await traksStore.updateTrak(track.value)
-    router.push({name : 'tracks-albun'})
+    router.push({ name: 'tracks-albun' })
   }
+}
+
+async function action(track) {
+  return await traksStore.createTrak(track)
 }
 </script>
