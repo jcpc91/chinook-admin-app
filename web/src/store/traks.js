@@ -5,7 +5,7 @@ import { ref, computed, reactive } from 'vue'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 const api = {
-  
+
   fetchItemId: (id) => {
     const url = new URL(`traks/${id}`, BASE_URL)
     return fetch(url).then((response) => response.json())
@@ -28,22 +28,22 @@ const api = {
 
 
 export const useTraksStore = defineStore('traks', () => {
-  
+
   const traks = ref([])
   const getTraks = computed(() => traks.value)
-  
 
-  const fetchTraks = (idalbum) => { 
+
+  const fetchTraks = (idalbum) => {
     return useMyFetch(`traks?albumid=${idalbum}`).get().json()
-    .then(({data}) => { 
+    .then(({data}) => {
       traks.value = [...data.value]
       return data.value
     })
   }
 
-  function fetchTrak(id) {
+  function fetchTrak(args) {
     return useMyFetch(`traks?albumid=${args.idalbum}`).get().json()
-    .then(({data}) => { 
+    .then(({data}) => {
       traks.value = [...data.value]
       return data.value
     })

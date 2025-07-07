@@ -31,12 +31,13 @@
     <div>isReady:{{ isReady }}</div>
     <div>isloading:{{ isLoading }}</div>
     <div>error:{{ error }}</div>
+    <div>form: {{ track }}</div>
   </form>
 </template>
 <script setup>
-import { ref, onMounted, watch, computed, reactive } from "vue";
+import { ref, onMounted} from "vue";
 import { useRoute, onBeforeRouteUpdate, useRouter } from "vue-router";
-import { useAsyncState, reactify } from '@vueuse/core'
+import { useAsyncState } from '@vueuse/core'
 import InputButton from "@/components/forms/InputButton.vue";
 import GeneroDropDown from "@/components/forms/GenerosDropDown.vue";
 import MediaTypeDropDown from "@/components/forms/MediaTypeDropDown.vue";
@@ -48,7 +49,7 @@ const router = useRouter()
 const route = useRoute();
 const traksStore = useTraksStore();
 const track = ref({})
-const { state, isReady, isLoading, error, execute } = useAsyncState(action, {})
+const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, { immediate: false})
 
 
 onMounted(async () => {
@@ -75,7 +76,7 @@ onBeforeRouteUpdate(async (to, from, next) => {
 
 async function on_submit() {
   if (route.meta.type == 'insert') {
-    execute(track.value)
+    execute(0, track.value)
     track.value = {
       albumId: route.params.idalbum
     }

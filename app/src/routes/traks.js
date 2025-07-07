@@ -8,8 +8,8 @@ const JsonFileTrakRepository = require("../../repositories/jsonRepository/traks.
 const repository = new TrakService(new JsonFileTrakRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
-    if (req.query.albumId) {
-        repository.getTrakByIdAlbum(req.query.albumId)
+    if (req.query.albumid) {
+        repository.getTrakByIdAlbum(req.query.albumid)
         .then((traks) => {
             res.json(traks);
         }).catch((error) => {
