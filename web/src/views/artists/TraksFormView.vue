@@ -29,8 +29,8 @@
     <hr>
     <div><strong>state:</strong> {{ state }}</div>
     <div>isReady:{{ isReady }}</div>
-    <div>isloading:{{ isLoading }}</div>
-    <div>error:{{ error }}</div>
+    <div>route.meta: {{route.meta}}</div>
+    <div>error:{{ traksStore.error }}</div>
     <div>form: {{ track }}</div>
   </form>
 </template>
@@ -54,7 +54,7 @@ const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, 
 
 onMounted(async () => {
   if (route.meta.type == 'update') {
-    track.value = await traksStore.fetchTrak(route.params.idTrack)
+    track.value = await traksStore.fetchTrakById(route.params.idTrack)
   } else {
     track.value = {
       albumId: route.params.idalbum
@@ -65,7 +65,7 @@ onMounted(async () => {
 
 onBeforeRouteUpdate(async (to, from, next) => {
   if (route.meta.type == 'update') {
-    track.value = await traksStore.fetchTrak(to.params.idTrack)
+    track.value = await traksStore.fetchTrakById(to.params.idTrack)
   } else {
     track.value = {
       albumId: to.params.idalbum

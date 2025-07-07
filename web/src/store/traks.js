@@ -3,32 +3,12 @@ import { useMyFetch } from '@/stores/api'
 import { reactify, useAsyncState } from '@vueuse/core'
 import { ref, computed, reactive } from 'vue'
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const api = {
-
-  fetchItemId: (id) => {
-    const url = new URL(`traks/${id}`, BASE_URL)
-    return fetch(url).then((response) => response.json())
-  },
-  postItem: (data) => {
-    return useMyFetch('traks').post(data).json()
-  },
-  putItem: (data) => {
-    const url = new URL(`traks/${data.id}`, BASE_URL)
-    return fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    }).then((response) => response.json())
-  },
-}
 
 
 
 export const useTraksStore = defineStore('traks', () => {
-
+  const loading = ref(false)
+  const error = ref(null)
   const traks = ref([])
   const getTraks = computed(() => traks.value)
 
@@ -41,32 +21,39 @@ export const useTraksStore = defineStore('traks', () => {
     })
   }
 
-  function fetchTrak(args) {
-    return useMyFetch(`traks?albumid=${args.idalbum}`).get().json()
+  function fetchTrakById(idTrack) {
+    return useMyFetch(`traks/${idTrack}`)
+    .get()
+    .json()
     .then(({data}) => {
-      traks.value = [...data.value]
       return data.value
     })
   }
   async function createTrak(trak) {
-    return useMyFetch('traks').post(trak).json()
-    .then(({data}) => {
-      traks.value.push(data.value)
-      return data.value
-    })
+    return useMyFetch('traks')
+      .post(trak)
+      .json()
+      .then(({data}) => {
+        traks.value.push(data.value)
+        return data.value
+      })
   }
   async function updateTrak(trak) {
-    this.loading = true
+    loading.value = true
     try {
-      const data = await api.putItem(trak)
-      const index = this.traks.findIndex((item) => item.id === data.id)
+      const {data, error} = await useMyFetch('traks')
+        .put(trak)
+        .json()
+      if (error.value)
+        throw error.value
+      const index = traks.findIndex((item) => item.id === data.value.id)
       if (index !== -1) {
-        this.traks.splice(index, 1, data)
+        traks.splice(index, 1, data.value)
       }
-    } catch (error) {
-      this.error = error
+    } catch (err) {
+      error.value = err
     } finally {
-      this.loading = false
+      loading.value = false
     }
   }
 
@@ -76,9 +63,11 @@ export const useTraksStore = defineStore('traks', () => {
   return {
     getTraks,
     fetchTraks,
-    fetchTrak,
+    fetchTrakById,
     createTrak,
     updateTrak,
     deleteTrak,
+    error,
+    loading
   }
 })

@@ -215,6 +215,24 @@
       "genero": "1",
       "precio": "3",
       "id": 20
+    },
+    {
+      "albumId": "2",
+      "nombre": "Dolor tellus elit vivamus elementum",
+      "compositores": "Jane Johnson",
+      "mediatype": "3",
+      "genero": "2",
+      "precio": "3",
+      "id": 21
+    },
+    {
+      "albumId": "3",
+      "nombre": "Nisi sed vendor semper nisi",
+      "compositores": "Michael Smith",
+      "mediatype": "4",
+      "genero": "2",
+      "precio": "3",
+      "id": 22
     }
   ]
 }

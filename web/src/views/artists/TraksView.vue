@@ -15,12 +15,12 @@
     </div>
 
     <div >
-      <TracksDataTable :items="traksStore.getTraks"></TracksDataTable>
+      <TracksDataTable :items="traksStore.getTraks" @click-row="on_selected"></TracksDataTable>
     </div>
     <div>
         <RouterView></RouterView>
     </div>
-    <div>state:{{ state }}</div>
+    <div>error:{{ traksStore.error }}</div>
   </div>
 </template>
 <script setup>
@@ -57,6 +57,10 @@
       execute(0, {idalbum: to.params.idalbum })
     next()
   })
+
+  function on_selected(item) {
+    router.push({name: 'detalle-track', params: {idTrack: item.id}})
+  }
 
 
 </script>
