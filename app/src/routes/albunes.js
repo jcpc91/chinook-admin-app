@@ -7,7 +7,9 @@ const JsonFileAlbumRepository = require("../../repositories/jsonRepository/album
 const repository = new AlbumService(new JsonFileAlbumRepository());
 
 //get albunes by artistid route get /albunes?artistid=1
-router.get("/", (req, res) => {
+router.get("/", 
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
     const artistId = req.query.artistid;
     if (artistId) {
         repository

@@ -26,15 +26,14 @@
     <div class="flex justify-end">
       <InputButton type="submit" label="Aceptar" />
     </div>
-
-    <div><strong>track:</strong> {{ track }}</div>
-    <div>{{route.meta}}</div>
+    <hr>
+    <div>error: {{error}}</div>
   </form>
 </template>
 <script setup>
-import { ref, onMounted, watch, computed, reactive } from "vue";
+import { ref, onMounted} from "vue";
 import { useRoute, onBeforeRouteUpdate, useRouter } from "vue-router";
-import { useAsyncState, reactify } from '@vueuse/core'
+import { useAsyncState } from '@vueuse/core'
 import InputButton from "@/components/forms/InputButton.vue";
 import GeneroDropDown from "@/components/forms/GenerosDropDown.vue";
 import MediaTypeDropDown from "@/components/forms/MediaTypeDropDown.vue";
@@ -46,40 +45,46 @@ const router = useRouter()
 const route = useRoute();
 const traksStore = useTraksStore();
 const track = ref({})
-
-
-
-onMounted(async () => {
-  if (route.meta.type == 'update') {
-    track.value = await traksStore.fetchTrak(route.params.idTrack)
-  } else {
-    track.value = {
-      albumId: route.params.idalbum
+const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, { immediate: false})
+  
+  
+  onMounted(async () => {
+    if (route.meta.type == 'update') {
+      track.value = await traksStore.fetchTrakById(route.params.idTrack)
+    } else {
+      track.value = {
+        albumId: route.params.idalbum
+      }
+    }
+  
+  })
+  
+  onBeforeRouteUpdate(async (to, from, next) => {
+    if (route.meta.type == 'update') {
+      track.value = await traksStore.fetchTrakById(to.params.idTrack)
+    } else {
+      track.value = {
+        albumId: to.params.idalbum
+      }
+    }
+    next()
+  })
+  
+  async function on_submit() {
+      execute(0, track.value)
+  }
+  
+    
+  async function action(track) {
+  
+    if (route.meta.type == 'insert') {
+      await traksStore.createTrak(track)
+      track.value = {
+        albumId: route.params.idalbum
+      }
+    } else {
+      await traksStore.updateTrak(track)
+      router.push({ name: 'tracks-albun' })
     }
   }
-
-})
-
-onBeforeRouteUpdate(async (to, from, next) => {
-  if (route.meta.type == 'update') {
-    track.value = await traksStore.fetchTrak(to.params.idTrack)
-  } else {
-    track.value = {
-      albumId: to.params.idalbum
-    }
-  }
-  next()
-})
-
-async function on_submit() {
-  if (route.meta.type == 'insert') {
-    await traksStore.createTrak(track.value)
-    track.value = {
-      albumId: route.params.idalbum
-    }
-  } else {
-    await traksStore.updateTrak(track.value)
-    router.push({name : 'tracks-albun'})
-  }
-}
 </script>

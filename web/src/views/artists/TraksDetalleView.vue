@@ -2,7 +2,7 @@
   <div class="w-2xl mx-auto">
 
     <Details :headers="config.traksHeaders" :value="track" @edit="edit_item" ></Details>
-
+    
   </div>
 </template>
 <script setup>
@@ -21,11 +21,11 @@
   
 
   onMounted(async() => {
-    track.value = await store.fetchTrak(route.params.idTrack)
+    track.value = await store.fetchTrakById(route.params.idTrack)
   })
 
   onBeforeRouteUpdate(async (to, from, next) => {
-    track.value = await store.fetchTrak(to.params.idTrack)
+    track.value = await store.fetchTrakById(to.params.idTrack)
     next()
   })
 

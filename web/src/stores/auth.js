@@ -1,18 +1,6 @@
-import { defineStore } from 'pinia';
-const BASE_URL = import.meta.env.VITE_BASE_URL
+import { defineStore } from 'pinia'
+import { useServerAuth } from '@/services/authserver'
 
-const apiclient = {
-  login: async (username, password) => {
-    // Fake authentication logic
-    if (username === 'admin' && password === 'password') {
-      const url = new URL('generate-token', BASE_URL)
-      const response = await fetch(url)
-      return response.json()
-    } else {
-      return Promise.reject(new Error('Invalid username or password.'))
-    }
-  }
-}
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: false,
@@ -20,29 +8,41 @@ export const useAuthStore = defineStore('auth', {
     error: null, // For storing login error messages
   }),
   getters: {
-
     isLoggedIn: (state) => state.isAuthenticated,
     currentUser: (state) => state.user,
     authError: (state) => state.error,
   },
   actions: {
     async login(username, password) {
-      try {
-        this.error = null; // Reset error before attempting login
-        this.user = await apiclient.login(username, password)
-        this.isAuthenticated = true;
-      }catch (error) {
-        this.error = error.message || 'Failed to login. Please check your credentials.';
+      this.error = null // Reset error before attempting login
+      const payload = {
+        username: username,
+        password: password,
       }
 
+      return useServerAuth('')
+        .post(payload)
+        .json()
+        .then(({data, error}) => {
+          
+          if (error.value) {
+            throw error.value
+          }
+          this.user = data.value
+          this.isAuthenticated = true
+        })
+        .catch((err) => {
+          console.error('Login failed:', err)
+          this.error = err
+        })
     },
     logout() {
-      this.isAuthenticated = false;
-      this.user = null;
+      this.isAuthenticated = false
+      this.user = null
       // Optionally, redirect to login or home page can be handled here or in the component
       // For example, by using the router instance if it's made available to the store
       // or by router.push('/login') in the component calling logout.
-      console.log('User logged out.');
+      console.log('User logged out.')
     },
   },
-});
+})
