@@ -47,4 +47,13 @@ router.post("/", passport.authenticate("jwt", { session: false }), (req, res) =>
             res.status(500).json({ error: error.message });
         });
 });
+router.put("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+    repository.updateTrak(req.body)
+    .then((trak) => {
+        res.json(trak);
+    })
+    .catch((error) => {
+        res.status(500).json({ error: error.message });
+    })
+})
 module.exports = router;

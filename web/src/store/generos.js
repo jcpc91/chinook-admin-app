@@ -29,11 +29,13 @@ export const useGenerosStore = defineStore('generosStore', {
 
       const index = this.items.findIndex(i => i.id === updatedItem.id)
       if (index !== -1) {
-        return useMyFetch(`generos/${updatedItem.id}`).put(updatedItem).json()
-        .then(({data}) => {
-          this.items[index] = { ...this.items[index], ...data.value }
-          return data.value
-        })
+        return useMyFetch(`generos/${updatedItem.id}`)
+          .put(updatedItem)
+          .json()
+          .then(({data}) => {
+            this.items[index] = { ...this.items[index], ...data.value }
+            return data.value
+          })
       } else {
         return Promise.resolve()
       }

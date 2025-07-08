@@ -58,6 +58,7 @@ class JsonFileTrackRepository extends IBaseRepository {
     if (!data.traks) {
       return null; // Or throw an error
     }
+    
     const index = data.traks.findIndex((a) => a.id == id);
     if (index === -1) {
       return null;

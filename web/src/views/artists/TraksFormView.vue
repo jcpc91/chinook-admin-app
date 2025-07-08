@@ -27,11 +27,7 @@
       <InputButton type="submit" label="Aceptar" />
     </div>
     <hr>
-    <div><strong>state:</strong> {{ state }}</div>
-    <div>isReady:{{ isReady }}</div>
-    <div>route.meta: {{route.meta}}</div>
-    <div>error:{{ traksStore.error }}</div>
-    <div>form: {{ track }}</div>
+    <div>error: {{error}}</div>
   </form>
 </template>
 <script setup>
@@ -50,43 +46,45 @@ const route = useRoute();
 const traksStore = useTraksStore();
 const track = ref({})
 const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, { immediate: false})
-
-
-onMounted(async () => {
-  if (route.meta.type == 'update') {
-    track.value = await traksStore.fetchTrakById(route.params.idTrack)
-  } else {
-    track.value = {
-      albumId: route.params.idalbum
+  
+  
+  onMounted(async () => {
+    if (route.meta.type == 'update') {
+      track.value = await traksStore.fetchTrakById(route.params.idTrack)
+    } else {
+      track.value = {
+        albumId: route.params.idalbum
+      }
+    }
+  
+  })
+  
+  onBeforeRouteUpdate(async (to, from, next) => {
+    if (route.meta.type == 'update') {
+      track.value = await traksStore.fetchTrakById(to.params.idTrack)
+    } else {
+      track.value = {
+        albumId: to.params.idalbum
+      }
+    }
+    next()
+  })
+  
+  async function on_submit() {
+      execute(0, track.value)
+  }
+  
+    
+  async function action(track) {
+  
+    if (route.meta.type == 'insert') {
+      await traksStore.createTrak(track)
+      track.value = {
+        albumId: route.params.idalbum
+      }
+    } else {
+      await traksStore.updateTrak(track)
+      router.push({ name: 'tracks-albun' })
     }
   }
-
-})
-
-onBeforeRouteUpdate(async (to, from, next) => {
-  if (route.meta.type == 'update') {
-    track.value = await traksStore.fetchTrakById(to.params.idTrack)
-  } else {
-    track.value = {
-      albumId: to.params.idalbum
-    }
-  }
-  next()
-})
-
-async function on_submit() {
-  if (route.meta.type == 'insert') {
-    execute(0, track.value)
-    track.value = {
-      albumId: route.params.idalbum
-    }
-  } else {
-    await traksStore.updateTrak(track.value)
-    router.push({ name: 'tracks-albun' })
-  }
-}
-
-async function action(track) {
-  return await traksStore.createTrak(track)
-}
 </script>

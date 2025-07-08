@@ -19,5 +19,8 @@ class TraksService {
   createTrak(trakData) {
     return this.baseRepoository.create(trakData);
   }
+  updateTrak(trakData) {
+    return this.baseRepoository.update(trakData.id, trakData);
+  }
 }
 module.exports = TraksService;
