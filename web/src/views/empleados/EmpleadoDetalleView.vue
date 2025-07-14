@@ -5,7 +5,7 @@
     <div>
 
     </div>
-    <div class="text-xs">employee:{{ employee }}</div>
+    <div class="text-xs">employee:{{ route.params }}</div>
   </div>
 </template>
 
@@ -26,13 +26,13 @@ const editEmployee = () => {
 };
 
 
-onMounted(() => {
-  const emp = empleadoStore.getEmpleadoById(route.params.id);
+onMounted(async() => {
+  const emp = await empleadoStore.getEmpleadoById(route.params.id);
   employee.value = emp;
 });
 
 onBeforeRouteUpdate(async (to, from, next) => {
-  const emp = empleadoStore.getEmpleadoById(to.params.id);
+  const emp = await empleadoStore.getEmpleadoById(to.params.id);
   employee.value = emp;
   next()
 })

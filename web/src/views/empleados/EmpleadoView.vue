@@ -6,7 +6,7 @@
     <div>
       <RouterView name="top" />
     </div>
-    <EmpleadosDataTable @click-row="on_clickrow"  :items="empleadoStore.getEmpleados"  />
+    <EmpleadosDataTable @click-row="on_clickrow"  :items="empleadoStore.Empleados"  />
 
     <RouterView name="bottom"/>
   </Panel>
@@ -23,16 +23,16 @@
   const empleadoStore = useEmpleadosStore()
   const router = useRouter()
   const itemSelected = ref(null);
-
+  
 
 
   function on_clickrow(item) {
     itemSelected.value = item;
-    router.push({ name: 'detalle-empleado', params: { id: item.id } });
+    router.push({ name: 'detalle-empleado', params: { id: item.EmployeeId } });
   }
 
-  onMounted(() => {
-    empleadoStore.fetchEmpleados()
+  onMounted(async () => {
+    await empleadoStore.fetchEmpleados
   })
 
 

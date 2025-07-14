@@ -155,7 +155,8 @@
           </div>
         </div>
       </form>
-      <div>{{ form }}</div>
+      <div>{{ error }}</div>
+    <div>{{form}}</div>
   </Panel>
 </template>
 
@@ -169,6 +170,7 @@
   import { useRouter, useRoute } from 'vue-router';
   import { useEmpleadosStore } from "@/store/empleados";
 
+  const error = ref(null)
   const empleadosStore = useEmpleadosStore()
   const router = useRouter();
   const route = useRoute();
@@ -181,9 +183,9 @@
     LastName: '',
     FirstName: '',
     Title: '',
-    ReportsTo: null,
-    BirthDate: '',
-    HireDate: '',
+    ReportsTo: '1',
+    BirthDate: '2025-07-04',
+    HireDate: '2025-07-04',
     Address: '',
     City: '',
     State: '',
@@ -197,7 +199,7 @@
     LastName: '',
     FirstName: '',
     Title: '',
-    ReportsTo: null,
+    ReportsTo: '',
     BirthDate: '',
     HireDate: '',
     Address: '',
@@ -212,20 +214,24 @@
 
 
 
-  const on_submit = () => {
-    if (route.meta.type == 'insert') {
-      empleadosStore.createEmpleado(form.value)
-      form.value = {... defaultform}
-      //router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
-    } else if(route.meta.type == 'update') {
-      empleadosStore.updateEmpleado(form.value)
-      router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
+  const on_submit = async () => {
+    try {
+      if (route.meta.type == 'insert') {
+        await empleadosStore.createEmpleado(form.value)
+        form.value = {... defaultform}
+        //router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
+      } else if(route.meta.type == 'update') {
+        empleadosStore.updateEmpleado(form.value)
+        router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
+      }
+    } catch (err) {
+      error.value = err
     }
   };
 
-  onMounted(() => {
+  onMounted(async() => {
     if(route.meta.type == 'update') {
-      const data = empleadosStore.getEmpleadoById(route.params.id)
+      const data = await empleadosStore.getEmpleadoById(route.params.id)
       form.value = { ...data }
     }
 

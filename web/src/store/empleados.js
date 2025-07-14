@@ -1,23 +1,67 @@
 import { defineStore } from 'pinia';
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const api = {
-  fetchEmpleados: () => {
-    const url = new URL('employees', BASE_URL)
-    return fetch(url).then((response) => response.json())
-  },
-  postEmpleado: (empleado) => {
-    const url = new URL('employees', BASE_URL)
-    return fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(empleado),
-    }).then((response) => response.json())
+import { useMyFetch } from '@/stores/api'
+import { ref, computed, reactive } from 'vue'
+
+
+export const useEmpleadosStore = defineStore('empleados', () => {
+  const empleados = ref([])
+  const err = ref(null)
+  const Empleados = computed(() => empleados.value)
+  const fetchEmpleados = useMyFetch('employees')
+    .get()
+    .json()
+    .then(({ data, error }) => {
+      if (error.value)
+        throw error.value
+      empleados.value = [...data.value]
+      return data.value
+    })
+    
+  const createEmpleado = (empleado) => useMyFetch('employees')
+    .post(empleado)
+    .json()
+    .then(({ data, error }) => {
+      if (error.value)
+        throw error.value
+      empleados.value.push(data.value)
+    })
+  
+  function getEmpleadoById(id) {
+    return useMyFetch(`employees/${id}`)
+    .get()
+    .json()
+    .then(({ data, error }) => {
+      if (error.value)
+        throw error.value
+      return data.value
+    })
   }
-}
-export const useEmpleadosStore = defineStore('empleados', {
-  state: () => ({
+
+  function updateEmpleado(empleado) {
+    return useMyFetch(`employees`)
+    .put(empleado)
+    .json()
+    .then(({ data, error }) => {
+      if (error.value)
+        throw error.value
+      const index = empleados.value.findIndex(emp => emp.id === data.value.id);
+      if (index !== -1) {
+        empleados.value[index] = { ...empleados.value[index], ...data.value };
+      }
+      return data.value
+    })
+  }
+  return {
+    err,
+    empleados,
+    Empleados,
+    fetchEmpleados,
+    createEmpleado,
+    getEmpleadoById,
+    updateEmpleado,
+    //deleteEmpleado,
+  }
+  /*state: () => ({
     empleados: [],
   }),
   getters: {
@@ -46,5 +90,5 @@ export const useEmpleadosStore = defineStore('empleados', {
     deleteEmpleado(empleadoId) {
       this.empleados = this.empleados.filter(emp => emp.id !== empleadoId);
     },
-  },
+  },*/
 });

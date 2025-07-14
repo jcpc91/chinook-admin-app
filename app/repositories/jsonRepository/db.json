@@ -297,5 +297,58 @@
       "precio": "33",
       "id": 26
     }
+  ],
+  "employees": [
+    {
+      "EmployeeId": 1,
+      "LastName": "Linda Smith",
+      "FirstName": "Jane Jones",
+      "Title": "Eiusmod vendor sit lorem consectetur",
+      "ReportsTo": "1",
+      "BirthDate": "2025-07-04",
+      "HireDate": "2025-07-04",
+      "Address": "2849 Elm Rd",
+      "City": "lorem",
+      "State": "lorem",
+      "Country": "lorem",
+      "PostalCode": "3493",
+      "Phone": "928399134",
+      "Fax": "4839",
+      "Email": "jjohnson@gmail.com"
+    },
+    {
+      "EmployeeId": 2,
+      "LastName": "William Jones",
+      "FirstName": "Jane Davis",
+      "Title": "Lorem vivamus dolor porttitor leo",
+      "ReportsTo": "2",
+      "BirthDate": "2022-08-01",
+      "HireDate": "2020-09-02",
+      "Address": "2853 Elm Blvd",
+      "City": "lorem",
+      "State": "lorem",
+      "Country": "lorem",
+      "PostalCode": "27876",
+      "Phone": "928399134",
+      "Fax": "4839",
+      "Email": "msmith@gmail.com"
+    },
+    {
+      "EmployeeId": 3,
+      "LastName": "Michael Brown",
+      "FirstName": "Michael Davis",
+      "Title": "Lorem porttitor sit sed eiusmod",
+      "ReportsTo": "1",
+      "BirthDate": "2025-02-11",
+      "HireDate": "2020-02-11",
+      "Address": "2960 Maple Ave",
+      "City": "lorem",
+      "State": "lorem",
+      "Country": "lorem",
+      "PostalCode": "2940",
+      "Phone": "9612838498",
+      "Fax": "96128384992",
+      "Email": "mjones@gmail.com"
+    }
   ]
 }
