@@ -1,9 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const simulateLongIOProcess = require("./simulateLongCPUProcess");
+
 require("dotenv").config();
 console.log("env: ", process.env);
+if (!process.env.JWT_SECREAT_KEY)
+  throw 'JWT_SECREAT_KEY not found'
+
 const app = express();
 const port = process.env.PORT || 3000;
 

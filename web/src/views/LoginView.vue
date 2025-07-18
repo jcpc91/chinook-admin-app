@@ -13,9 +13,11 @@
       <div v-if="error" class="error-message">{{ error }}</div>
       <button type="submit">Login</button>
       <div>
-        isLoggedIn:{{ authStore.isLoggedIn }},currentUser:{{ authStore.currentUser }},authError:{{ authStore.authError }}
+        state: {{ state }}
       </div>
-      
+      <div>
+        error: {{ error }}
+      </div>
     </form>
   </div>
 </template>
@@ -24,27 +26,27 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth'; // Assuming auth store will be at @/stores/auth
+import { useAsyncState } from "@vueuse/core";
 
 const username = ref('admin');
 const password = ref('password');
-const error = ref('');
 const router = useRouter();
-const authStore = useAuthStore();
+const {login} = useAuthStore();
 
-    onMounted(() => {
-    console.log('authStore:', import.meta.env.VITE_URL_AUTH);
-  })
+const { state, execute, error, isLoading, isReady, then } = useAsyncState(login, null, { immediate: false })
+
 const handleLogin = async () => {
-  error.value = ''; // Reset error message
-  try {
-    await authStore.login(username.value, password.value);
-    // Redirect to home or originally intended route
-    const redirectPath = router.currentRoute.value.query.redirect || '/';
-    console.log('Redirecting to:', redirectPath);
-    router.push(redirectPath);
-  } catch (err) {
-    error.value = err.message || 'Failed to login. Please check your credentials.';
-  }
+
+    await execute(0, { username: username.value, password: password.value });
+    console.log('ok')
+
+//   try {
+//     const redirectPath = router.currentRoute.value.query.redirect || '/';
+//     router.push(redirectPath);
+//   } catch (err) {
+//     console.error(err);
+//     error.value = 'Failed to login. Please check your credentials.';
+//   }
 };
 </script>
 
