@@ -10,34 +10,37 @@
         <label for="password">Password</label>
         <input type="password" id="password" v-model="password" required />
       </div>
-      <div v-if="error" class="error-message">{{ error }}</div>
+      <div v-if="authStore.error" class="error-message">{{ authStore.error }}</div>
       <button type="submit">Login</button>
       <div>
-        state: {{ state }}
+        state: {{ authStore.data }}
       </div>
+
       <div>
-        error: {{ error }}
+        isFetching: {{ authStore.isFetching }}
       </div>
     </form>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth'; // Assuming auth store will be at @/stores/auth
-import { useAsyncState } from "@vueuse/core";
+import { storeToRefs } from 'pinia'
 
 const username = ref('admin');
 const password = ref('password');
 const router = useRouter();
-const {login} = useAuthStore();
+const authStore = useAuthStore()
 
-const { state, execute, error, isLoading, isReady, then } = useAsyncState(login, null, { immediate: false })
+
 
 const handleLogin = async () => {
 
-    await execute(0, { username: username.value, password: password.value });
+    //await execute(0, { username: username.value, password: password.value });
+    authStore.post({ username: username.value, password: password.value })
+    await authStore.execute(true)
     console.log('ok')
 
 //   try {

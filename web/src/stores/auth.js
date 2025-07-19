@@ -1,25 +1,17 @@
 import { defineStore } from 'pinia'
 import { useServerAuth } from '@/services/authserver'
-import { ref} from 'vue';
+import { watch, ref } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
-    const loading = ref(false)
-    const error = ref(null)
-    async function login(payload) {
-        try {
-            loading.value = true
-            const result = await useServerAuth('', {immediate: false}).post(payload).json()
-            if (result.statusCode.value === 401)
-                throw new Error('Invalid credentials')
+    const { data, error, execute, statusCode, isFetching, post } = useServerAuth('', {method: 'post'}, {immediate: false, initialData: {}})
 
-            return result.data.value
-        } catch (error) {
-            error.value = error.message
-            throw error
-        } finally {
-            loading.value = false
-        }
-    }
+    watch(error, () => {
+        console.log('watch error', error.value)
+    })
+    watch(data, () => {
+        console.log('watch data', data.value)
+    })
+
     async function logout() {
         this.isAuthenticated = false
         this.user = null
@@ -29,9 +21,12 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('User logged out.')
         }
     return {
-        loading,
+        execute,
+        statusCode,
+        data,
         error,
+        isFetching,
+        post,
         logout,
-        login
     }
 })
