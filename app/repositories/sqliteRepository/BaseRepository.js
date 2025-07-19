@@ -1,15 +1,15 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const IBaseRepository = require('../IBaseRepository');
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
+const IBaseRepository = require("../IBaseRepository");
 
 class BaseRepository extends IBaseRepository {
-    constructor(tableName, dbPath = path.resolve(__dirname, '../../../.db/chinook.db')) {
+    constructor(tableName, dbPath = path.resolve(__dirname, "../../../.db/dev.sqlite3")) {
         super();
         this.db = new sqlite3.Database(dbPath, (err) => {
             if (err) {
-                console.error('Error al conectar a la base de datos SQLite:', err.message);
+                console.error("Error al conectar a la base de datos SQLite:", err.message);
             } else {
-                console.log('Conectado a la base de datos SQLite.');
+                console.log("Conectado a la base de datos SQLite.");
             }
         });
         this.tableName = tableName;
@@ -41,9 +41,9 @@ class BaseRepository extends IBaseRepository {
         return new Promise((resolve, reject) => {
             const keys = Object.keys(entity);
             const values = Object.values(entity);
-            const placeholders = keys.map(() => '?').join(', ');
+            const placeholders = keys.map(() => "?").join(", ");
 
-            const sql = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders})`;
+            const sql = `INSERT INTO ${this.tableName} (${keys.join(", ")}) VALUES (${placeholders})`;
 
             this.db.run(sql, values, function (err) {
                 if (err) {
@@ -58,7 +58,7 @@ class BaseRepository extends IBaseRepository {
         return new Promise((resolve, reject) => {
             const keys = Object.keys(entity);
             const values = Object.values(entity);
-            const setClause = keys.map((key) => `${key} = ?`).join(', ');
+            const setClause = keys.map((key) => `${key} = ?`).join(", ");
 
             const sql = `UPDATE ${this.tableName} SET ${setClause} WHERE id = ?`;
 
