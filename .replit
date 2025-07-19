@@ -4,6 +4,7 @@ run = "./run.sh"
 
 [nix]
 channel = "stable-24_05"
+packages = ["sqlite"]
 
 [deployment]
 run = ["sh", "-c", "npm run dev"]

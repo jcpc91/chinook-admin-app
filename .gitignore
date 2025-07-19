@@ -142,10 +142,5 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
-
+.db/
 # End of https://www.toptal.com/developers/gitignore/api/node
-1920 x 911
-
-|
-
-2xl
