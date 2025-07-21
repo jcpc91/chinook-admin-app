@@ -1,8 +1,8 @@
-const BaseRepository = require('./BaseRepository');
+const BaseRepository = require("./BaseRepository");
 
 class GenreRepository extends BaseRepository {
     constructor() {
-        super('genres');
+        super("generos");
     }
 }
 

@@ -4,26 +4,29 @@ const passport = require("passport");
 
 const TrakService = require("../../repositories/service/TraksService.js");
 const JsonFileTrakRepository = require("../../repositories/jsonRepository/traks.js");
+const TrakRepository = require("../../repositories/sqliteRepository/TrakRepository.js");
 
-const repository = new TrakService(new JsonFileTrakRepository());
+const repository = new TrakService(new TrakRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
     if (req.query.albumid) {
-        repository.getTrakByIdAlbum(req.query.albumid)
-        .then((traks) => {
-            res.json(traks);
-        }).catch((error) => {
-            res.status(500).json({ error: error.message });
-        })
-    }else {
         repository
-        .getTraks()
-        .then((traks) => {
-            res.json(traks);
-        })
-        .catch((error) => {
-            res.status(500).json({ error: error.message });
-        });
+            .getTrakByIdAlbum(req.query.albumid)
+            .then((traks) => {
+                res.json(traks);
+            })
+            .catch((error) => {
+                res.status(500).json({ error: error.message });
+            });
+    } else {
+        repository
+            .getTraks()
+            .then((traks) => {
+                res.json(traks);
+            })
+            .catch((error) => {
+                res.status(500).json({ error: error.message });
+            });
     }
 });
 
@@ -36,7 +39,7 @@ router.get("/:id", passport.authenticate("jwt", { session: false }), (req, res) 
         .catch((error) => {
             res.status(500).json({ error: error.message });
         });
-})
+});
 router.post("/", passport.authenticate("jwt", { session: false }), (req, res) => {
     repository
         .createTrak(req.body)
@@ -48,12 +51,13 @@ router.post("/", passport.authenticate("jwt", { session: false }), (req, res) =>
         });
 });
 router.put("/", passport.authenticate("jwt", { session: false }), (req, res) => {
-    repository.updateTrak(req.body)
-    .then((trak) => {
-        res.json(trak);
-    })
-    .catch((error) => {
-        res.status(500).json({ error: error.message });
-    })
-})
+    repository
+        .updateTrak(req.body)
+        .then((trak) => {
+            res.json(trak);
+        })
+        .catch((error) => {
+            res.status(500).json({ error: error.message });
+        });
+});
 module.exports = router;
