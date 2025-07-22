@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "migrate": "knex migrate:latest",
+    "migrate-app": "knex migrate:latest --cwd app",
     "up": "knex migrate:up"
   },
   "author": "",
