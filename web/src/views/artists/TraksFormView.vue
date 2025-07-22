@@ -75,10 +75,10 @@ const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, 
   }
   
     
-  async function action(track) {
+  async function action() {
   
     if (route.meta.type == 'insert') {
-      await traksStore.createTrak(track)
+      await traksStore.createTrak(track.value)
       track.value = {
         albumId: route.params.idalbum
       }
