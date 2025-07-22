@@ -1,0 +1,19 @@
+{
+  "name": "database",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "migrate": "knex migrate:latest",
+    "up": "knex migrate:up"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "knex": "^3.1.0"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
+}

@@ -1,0 +1,4 @@
+## .env variables
+CORS_ORIGIN=
+JWT_SECREAT_KEY=
+PORT=
