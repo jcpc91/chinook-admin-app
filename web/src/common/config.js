@@ -30,7 +30,7 @@ const config = {
   ],
   traksHeaders: [
     { text: "Id", value: "id" },
-    { text: "Album", value: "albumId" },
+    { text: "Album", value: "albumTitle" },
     { text: "Nombre", value: "nombre" },
     { text: "Compositores", value: "compositores" },
     { text: "Tipo", value: "mediatype" },

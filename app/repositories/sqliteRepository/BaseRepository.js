@@ -37,6 +37,11 @@ class BaseRepository extends IBaseRepository {
         });
     }
 
+/**
+ * Inserts a new record into the database table associated with this repository.
+ * @param {Object} entity - The object to create in the database, where each key is a column name.
+ * @returns {Promise<Object>} A promise that resolves with the created object, including the generated ID.
+ */
     async create(entity) {
         return new Promise((resolve, reject) => {
             const keys = Object.keys(entity);

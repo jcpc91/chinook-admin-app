@@ -12,11 +12,11 @@
       </div>
       <div class="lg:flex lg:flex-row gap-3">
         <Label label="Media type:" name="mediaType" class="lg:w-2xs"></Label>
-        <MediaTypeDropDown v-model="track.mediatype" class="basis-full" />
+        <MediaTypeDropDown v-model="track.mediatypeId" class="basis-full" />
       </div>
       <div class="lg:flex lg:flex-row gap-3">
         <Label label="Generos:" name="generos" class="lg:w-2xs"></Label>
-        <GeneroDropDown v-model="track.genero" class="basis-full"></GeneroDropDown>
+        <GeneroDropDown v-model="track.generoId" class="basis-full"></GeneroDropDown>
       </div>
       <div class="lg:flex lg:flex-row gap-3">
         <Label label="Precio unitario:" name="nombre" class="lg:w-2xs"></Label>
@@ -46,8 +46,8 @@ const route = useRoute();
 const traksStore = useTraksStore();
 const track = ref({})
 const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, { immediate: false})
-  
-  
+
+
   onMounted(async () => {
     if (route.meta.type == 'update') {
       track.value = await traksStore.fetchTrakById(route.params.idTrack)
@@ -56,9 +56,9 @@ const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, 
         albumId: route.params.idalbum
       }
     }
-  
+
   })
-  
+
   onBeforeRouteUpdate(async (to, from, next) => {
     if (route.meta.type == 'update') {
       track.value = await traksStore.fetchTrakById(to.params.idTrack)
@@ -69,14 +69,14 @@ const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, 
     }
     next()
   })
-  
+
   async function on_submit() {
       execute(0, track.value)
   }
-  
-    
+
+
   async function action() {
-  
+
     if (route.meta.type == 'insert') {
       await traksStore.createTrak(track.value)
       track.value = {

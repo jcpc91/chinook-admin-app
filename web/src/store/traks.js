@@ -6,7 +6,7 @@ import { ref, computed, reactive } from 'vue'
 
 
 export const useTraksStore = defineStore('traks', () => {
-  
+
   const traks = ref([])
   const getTraks = computed(() => traks.value)
 
@@ -32,6 +32,8 @@ export const useTraksStore = defineStore('traks', () => {
       .post(trak)
       .json()
       .then(({data, error}) => {
+        if (error.value)
+          throw error.value
         traks.value.push(data.value)
         return data.value
       })
@@ -45,7 +47,7 @@ export const useTraksStore = defineStore('traks', () => {
         console.log('updateTrak', data, error)
         if (error.value)
           throw error.value
-        
+
         const index = traks.value.findIndex((i) => i.id === data.value.id)
         traks.value[index] = {...traks.value[index], ...data.value}
         return data.value

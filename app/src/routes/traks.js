@@ -3,14 +3,13 @@ const router = express.Router();
 const passport = require("passport");
 
 const TrakService = require("../../repositories/service/TraksService.js");
-const JsonFileTrakRepository = require("../../repositories/jsonRepository/traks.js");
 const TrakRepository = require("../../repositories/sqliteRepository/TrackRepository.js");
 
 const repository = new TrakService(new TrakRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
     if (req.query.albumid) {
-        
+
         repository
             .getTrakByIdAlbum(req.query.albumid)
             .then((traks) => {

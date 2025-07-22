@@ -5,11 +5,49 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "name": "Launch web",
             "request": "launch",
-            "name": "Iniciar Chrome para localhost",
-            "url": "https://musical-space-cod-9xj6w54v97c7q44-5173.app.github.dev/",
-            "webRoot": "${workspaceFolder}"
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}/web",
+            "sourceMaps": true
+        },
+        {
+            "name": "Launch auth",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "start"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}/auth",
+            "sourceMaps": true
+        },
+        {
+            "name": "Launch app",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}/app",
+            "sourceMaps": true
         }
     ]
 }
