@@ -1,11 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+import UserRepository from "./repositories/user.repository.js";
 const simulateLongIOProcess = require("./simulateLongCPUProcess");
 require("dotenv").config();
 console.log("env: ", process.env);
 const app = express();
 const port = process.env.PORT || 3000;
+
+const userRepository = new UserRepository();
+userRepository.add({ id: 1, username: "admin", password: "admin" });
 
 // Enable CORS
 app.use(
@@ -27,11 +31,11 @@ app.get("/", (req, res) => {
 // Login route
 app.post("/", async (req, res) => {
   const { username, password } = req.body;
-  //await simulateLongIOProcess(5000);
-  // Validate credentials
-  if (username === "admin" && password === "admin") {
+  const user = userRepository.getAll().find(u => u.username === username && u.password === password);
+
+  if (user) {
     // Generate JWT token
-    const token = jwt.sign({ user: "admin" }, process.env.JWT_SECREAT_KEY, {
+    const token = jwt.sign({ user: user.username }, process.env.JWT_SECREAT_KEY, {
       expiresIn: "2h",
     });
     res.json({ token });
