@@ -24,12 +24,11 @@ export const useAuthStore = defineStore('auth', {
       return useServerAuth('')
         .post(payload)
         .json()
-        .then(({data, error}) => {
-          
+        .then(({ data, error }) => {
           if (error.value) {
             throw error.value
           }
-          this.user = data.value
+          this.user = data.value.token
           this.isAuthenticated = true
         })
         .catch((err) => {
