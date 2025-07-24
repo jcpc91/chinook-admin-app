@@ -49,10 +49,7 @@ passport.use(
     // will be attached to req.user in the route handler if authentication succeeds.
     if (jwtPayload) {
       // Return null for error, and the user object (or true if no specific user object needed)
-      return done(null, {
-        id: jwtPayload.sub || "testUser",
-        message: "User authenticated via JWT",
-      });
+      return done(null, jwtPayload);
     } else {
       // Return null for error, and false if no user could be found/authenticated
       return done(null, false);
