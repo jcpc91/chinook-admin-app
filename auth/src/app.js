@@ -31,10 +31,10 @@ app.get("/", (req, res) => {
 app.post("/", async (req, res) => {
     const { username, password } = req.body;
     const user = userRepository.validUserPassword(username, password);
-
+    console.log(user)
     if (user) {
         // Generate JWT token
-        const token = jwt.sign({ user: user.username }, process.env.JWT_SECREAT_KEY, {
+        const token = jwt.sign({ user: user.username, role: user.role }, process.env.JWT_SECREAT_KEY, {
             expiresIn: "2h",
         });
         res.json({ token });

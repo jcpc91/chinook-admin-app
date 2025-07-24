@@ -2,20 +2,20 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const MediaTypeService = require("../../repositories/service/MediaTypeService.js");
-const JsonFileMediaTypeRepository = require("../../repositories/jsonRepository/mediatypes.js");
+const { isAdmin } = require("../middelware/rolles.js");
 const MediaTypeRepository = require("../../repositories/sqliteRepository/MediaTypeRepository.js");
 
 const repository = new MediaTypeService(new MediaTypeRepository());
 
 // GET all media types
-router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository.getMediaTypes().then((mediatypes) => {
     res.json(mediatypes);
   });
 });
 
 // POST a new media type
-router.post("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   // Implementation for creating a new media type
   repository
     .createMediaType(req.body)
@@ -28,7 +28,7 @@ router.post("/", passport.authenticate("jwt", { session: false }), (req, res) =>
 });
 
 // PUT (update) a media type
-router.put("/:id", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.put("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository
     .updateMediaType(parseInt(req.params.id), req.body)
     .then((mediaType) => {
@@ -40,7 +40,7 @@ router.put("/:id", passport.authenticate("jwt", { session: false }), (req, res) 
 });
 
 // DELETE a media type
-router.delete("/:id", (req, res) => {
+router.delete("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   // Implementation for deleting a media type
   res.send(`DELETE media type with id ${req.params.id}`);
 });
