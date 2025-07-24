@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { useServerAuth } from '@/services/authserver'
+import { useLocalStorage } from '@vueuse/core'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    isAuthenticated: false,
-    user: null, // Will store user information like username
+    isAuthenticated: useLocalStorage('isAuthenticated', false),
+    user: useLocalStorage('user', null), // Will store user information like username and token
     error: null, // For storing login error messages
   }),
   getters: {
@@ -39,9 +40,7 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.isAuthenticated = false
       this.user = null
-      // Optionally, redirect to login or home page can be handled here or in the component
-      // For example, by using the router instance if it's made available to the store
-      // or by router.push('/login') in the component calling logout.
+      // useLocalStorage automatically syncs these changes to localStorage
       console.log('User logged out.')
     },
   },
