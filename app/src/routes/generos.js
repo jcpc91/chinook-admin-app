@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const GenerosService = require("../../repositories/service/GenerosService.js");
-const JsonFileGenreRepository = require("../../repositories/jsonRepository/generos.js");
+const { isAdmin } = require("../middelware/rolles.js");
 const GenreRepository = require("../../repositories/sqliteRepository/GenreRepository.js");
 
 const repository = new GenerosService(new GenreRepository());
 // GET all genres
-router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository
         .getGeneros()
         .then((generos) => {
@@ -18,7 +18,7 @@ router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => 
         });
 });
 
-router.post("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     // Implementation for creating a new genre
     repository
         .createGenero(req.body)
@@ -30,7 +30,7 @@ router.post("/", passport.authenticate("jwt", { session: false }), (req, res) =>
         });
 });
 
-router.put("/:id", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.put("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository
         .updateGenero(parseInt(req.params.id), req.body)
         .then((genre) => {

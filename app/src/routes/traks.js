@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-
+const { isAdmin } = require("../middelware/rolles.js");
 const TrakService = require("../../repositories/service/TraksService.js");
 const TrakRepository = require("../../repositories/sqliteRepository/TrackRepository.js");
 
 const repository = new TrakService(new TrakRepository());
 
-router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     if (req.query.albumid) {
 
         repository
@@ -30,7 +30,7 @@ router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => 
     }
 });
 
-router.get("/:id", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository
         .getTrakById(parseInt(req.params.id))
         .then((trak) => {
@@ -40,7 +40,7 @@ router.get("/:id", passport.authenticate("jwt", { session: false }), (req, res) 
             res.status(500).json({ error: error.message });
         });
 });
-router.post("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository
         .createTrak(req.body)
         .then((trak) => {
@@ -50,7 +50,7 @@ router.post("/", passport.authenticate("jwt", { session: false }), (req, res) =>
             res.status(500).json({ error: error.message });
         });
 });
-router.put("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.put("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository
         .updateTrak(req.body)
         .then((trak) => {
