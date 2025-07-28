@@ -15,7 +15,7 @@ app.use(
     cors({
         origin: process.env.CORS_ORIGIN,
         credentials: true,
-    })
+    }),
 );
 
 // Enable Express to parse JSON request bodies
@@ -34,9 +34,13 @@ app.post("/", async (req, res) => {
 
     if (user) {
         // Generate JWT token
-        const token = jwt.sign({ user: user.username }, process.env.JWT_SECREAT_KEY, {
-            expiresIn: "2h",
-        });
+        const token = jwt.sign(
+            { user: user.username, role: "ADMIN" },
+            process.env.JWT_SECREAT_KEY,
+            {
+                expiresIn: "2h",
+            },
+        );
         res.json({ token });
     } else {
         // Invalid credentials
