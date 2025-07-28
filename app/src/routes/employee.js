@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const EmployeeService = require("../../repositories/service/EmployeeService.js");
-const JsonFileEmployeeRepository = require("../../repositories/jsonRepository/employee.js");
+const { isAdmin } = require("../middelware/rolles.js");
 const EmployeeRepository = require("../../repositories/sqliteRepository/EmployeeRepository.js");
 
 const repository = new EmployeeService(new EmployeeRepository());
 
-router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository
     .getAllEmployees()
     .then((employees) => {
@@ -17,7 +17,7 @@ router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => 
       res.status(500).json({ error: error.message });
     });
 });
-router.get("/:id", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository
     .getEmployeeById(parseInt(req.params.id))
     .then((employee) => {
@@ -28,7 +28,7 @@ router.get("/:id", passport.authenticate("jwt", { session: false }), (req, res) 
     });
 });
 
-router.post("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository
     .createEmployee(req.body)
     .then((employee) => {
@@ -39,7 +39,7 @@ router.post("/", passport.authenticate("jwt", { session: false }), (req, res) =>
     });
 });
 
-router.put("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.put("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository
     .updateEmployee(req.body.EmployeeId, req.body)
     .then((employee) => {

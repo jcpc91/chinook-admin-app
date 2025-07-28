@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const { isAdmin } = require("../middelware/rolles.js");
 const ArtistService = require("../../repositories/service/ArtistService.js");
-const JsonFileArtistRepository = require("../../repositories/jsonRepository/artistas.js");
+
 const ArtistRepository = require("../../repositories/sqliteRepository/ArtistRepository.js");
 
 const repository = new ArtistService(new ArtistRepository());
 // GET all artists
-router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository
         .getArtists()
         .then((artistas) => {
@@ -19,14 +20,14 @@ router.get("/", passport.authenticate("jwt", { session: false }), (req, res) => 
 });
 
 // get artist by id
-router.get("/:id", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.get("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository.getArtistById(parseInt(req.params.id)).then((artist) => {
         res.json(artist);
     });
 });
 
 // POST a new artist
-router.post("/", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     // Implementation for creating a new artist
     repository
         .createArtist(req.body)
@@ -39,7 +40,7 @@ router.post("/", passport.authenticate("jwt", { session: false }), (req, res) =>
 });
 
 // PUT (update) an artist
-router.put("/:id", passport.authenticate("jwt", { session: false }), (req, res) => {
+router.put("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository
         .updateArtist(parseInt(req.params.id), req.body)
         .then((artist) => {
