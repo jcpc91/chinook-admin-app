@@ -31,9 +31,7 @@
     cliente.value = c;
   })
   
-  onMounted(() => {
-    console.log('onMounted')
-  });
+
   
   onBeforeRouteUpdate(async (to, from, next) => {
     const c = store.getCustomerById(to.params.id);

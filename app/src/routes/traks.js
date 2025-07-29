@@ -1,15 +1,14 @@
 const express = require("express");
-const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../middelware/rolles.js");
 const TrakService = require("../../repositories/service/TraksService.js");
 const TrakRepository = require("../../repositories/sqliteRepository/TrackRepository.js");
 
+const router = express.Router();
 const repository = new TrakService(new TrakRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     if (req.query.albumid) {
-
         repository
             .getTrakByIdAlbum(req.query.albumid)
             .then((traks) => {
@@ -41,13 +40,14 @@ router.get("/:id", passport.authenticate("jwt", { session: false }), isAdmin, (r
         });
 });
 router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
+    console.log(req.body);
     repository
         .createTrak(req.body)
         .then((trak) => {
             res.json(trak);
         })
         .catch((error) => {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: error });
         });
 });
 router.put("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
