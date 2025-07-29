@@ -22,12 +22,10 @@
 
   const empleadoStore = useEmpleadosStore()
   const router = useRouter()
-  const itemSelected = ref(null);
   
 
 
   function on_clickrow(item) {
-    itemSelected.value = item;
     router.push({ name: 'detalle-empleado', params: { id: item.EmployeeId } });
   }
 

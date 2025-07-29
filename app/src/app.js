@@ -67,6 +67,7 @@ const artistasRouter = require("./routes/artistas");
 const albunesRouter = require("./routes/albunes");
 const traksRouter = require("./routes/traks");
 const employeesRouter = require("./routes/employee");
+const customersRouter = require("./routes/customers");
 // Use routes
 app.use("/mediatypes", mediaTypesRouter);
 app.use("/generos", generosRouter);
@@ -74,12 +75,13 @@ app.use("/artistas", artistasRouter);
 app.use("/albunes", albunesRouter);
 app.use("/traks", traksRouter);
 app.use("/employees", employeesRouter);
+app.use("/customers", customersRouter);
 //error handler
-app.use((err, req, res, next) =>{
+app.use((err, req, res, next) => {
   console.error(err);
-  
+
   res.status(500).send(err);
-})
+});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
