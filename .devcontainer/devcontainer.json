@@ -28,13 +28,15 @@
 				"esbenp.prettier-vscode",
 				"EditorConfig.EditorConfig",
 				"oxc.oxc-vscode",
-				"vitest.explorer"
+				"vitest.explorer",
+				"alexcvzz.vscode-sqlite",
+				"WallabyJs.console-ninja"
 			]
 		}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": ["5173:5173", "3000:3000", "3001:3001"],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "init.sh",
