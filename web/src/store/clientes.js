@@ -6,13 +6,12 @@ export const useClientesStore = defineStore('clientes', () => {
   const customers = ref([])
   const err = ref(null)
 
-  const fetchCustomers = useMyFetch('customers')
+  const fetchCustomers = () => useMyFetch('customers')
     .get()
-
+    .json()
     .then(({ data, error }) => {
-      if (error.value) throw error.value
-      customers.value = [...data.value]
-      return data.value
+        if (error.value) throw error.value
+        customers.value = [... data.value]
     })
 
   async function fetchCustomer(id) {

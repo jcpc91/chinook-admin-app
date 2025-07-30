@@ -6,7 +6,7 @@
     <div>
       <RouterView name="top" />
     </div>
-    <ClientesDataTable :items="clientesStore.getAllCustomers" @click-row="on_selected"></ClientesDataTable>
+    <ClientesDataTable :items="store.customers" @click-row="on_selected"></ClientesDataTable>
 
     <RouterView name="bottom" />
   </Panel>
@@ -15,15 +15,15 @@
   import { ref, computed, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import { useClientesStore } from '@/store/clientes';
-  
+
   import Panel from "../../components/common/PanelComponent.vue";
   import Button from '@/components/forms/InputButton.vue'
   import ClientesDataTable from '@/components/ClientesDataTable.vue'
-  
+
   const router = useRouter()
-  const clientesStore = useClientesStore()
+  const store = useClientesStore()
   onMounted(() => {
-    clientesStore.fetchCustomers()
+    store.fetchCustomers()
   })
 
   function on_selected(item){

@@ -69,15 +69,7 @@
 
       <!-- SupportRepId -->
       <div class="lg:flex lg:flex-row gap-3">
-        <Label label="Representante de Soporte:" name="SupportRepId" class="lg:w-2xs" />
-        <InputSelect
-          name="SupportRepId"
-          v-model="form.SupportRepId"
-          :options="supportRepOptions"
-          placeholder="Seleccione un representante"
-          class="basis-full"
-        />
-        <!-- <InputText name="SupportRepId" v-model.number="form.SupportRepId" type="number" class="basis-full" /> -->
+        <EmployeeDropDown v-model="form.SupportRepId"/>
       </div>
 
       <!-- Buttons -->
@@ -105,6 +97,7 @@ import Button from '@/components/forms/InputButton.vue';
 import Label from "@/components/forms/EtiquetaLabel.vue";
 import InputText from '@/components/forms/InputText.vue';
 import InputSelect from '@/components/forms/InputSelect.vue';
+import EmployeeDropDown from "@/components/forms/EmployeeDropDown.vue";
 
 const clientesStore = useClientesStore();
 const router = useRouter();
@@ -127,11 +120,11 @@ const defaultForm = {
 
 const form = ref({ ...defaultForm });
 
-  
+
 const supportRepOptions = ref([
-  { value: 1, label: 'Nancy Davolio (Rep ID: 1)' }, 
+  { value: 1, label: 'Nancy Davolio (Rep ID: 1)' },
   { value: 2, label: 'Andrew Fuller (Rep ID: 2)' },
-  { value: 3, label: 'Janet Leverling (Rep ID: 3)' }  
+  { value: 3, label: 'Janet Leverling (Rep ID: 3)' }
   // Add more representatives as needed
 ]);
 
@@ -142,11 +135,11 @@ const supportRepOptions = ref([
 const on_submit = async () => {
   if (isEditMode.value) {
     await clientesStore.updateCustomer({ ...form.value, CustomerId: parseInt(route.params.id) });
-    router.push({ name: 'clientes' }); 
+    router.push({ name: 'clientes' });
   } else {
     await clientesStore.createCustomer(form.value);
-    form.value = { ...defaultForm }; 
-     router.push({ name: 'clientes' }); 
+    form.value = { ...defaultForm };
+     router.push({ name: 'clientes' });
   }
 };
 
@@ -161,7 +154,7 @@ onMounted(async () => {
     if (clientesStore.customers.length === 0) {
         await clientesStore.fetchCustomers(); // Make sure we have customers to find from
     }
-    const customerData = await clientesStore.fetchCustomer(customerId); 
+    const customerData = await clientesStore.fetchCustomer(customerId);
     form.value = { ...customerData };
   } else {
     // For new customer, reset form to default values
