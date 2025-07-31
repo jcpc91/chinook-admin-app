@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
   return knex.schema.alterTable('employees', function (table) {
-    table.integer('ReportsTo').alter();
+    table.integer('ReportsTo').defaultTo(0).alter();
   });
 };
 
