@@ -32,7 +32,7 @@ class EmployeeRepository extends BaseRepository {
                 t1.BirthDate,
                 t1.HireDate, t1.Address, t1.City, t1.State, t1.Country, t1.PostalCode, t1.Phone, t1.Fax, t1.Email
                 FROM ${this.tableName} t1
-                left join ${this.tableName} t2 on t2.ReportsTo = t1.EmployeeId  `, [], (err, rows) => {
+                left join ${this.tableName} t2 on t1.EmployeeId =  t2.ReportsTo `, [], (err, rows) => {
                 if (err) {
                     reject(err);
                 }

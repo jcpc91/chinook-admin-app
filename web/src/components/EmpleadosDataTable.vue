@@ -58,6 +58,7 @@ const headers = [
   { text: "Apellido", value: "LastName" },
   { text: "Nombre", value: "FirstName" },
   //{ text: "Título", value: "Title" },
+  { text: "Reporta a", value: "ReportsToId" },
   { text: "Reporta a", value: "ReportsTo" },
   //{ text: "Nacimiento", value: "BirthDate" },
   { text: "Contratación", value: "HireDate" },
