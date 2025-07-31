@@ -22,7 +22,7 @@ const employee = ref({});
 
 
 const editEmployee = () => {
-  router.push({ name: 'update-empleado', params: { id: employee.value.EmployeeId } });
+  router.push({ name: 'update-empleado', params: { id: employee.value.id } });
 };
 
 

@@ -1,5 +1,5 @@
 <template>
-  
+
   <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="headers" :items="props.items"
   table-class-name="tableClassName"
     @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
@@ -54,7 +54,7 @@ const props = defineProps({
 });
 
 const headers = [
-  //{ text: "Id2", value: "EmployeeId" },
+  { text: "Id", value: "id" },
   { text: "Apellido", value: "LastName" },
   { text: "Nombre", value: "FirstName" },
   //{ text: "Título", value: "Title" },

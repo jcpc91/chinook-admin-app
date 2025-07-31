@@ -2,21 +2,21 @@ import { defineStore } from 'pinia';
 import { useMyFetch } from '@/stores/api'
 import { ref, computed, reactive } from 'vue'
 
-
 export const useEmpleadosStore = defineStore('empleados', () => {
   const empleados = ref([])
   const err = ref(null)
-  const Empleados = computed(() => empleados.value)
-  const fetchEmpleados = useMyFetch('employees')
+
+  const fetchEmpleados = () => useMyFetch('employees')
     .get()
     .json()
     .then(({ data, error }) => {
       if (error.value)
         throw error.value
+
       empleados.value = [...data.value]
       return data.value
     })
-    
+
   const createEmpleado = (empleado) => useMyFetch('employees')
     .post(empleado)
     .json()
@@ -25,7 +25,7 @@ export const useEmpleadosStore = defineStore('empleados', () => {
         throw error.value
       empleados.value.push(data.value)
     })
-  
+
   function getEmpleadoById(id) {
     return useMyFetch(`employees/${id}`)
     .get()
@@ -54,7 +54,6 @@ export const useEmpleadosStore = defineStore('empleados', () => {
   return {
     err,
     empleados,
-    Empleados,
     fetchEmpleados,
     createEmpleado,
     getEmpleadoById,
@@ -74,7 +73,7 @@ export const useEmpleadosStore = defineStore('empleados', () => {
         const data = await api.fetchEmpleados()
         this.empleados = [...data]
       } catch (error) {
-        
+
       }
     },
     async createEmpleado(empleado) {

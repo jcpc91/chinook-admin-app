@@ -69,7 +69,8 @@
 
       <!-- SupportRepId -->
       <div class="lg:flex lg:flex-row gap-3">
-        <EmployeeDropDown v-model="form.SupportRepId"/>
+        <Label label="Support" name="Empleado" class="lg:w-2xs" />
+        <EmployeeDropDown v-model="form.SupportRepId" class="basis-full"/>
       </div>
 
       <!-- Buttons -->
@@ -80,10 +81,10 @@
         </div>
       </div>
     </form>
-    <!-- <div class="mt-4 p-4 border rounded bg-gray-50">
+    <div class="mt-4 p-4 border rounded bg-gray-50">
       <h3 class="font-semibold text-lg mb-2">Form Data (Debug):</h3>
       <pre>{{ form }}</pre>
-    </div> -->
+    </div>
   </Panel>
 </template>
 
@@ -121,12 +122,7 @@ const defaultForm = {
 const form = ref({ ...defaultForm });
 
 
-const supportRepOptions = ref([
-  { value: 1, label: 'Nancy Davolio (Rep ID: 1)' },
-  { value: 2, label: 'Andrew Fuller (Rep ID: 2)' },
-  { value: 3, label: 'Janet Leverling (Rep ID: 3)' }
-  // Add more representatives as needed
-]);
+
 
 //const isEditMode = computed(() => route.name === 'editar-cliente' && route.params.id);
  const isEditMode = computed(() => route.meta.mode === 'edit');

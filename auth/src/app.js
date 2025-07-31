@@ -2,19 +2,28 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const UserRepository = require("./repositories/inMemoryRepository/user.repository.js");
-const simulateLongIOProcess = require("./simulateLongCPUProcess");
+const app = express();
+
 require("dotenv").config();
 console.log("env: ", process.env);
-const app = express();
 const port = process.env.PORT || 3000;
-
+const allowedOrigins = process.env.CORS_ORIGIN.split(',')
 const userRepository = new UserRepository();
 
 // Enable CORS
 app.use(
     cors({
-        origin: process.env.CORS_ORIGIN,
-        credentials: true,
+        // origin: function (origin, callback) {
+        //     // Check if the requesting origin is in the allowedOrigins array
+        //     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        //     // If allowed or if the origin is not present (e.g., same-origin requests or non-browser requests), allow access
+        //     callback(null, true);
+        //     } else {
+        //     // If not allowed, send an error
+        //     callback(new Error('Not allowed by CORS'));
+        // }},
+        origin: allowedOrigins[0],
+        credentials: false,
     }),
 );
 

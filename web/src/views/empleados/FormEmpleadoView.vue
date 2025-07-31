@@ -36,14 +36,8 @@
         <div class="lg:flex lg:flex-row gap-3">
           <Label label="Reporta a:" name="ReportsTo" class="lg:w-2xs" />
           <!-- Reporta a -->
-          <InputSelect
 
-            name="ReportsTo"
-            v-model="form.ReportsTo"
-            :options="reportsToOptions"
-            placeholder="Seleccione un supervisor"
-            class="basis-full"
-          />
+          <EmployeeDropDown v-model="form.ReportsTo" class="basis-full" />
         </div>
         <div class="lg:flex lg:flex-row gap-3">
           <Label label="Fecha de nacimiento:" name="BirthDate" class="lg:w-2xs" />
@@ -167,6 +161,7 @@
   import Label from "@/components/forms/EtiquetaLabel.vue";
   import InputText from '@/components/forms/InputText.vue'
   import InputSelect from '@/components/forms/InputSelect.vue'
+  import EmployeeDropDown from "@/components/forms/EmployeeDropDown.vue";
   import { useRouter, useRoute } from 'vue-router';
   import { useEmpleadosStore } from "@/store/empleados";
 
@@ -174,11 +169,7 @@
   const empleadosStore = useEmpleadosStore()
   const router = useRouter();
   const route = useRoute();
-  const reportsToOptions = [
-    { value: 1, label: 'Supervisor 1' },
-    { value: 2, label: 'Supervisor 2' },
-    // ...agrega más opciones según tus datos
-  ]
+
   const defaultform = {
     LastName: '',
     FirstName: '',
