@@ -41,8 +41,10 @@ router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req
 
 router.put("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository
-    .updateEmployee(req.body.EmployeeId, req.body)
+    .updateEmployee(req.body.id, req.body)
     .then((employee) => {
+        if(!employee)
+            return res.status(404).json({ error: "Employee not found" });
       res.json(employee);
     })
     .catch((error) => {

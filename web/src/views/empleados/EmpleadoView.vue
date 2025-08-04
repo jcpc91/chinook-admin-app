@@ -7,7 +7,7 @@
       <RouterView name="top" />
     </div>
     <EmpleadosDataTable @click-row="on_clickrow"  :items="empleadoStore.empleados"  />
-    <div>{{ empleadoStore.empleados }}</div>
+
     <RouterView name="bottom"/>
   </Panel>
 </template>

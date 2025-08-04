@@ -26,13 +26,13 @@ class EmployeeRepository extends BaseRepository {
 
     async getAll() {
         return new Promise((resolve, reject) => {
-            this.db.all(`SELECT t1.EmployeeId as id, t1.LastName, t1.FirstName, t1.Title,
-                t1.ReportsTo as ReportsToId,
-                t2.LastName as ReportsTo,
-                t1.BirthDate,
-                t1.HireDate, t1.Address, t1.City, t1.State, t1.Country, t1.PostalCode, t1.Phone, t1.Fax, t1.Email
-                FROM ${this.tableName} t1
-                left join ${this.tableName} t2 on t1.EmployeeId =  t2.ReportsTo `, [], (err, rows) => {
+            this.db.all(`SELECT e.EmployeeId as id, e.LastName, e.FirstName, e.Title,
+                e.ReportsTo,
+                m.LastName as ReportsToText,
+                e.BirthDate,
+                e.HireDate, e.Address, e.City, e.State, e.Country, e.PostalCode, e.Phone, e.Fax, e.Email
+                FROM ${this.tableName} e
+                left join ${this.tableName} m on e.ReportsTo =  m.EmployeeId `, [], (err, rows) => {
                 if (err) {
                     reject(err);
                 }
@@ -45,8 +45,14 @@ class EmployeeRepository extends BaseRepository {
         return new Promise((resolve, reject) => {
 
             this.db.get(
-                `SELECT EmployeeId as id, LastName, FirstName, Title, ReportsTo, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email
-                FROM ${this.tableName} WHERE EmployeeId = ?`,
+                `SELECT e.EmployeeId as id, e.LastName, e.FirstName, e.Title,
+                e.ReportsTo,
+                m.LastName as ReportsToText,
+                e.BirthDate,
+                e.HireDate, e.Address, e.City, e.State, e.Country, e.PostalCode, e.Phone, e.Fax, e.Email
+                FROM ${this.tableName} e
+                left join ${this.tableName} m on e.ReportsTo =  m.EmployeeId
+                WHERE e.EmployeeId = ?`,
                 [id],
                 (err, row) => {
                     if (err) {
@@ -56,6 +62,11 @@ class EmployeeRepository extends BaseRepository {
                 },
             );
         });
+    }
+
+    async create(entity) {
+        const e = await super.create(entity)
+        return await this.getById(e.id)
     }
 
     async update(id, entity) {

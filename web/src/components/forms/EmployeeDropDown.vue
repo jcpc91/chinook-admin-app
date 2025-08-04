@@ -4,16 +4,17 @@
     item-value="id"
     item-title="title"
      />
-<div>{{ data }}</div>
+
 
 </template>
 <script setup>
+import { defineModel } from 'vue';
     import DropDown from "@/components/forms/InputSelect.vue";
     import { useEmpleadosStore } from "@/store/empleados";
     import { reactive, onMounted, computed } from "vue";
     import { useAsyncState } from '@vueuse/core'
 
-    const modelValue = defineModel({required: true})
+    const modelValue = defineModel({required: true});
     const state = useAsyncState(async(args) => {
         if (empleadoStore.empleados.length)
             return empleadoStore.empleados
