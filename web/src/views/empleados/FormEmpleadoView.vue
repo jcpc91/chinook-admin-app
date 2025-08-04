@@ -174,23 +174,7 @@
     LastName: '',
     FirstName: '',
     Title: '',
-    ReportsTo: '1',
-    BirthDate: '2025-07-04',
-    HireDate: '2025-07-04',
-    Address: '',
-    City: '',
-    State: '',
-    Country: '',
-    PostalCode: '',
-    Phone: '',
-    Fax: '',
-    Email: ''
-  }
-  const form = ref({
-    LastName: '',
-    FirstName: '',
-    Title: '',
-    ReportsTo: '',
+    ReportsTo: undefined,
     BirthDate: '',
     HireDate: '',
     Address: '',
@@ -201,29 +185,44 @@
     Phone: '',
     Fax: '',
     Email: ''
-  });
-
+  }
+  const form = ref({});
 
 
   const on_submit = async () => {
-    try {
-      if (route.meta.type == 'insert') {
-        await empleadosStore.createEmpleado(form.value)
-        form.value = {... defaultform}
-        //router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
-      } else if(route.meta.type == 'update') {
-        empleadosStore.updateEmpleado(form.value)
-        router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
-      }
-    } catch (err) {
-      error.value = err
+    if (route.meta.type == 'insert') {
+        const e = await empleadosStore.createEmpleado(form.value)
+        //form.value = {... defaultform}
+        await router.push({ name: 'detalle-empleado', params: { id: e.id } });
+    } else if(route.meta.type == 'update') {
+        await empleadosStore.updateEmpleado(form.value)
+        await router.push({ name: 'detalle-empleado', params: { id: route.params.id } });
     }
   };
 
   onMounted(async() => {
+
     if(route.meta.type == 'update') {
       const data = await empleadosStore.getEmpleadoById(route.params.id)
       form.value = { ...data }
+    } else {
+        if (import.meta.env.DEV) {
+            import('@/common/tools')
+            .then(m => {
+                console.log(m.ranDate())
+                form.value.LastName = chance.name()
+                form.value.FirstName = chance.name()
+                form.value.Title  = chance.sentence({words: 4})
+                form.value.BirthDate = m.ranDate()
+                form.value.HireDate = m.ranDate()
+                form.value.Address = chance.address()
+                form.value.City = chance.city()
+                form.value.State = chance.state({ full: true })
+                form.value.Country = chance.country({ full: true })
+                form.value.Phone = chance.phone({ formatted: false })
+                form.value.Email = chance.email()
+            })
+        }
     }
 
   });

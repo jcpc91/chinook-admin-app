@@ -1,43 +1,45 @@
 <template>
+<div>
 
-  <vue3-easy-data-table ref="dataTable" v-model:items-selected="itemSelected" :headers="headers" :items="props.items"
-  table-class-name="tableClassName"
-    @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
-    :header-item-class-name="headerItemClassNameFunction"
-    body-row-class-name="bg-white hover:bg-gray-100 hover:cursor-pointer"
-    body-item-class-name=" px-3 py-2 whitespace-nowrap">
-    <template #item-LastName="{LastName}">
-      {{ LastName }}
-    </template>
-  </vue3-easy-data-table>
+    <vue3-easy-data-table ref="dataTable" v-model="itemSelected" :headers="headers" :items="props.items"
+    table-class-name="tableClassName"
+      @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
+      :header-item-class-name="headerItemClassNameFunction"
+      body-row-class-name="bg-white hover:bg-gray-100 hover:cursor-pointer"
+      body-item-class-name=" px-3 py-2 whitespace-nowrap">
+      <template #item-LastName="{LastName}">
+        {{ LastName }}
+      </template>
+    </vue3-easy-data-table>
+    <div class="flex justify-center items-center mt-6">
+      <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        <a href="#" @click="prevPage"
+          class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+          <span class="sr-only">Previous</span>
+          <!-- Heroicon name: chevron-left -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </a>
+        <a v-for="page in maxPaginationNumber" :key="page" href="#top" @click="updatePage(page)"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">{{
+            page }}</a>
 
-  <div class="flex justify-center items-center mt-6">
-    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-      <a href="#" @click="prevPage"
-        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-        <span class="sr-only">Previous</span>
-        <!-- Heroicon name: chevron-left -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-        </svg>
-      </a>
-      <a v-for="page in maxPaginationNumber" :key="page" href="#top" @click="updatePage(page)"
-        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">{{
-          page }}</a>
+        <a href="#" @click="nextPage"
+          class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+          <span class="sr-only">Next</span>
+          <!-- Heroicon name: chevron-right -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </a>
 
-      <a href="#" @click="nextPage"
-        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-        <span class="sr-only">Next</span>
-        <!-- Heroicon name: chevron-right -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </a>
+      </nav>
+    </div>
+</div>
 
-    </nav>
-  </div>
 </template>
 <script setup>
 import { ref, computed, defineModel, defineEmits } from 'vue';
@@ -58,8 +60,8 @@ const headers = [
   { text: "Apellido", value: "LastName" },
   { text: "Nombre", value: "FirstName" },
   //{ text: "Título", value: "Title" },
-  { text: "Reporta a", value: "ReportsToId" },
-  { text: "Reporta a", value: "ReportsTo" },
+  { text: "Reporta a", value: "ReportsToText" },
+  //{ text: "Reporta a", value: "ReportsTo" },
   //{ text: "Nacimiento", value: "BirthDate" },
   { text: "Contratación", value: "HireDate" },
   { text: "Ciudad", value: "City" },

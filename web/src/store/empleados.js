@@ -24,9 +24,16 @@ export const useEmpleadosStore = defineStore('empleados', () => {
       if (error.value)
         throw error.value
       empleados.value.push(data.value)
+      return data.value
     })
 
   function getEmpleadoById(id) {
+    const idx = this.empleados.findIndex(f => f.id == id)
+    console.log('getEmpleadoById', id, idx)
+    if (idx !== -1) {
+      return empleados.value[idx]
+    }
+    // If not found in local state, fetch from API
     return useMyFetch(`employees/${id}`)
     .get()
     .json()

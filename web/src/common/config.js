@@ -3,7 +3,7 @@ const config = {
     { text: 'Apellido', value: 'LastName' },
     { text: 'Nombre', value: 'FirstName' },
     { text: 'Título', value: 'Title' },
-    { text: 'Reporta a', value: 'ReportsTo' },
+    { text: 'Reporta a', value: 'ReportsToText' },
     { text: 'Nacimiento', value: 'BirthDate' },
     { text: 'Contratación', value: 'HireDate' },
     { text: 'Ciudad', value: 'City' },

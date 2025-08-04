@@ -28,11 +28,13 @@ const editEmployee = () => {
 
 onMounted(async() => {
   const emp = await empleadoStore.getEmpleadoById(route.params.id);
+    console.log(emp)
   employee.value = emp;
 });
 
 onBeforeRouteUpdate(async (to, from, next) => {
   const emp = await empleadoStore.getEmpleadoById(to.params.id);
+  console.log(emp)
   employee.value = emp;
   next()
 })

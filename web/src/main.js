@@ -5,18 +5,15 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import "chance";
+
 
 
 const app = createApp(App)
 
 const pinia = createPinia()
-pinia.use(({ store }) => {
-  store.$subscribe((mutation, state) => {
-    console.log(mutation.events.type, mutation, state);
+console.log(import.meta.env)
 
-    //localStorage.setItem(store.$id, JSON.stringify(state))
-  })
-})
 app.use(pinia)
 app.use(router)
 

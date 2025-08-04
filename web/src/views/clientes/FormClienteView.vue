@@ -81,10 +81,10 @@
         </div>
       </div>
     </form>
-    <div class="mt-4 p-4 border rounded bg-gray-50">
+    <!-- <div class="mt-4 p-4 border rounded bg-gray-50">
       <h3 class="font-semibold text-lg mb-2">Form Data (Debug):</h3>
       <pre>{{ form }}</pre>
-    </div>
+    </div> -->
   </Panel>
 </template>
 
