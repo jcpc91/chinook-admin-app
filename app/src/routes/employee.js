@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../middelware/rolles.js");
-const EmployeeService = require("../../../repository/service/EmployeeService.js");
-const EmployeeRepository = require("../../../repository/sqliteRepository/EmployeeRepository.js");
+const EmployeeService = require("../../../database/repository/service/EmployeeService.js");
+const EmployeeRepository = require("../../../database/repository/sqliteRepository/EmployeeRepository.js");
 
 const repository = new EmployeeService(new EmployeeRepository());
 

@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../middelware/rolles.js");
-const MediaTypeService = require("../../../repository/service/MediaTypeService.js");
-const MediaTypeRepository = require("../../../repository/sqliteRepository/MediaTypeRepository.js");
+const MediaTypeService = require("../../../database/repository/service/MediaTypeService.js");
+const MediaTypeRepository = require("../../../database/repository/sqliteRepository/MediaTypeRepository.js");
 
 const repository = new MediaTypeService(new MediaTypeRepository());
 

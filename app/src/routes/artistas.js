@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../middelware/rolles.js");
-const ArtistService = require("../../../repository/service/ArtistService.js");
+const ArtistService = require("../../../database/repository/service/ArtistService.js");
 
-const ArtistRepository = require("../../../repository/sqliteRepository/ArtistRepository.js");
+const ArtistRepository = require("../../../database/repository/sqliteRepository/ArtistRepository.js");
 
 const repository = new ArtistService(new ArtistRepository());
 // GET all artists
