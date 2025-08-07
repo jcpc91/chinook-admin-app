@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../middelware/rolles.js");
-const GenerosService = require("../../repositories/service/GenerosService.js");
-const GenreRepository = require("../../repositories/sqliteRepository/GenreRepository.js");
+const GenerosService = require("../../../repository/service/GenerosService.js");
+const GenreRepository = require("../../../repository/sqliteRepository/GenreRepository.js");
 
 const repository = new GenerosService(new GenreRepository());
 // GET all genres

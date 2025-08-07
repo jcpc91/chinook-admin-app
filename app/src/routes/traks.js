@@ -1,8 +1,8 @@
 const express = require("express");
 const passport = require("passport");
 const { isAdmin } = require("../middelware/rolles.js");
-const TrakService = require("../../repositories/service/TraksService.js");
-const TrakRepository = require("../../repositories/sqliteRepository/TrackRepository.js");
+const TrakService = require("../../../repository/service/TraksService.js");
+const TrakRepository = require("../../../repository/sqliteRepository/TrackRepository.js");
 
 const router = express.Router();
 const repository = new TrakService(new TrakRepository());

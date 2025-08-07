@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const UserRepository = require("./repositories/inMemoryRepository/user.repository.js");
+const UserRepository = require("../../repository/inMemoryRepository/user.repository.js");
 const app = express();
 
 require("dotenv").config();
