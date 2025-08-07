@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../middelware/rolles.js");
-const AlbumService = require("../../repositories/service/AlbumService.js");
+const AlbumService = require("../../../database/repository/service/AlbumService");
 
-const AlbumRepository = require("../../repositories/sqliteRepository/AlbumRepository.js");
+const AlbumRepository = require("../../../database/repository/sqliteRepository/AlbumRepository.js");
 
 const repository = new AlbumService(new AlbumRepository());
 
