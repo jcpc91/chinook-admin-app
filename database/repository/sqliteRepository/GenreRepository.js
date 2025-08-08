@@ -1,8 +1,9 @@
 const BaseRepository = require("./BaseRepository");
+const path = require("path");
 
 class GenreRepository extends BaseRepository {
     constructor() {
-        super("generos");
+        super("generos", path.resolve(__dirname, "../../../.db/catalogos.sqlite3"));
     }
 }
 

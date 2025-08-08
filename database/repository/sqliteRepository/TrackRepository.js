@@ -2,7 +2,7 @@ const BaseRepository = require("./BaseRepository");
 
 class TrackRepository extends BaseRepository {
     constructor() {
-        super("tracks");
+        super("tracks", path.resolve(__dirname, "../../../.db/catalogos.sqlite3"));
     }
 
     async getByIdAlbum(idAlbum) {

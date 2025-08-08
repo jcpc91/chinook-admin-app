@@ -30,7 +30,7 @@ app.get("/health", (req, res) => {
 // Import and use route modules
 const generosRoutes = require("./routes/generos");
 const artistasRoutes = require("./routes/artistas");
-const albumesRoutes = require("./routes/albumes");
+const albumesRoutes = require("./routes/albunes");
 const mediaTypesRoutes = require("./routes/mediatypes");
 
 app.use("/api/generos", generosRoutes);

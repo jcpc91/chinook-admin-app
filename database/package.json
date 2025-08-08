@@ -6,6 +6,7 @@
   "scripts": {
     "migrate-app": "knex migrate:latest --cwd app",
     "migrate-auth": "knex migrate:latest --cwd auth",
+    "migrate-cat": "knex migrate:latest --cwd catalogos",
     "up": "knex migrate:up"
   },
   "author": "",

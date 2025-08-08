@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const { isAdmin } = require("../middelware/rolles.js");
+const { isAdmin } = require("../../../share/middelware/rolles.js");
 const TrakService = require("../../../database/repository/service/TraksService.js");
 const TrakRepository = require("../../../database/repository/sqliteRepository/TrackRepository.js");
 
