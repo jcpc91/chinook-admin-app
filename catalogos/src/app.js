@@ -1,26 +1,29 @@
-
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
-
 const app = express();
+require("dotenv").config();
+console.log("env: ", process.env)
 const PORT = process.env.PORT || 3002;
 
 // Middleware
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.get("/", (req, res) => {
+
+app.get("/", (_req, res) => {
   res.json({ 
     message: "Catalogos API is running",
     version: "1.0.0"
   });
 });
+
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -28,6 +31,7 @@ app.get("/health", (req, res) => {
 });
 
 // Import and use route modules
+
 const generosRoutes = require("./routes/generos");
 const artistasRoutes = require("./routes/artistas");
 const albumesRoutes = require("./routes/albunes");
@@ -43,19 +47,21 @@ app.use("/api/traks", traksRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: "Something went wrong!",
-    message: err.message 
+    message: err.message,
   });
 });
 
 // 404 handler
+/*
 app.use("*", (req, res) => {
   res.status(404).json({ 
     error: "Route not found",
     path: req.originalUrl 
   });
 });
+*/
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Catalogos API server running on http://0.0.0.0:${PORT}`);

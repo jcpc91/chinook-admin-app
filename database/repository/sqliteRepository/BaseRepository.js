@@ -7,9 +7,12 @@ class BaseRepository extends IBaseRepository {
         super();
         this.db = new sqlite3.Database(dbPath, (err) => {
             if (err) {
-                console.error("Error al conectar a la base de datos SQLite:", err.message);
+                console.error(
+                    `(${tableName}) Error al conectar a la base de datos SQLite (${dbPath})`,
+                    err.message,
+                );
             } else {
-                console.log("Conectado a la base de datos SQLite.");
+                console.log(`Conectado a la base de datos SQLite. (${dbPath})`);
             }
         });
         this.tableName = tableName;
@@ -37,11 +40,11 @@ class BaseRepository extends IBaseRepository {
         });
     }
 
-/**
- * Inserts a new record into the database table associated with this repository.
- * @param {Object} entity - The object to create in the database, where each key is a column name.
- * @returns {Promise<Object>} A promise that resolves with the created object, including the generated ID.
- */
+    /**
+     * Inserts a new record into the database table associated with this repository.
+     * @param {Object} entity - The object to create in the database, where each key is a column name.
+     * @returns {Promise<Object>} A promise that resolves with the created object, including the generated ID.
+     */
     async create(entity) {
         return new Promise((resolve, reject) => {
             const keys = Object.keys(entity);
