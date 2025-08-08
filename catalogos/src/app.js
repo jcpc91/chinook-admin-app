@@ -32,11 +32,13 @@ const generosRoutes = require("./routes/generos");
 const artistasRoutes = require("./routes/artistas");
 const albumesRoutes = require("./routes/albunes");
 const mediaTypesRoutes = require("./routes/mediatypes");
+const traksRoutes = require("./routes/traks");
 
 app.use("/api/generos", generosRoutes);
 app.use("/api/artistas", artistasRoutes);
-app.use("/api/albumes", albumesRoutes);
+app.use("/api/albunes", albumesRoutes);
 app.use("/api/mediatypes", mediaTypesRoutes);
+app.use("/api/traks", traksRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
