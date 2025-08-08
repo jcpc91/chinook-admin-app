@@ -4,7 +4,7 @@ module.exports = class UserRepository extends IBaseRepository {
     constructor() {
         super();
         this.users = [
-            { id: 1, username: "admin", password: "admin", role:"ADMINISTRADOR" },
+            { id: 1, username: "admin1", password: "admin1", role:"ADMINISTRADOR" },
             { id: 2, username: "user", password: "user", role:"USUARIO" }
 
         ];

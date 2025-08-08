@@ -6,9 +6,7 @@
  * mostrando la Inyección de Dependencias.
  */
 class AlbumService {
-    /**
-     * @param {IBaseRepository} albumRepository Una instancia de un repositorio de álbumes.
-     */
+
     constructor(albumRepository) {
         this.albumRepository = albumRepository;
     }

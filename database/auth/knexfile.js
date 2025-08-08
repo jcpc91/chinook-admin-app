@@ -7,8 +7,11 @@ module.exports = {
     development: {
         client: "sqlite3",
         connection: {
-            filename: "../../.db/atuh.sqlite3",
+            filename: "../../.db/auth.sqlite3",
         },
+        seeds: {
+            directory: "./seeds/dev",
+        }
     },
 
     staging: {
