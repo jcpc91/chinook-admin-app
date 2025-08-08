@@ -61,19 +61,19 @@ passport.use(
 app.use(passport.initialize());
 
 // Import routes
-const mediaTypesRouter = require("./routes/mediatypes");
-const generosRouter = require("./routes/generos");
-const artistasRouter = require("./routes/artistas");
-const albunesRouter = require("./routes/albunes");
-const traksRouter = require("./routes/traks");
+//const mediaTypesRouter = require("./routes/mediatypes");
+//const generosRouter = require("./routes/generos");
+//const artistasRouter = require("./routes/artistas");
+//const albunesRouter = require("./routes/albunes");
+//const traksRouter = require("./routes/traks");
 const employeesRouter = require("./routes/employee");
 const customersRouter = require("./routes/customers");
 // Use routes
-app.use("/mediatypes", mediaTypesRouter);
-app.use("/generos", generosRouter);
-app.use("/artistas", artistasRouter);
-app.use("/albunes", albunesRouter);
-app.use("/traks", traksRouter);
+//app.use("/mediatypes", mediaTypesRouter);
+//app.use("/generos", generosRouter);
+//app.use("/artistas", artistasRouter);
+//app.use("/albunes", albunesRouter);
+//app.use("/traks", traksRouter);
 app.use("/employees", employeesRouter);
 app.use("/customers", customersRouter);
 //error handler
