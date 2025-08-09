@@ -1,6 +1,6 @@
 // stores/crudStore.js
 import { defineStore } from 'pinia'
-import { useMyFetch } from '@/stores/api'
+import { useCatalogoFetch } from '@/services/api'
 import { ref, computed, reactive } from 'vue'
 
 export const useAlbunesStore = defineStore('albunesStore', () => {
@@ -13,7 +13,7 @@ export const useAlbunesStore = defineStore('albunesStore', () => {
   }
 
   const fetchItemsByArtistId = (artistId) => {
-    return useMyFetch(`albunes?artistid=${artistId}`)
+    return useCatalogoFetch(`albunes?artistid=${artistId}`)
       .get()
       .json()
       .then(({ data }) => {
@@ -23,7 +23,7 @@ export const useAlbunesStore = defineStore('albunesStore', () => {
   }
 
   const addItem = (item) => {
-    return useMyFetch('albunes')
+    return useCatalogoFetch('albunes')
       .post(item)
       .json()
       .then(({ data }) => {
@@ -33,10 +33,9 @@ export const useAlbunesStore = defineStore('albunesStore', () => {
   }
 
   const updateItem = (updatedItem) => {
-    console.log('updateItem', updatedItem)
     const index = items.value.findIndex((i) => i.id == updatedItem.id)
     if (index !== -1) {
-      return useMyFetch(`albunes/${updatedItem.id}`)
+      return useCatalogoFetch(`albunes/${updatedItem.id}`)
         .put(updatedItem)
         .json()
         .then(({ data }) => {
@@ -50,7 +49,7 @@ export const useAlbunesStore = defineStore('albunesStore', () => {
   }
 
   const deleteItem = (itemToRemove) => {
-    return useMyFetch(`albunes/${itemToRemove.id}`)
+    return useCatalogoFetch(`albunes/${itemToRemove.id}`)
       .delete()
       .json()
       .then(({ data }) => {

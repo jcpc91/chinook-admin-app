@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { isAdmin } = require("../middelware/rolles.js");
+const { isAdmin } = require("../../../share/middelware/rolles.js");
 const EmployeeService = require("../../../database/repository/service/EmployeeService.js");
 const EmployeeRepository = require("../../../database/repository/sqliteRepository/EmployeeRepository.js");
 
@@ -43,8 +43,7 @@ router.put("/", passport.authenticate("jwt", { session: false }), isAdmin, (req,
   repository
     .updateEmployee(req.body.id, req.body)
     .then((employee) => {
-        if(!employee)
-            return res.status(404).json({ error: "Employee not found" });
+      if (!employee) return res.status(404).json({ error: "Employee not found" });
       res.json(employee);
     })
     .catch((error) => {

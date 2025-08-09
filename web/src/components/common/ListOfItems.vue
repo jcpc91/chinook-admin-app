@@ -21,14 +21,17 @@
         <button @click="removeItem(index, link)" class="text-red-500 ml-2 mr-1">❌</button>
       </li>
     </ul>
-    
+
   </div>
 </template>
 
 <script setup>
-// Importamos funciones reactivas desde Vue
-import { reactive, defineEmits, watchEffect } from 'vue';
 
+import { reactive, defineEmits, watchEffect, useTemplateRef } from 'vue';
+import { useFocus } from '@vueuse/core'
+
+const input = useTemplateRef('input')
+useFocus(input, { initialValue: true })
 // Definición de eventos emitidos hacia el componente padre
 const emit = defineEmits(['item-updated', 'item-added', 'item-deleted']);
 
@@ -61,7 +64,6 @@ const props = defineProps({
 const items = reactive([]);
 
 watchEffect(() => {
-  console.log('watchEffect called')
   items.splice(0, items.length, ...props.links.map(link => ({ ...link })));
 })
 

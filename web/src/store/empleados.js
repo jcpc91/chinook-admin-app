@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useMyFetch } from '@/stores/api'
+import { useMyFetch } from '@/services/api'
 import { ref, computed, reactive } from 'vue'
 
 export const useEmpleadosStore = defineStore('empleados', () => {

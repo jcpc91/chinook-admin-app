@@ -48,3 +48,7 @@ args = "cd app && npm run dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd auth && npm run start"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd catalogos && npm run dev"

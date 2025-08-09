@@ -7,7 +7,7 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 require("dotenv").config();
-console.log("env: ", process.env.CORS_ORIGIN || "http://localhost:3000");
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -36,7 +36,6 @@ passport.use(
     // For this example, we'll just log the payload and assume authentication is successful
     // if the token is valid (signed with the correct secret).
 
-    console.log("JWT Payload received:", jwtPayload);
 
     // Example: If a 'userId' existed in the payload and you wanted to find the user:
     // User.findById(jwtPayload.userId, (err, user) => {
