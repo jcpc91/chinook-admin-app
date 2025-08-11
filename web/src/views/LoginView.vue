@@ -11,9 +11,10 @@
                 <input type="password" id="password" v-model="password" required />
             </div>
             <div v-if="error" class="error-message">{{ error }}</div>
-            <button type="submit">Login</button>
-            <div>
-                isLoggedIn:{{ authStore.isLoggedIn }},currentUser:{{ authStore.currentUser }},authError:{{ authStore.authError }}
+            <div class="flex justify-between">
+                <button type="submit">Login</button>
+                <button type="button" @click="router.push('/register')">Register</button>
+                
             </div>
             
         </form>
