@@ -67,9 +67,10 @@ const headers = [
   { text: "Ciudad", value: "City" },
   { text: "Estado", value: "State" },
   { text: "País", value: "Country" },
-  { text: "Código Postal", value: "PostalCode" },
+  //{ text: "Código Postal", value: "PostalCode" },
   { text: "Teléfono", value: "Phone" },
-  { text: "Email", value: "Email" }
+  { text: "Email", value: "Email" },
+  { text: "Rol", value: "role" },
 ];
 
 // eslint-disable-next-line no-unused-vars

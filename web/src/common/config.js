@@ -12,6 +12,7 @@ const config = {
     { text: 'Código Postal', value: 'PostalCode' },
     { text: 'Teléfono', value: 'Phone' },
     { text: 'Email', value: 'Email' },
+    { text: 'Rol', value: 'role' },
   ],
   //{ CustomerId: 1, FirstName: "Maria", LastName: "Anders", Company: "Alfreds Futterkiste", Address: "Obere Str. 57", City: "Berlin", State: null, Country: "Germany", PostalCode: "12209", Phone: "030-0074321", Fax: "030-0076545", Email: "maria.anders@example.com", SupportRepId: 2 },
   clientesHeaders: [

@@ -3,10 +3,7 @@
     <div class="register-container">
         <h2>Register</h2>
         <form @submit.prevent="handleRegister">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" v-model="username" required />
-            </div>
+
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" v-model="email" required />
@@ -33,7 +30,6 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const username = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
@@ -60,12 +56,12 @@ const handleRegister = async () => {
         // TODO: Implement registration API call
         // For now, just show success message
         success.value = 'Registration successful! Redirecting to login...';
-        
+
         // Redirect to login after 2 seconds
         setTimeout(() => {
             router.push('/login');
         }, 2000);
-        
+
     } catch (err) {
         error.value = err.message || 'Failed to register. Please try again.';
     }

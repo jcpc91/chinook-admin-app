@@ -30,7 +30,7 @@ class EmployeeRepository extends BaseRepository {
                 e.ReportsTo,
                 m.LastName as ReportsToText,
                 e.BirthDate,
-                e.HireDate, e.Address, e.City, e.State, e.Country, e.PostalCode, e.Phone, e.Fax, e.Email
+                e.HireDate, e.Address, e.City, e.State, e.Country, e.PostalCode, e.Phone, e.Fax, e.Email, e.role
                 FROM ${this.tableName} e
                 left join ${this.tableName} m on e.ReportsTo =  m.EmployeeId `, [], (err, rows) => {
                 if (err) {
@@ -49,7 +49,7 @@ class EmployeeRepository extends BaseRepository {
                 e.ReportsTo,
                 m.LastName as ReportsToText,
                 e.BirthDate,
-                e.HireDate, e.Address, e.City, e.State, e.Country, e.PostalCode, e.Phone, e.Fax, e.Email
+                e.HireDate, e.Address, e.City, e.State, e.Country, e.PostalCode, e.Phone, e.Fax, e.Email, e.role
                 FROM ${this.tableName} e
                 left join ${this.tableName} m on e.ReportsTo =  m.EmployeeId
                 WHERE e.EmployeeId = ?`,
@@ -86,6 +86,7 @@ class EmployeeRepository extends BaseRepository {
                 Phone: entity.Phone,
                 Fax: entity.Fax,
                 Email: entity.Email,
+                role: entity.role
             };
             const keys = Object.keys(data);
             const values = Object.values(data);
