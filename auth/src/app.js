@@ -9,6 +9,7 @@ const app = express();
 require("dotenv").config();
 console.log("env: ", process.env);
 const port = process.env.PORT || 3000;
+process.env.EVENT_BUS_TYPE = 'elasticmq';
 const allowedOrigins = process.env.CORS_ORIGIN.split(',')
 const validuser = new ValidUserService(new ValidUserRepository());
 
@@ -39,6 +40,9 @@ app.get("/", (req, res) => {
     res.send("hola mundo auth");
 });
 // Login route
+const registerRoute = require("./routes/register");
+app.use("/", registerRoute);
+
 app.post("/", async (req, res) => {
     const { username, password } = req.body;
     const user =await validuser.validUserPassword(username, password);
