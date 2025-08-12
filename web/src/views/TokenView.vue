@@ -58,12 +58,12 @@ const handleTokenSubmit = async () => {
     try {
         // TODO: Implement token verification API call
         // For now, just show success message
-        success.value = 'Token verified successfully!';
+        success.value = 'Token verified successfully! Redirecting to password setup...';
         
-        // You can add additional logic here, such as:
-        // - Redirect to a specific page
-        // - Store token information
-        // - Call authentication service
+        // Redirect to password view after successful verification
+        setTimeout(() => {
+            router.push({ name: 'password' });
+        }, 1500);
         
     } catch (err) {
         error.value = err.message || 'Failed to verify token. Please try again.';

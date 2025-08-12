@@ -25,6 +25,12 @@ const router = createRouter({
       meta: { requiresAuth: false } // Does not require authentication
     },
     {
+      path: '/password', // Password route
+      name: 'password',
+      component: () => import('../views/PasswordView.vue'),
+      meta: { requiresAuth: false } // Does not require authentication
+    },
+    {
       path: '/',
       name: 'home',
       component: HomeView,
