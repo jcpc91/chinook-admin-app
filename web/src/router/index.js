@@ -19,6 +19,12 @@ const router = createRouter({
       meta: { requiresAuth: false } // Does not require authentication
     },
     {
+      path: '/token', // Token route
+      name: 'token',
+      component: () => import('../views/TokenView.vue'),
+      meta: { requiresAuth: false } // Does not require authentication
+    },
+    {
       path: '/',
       name: 'home',
       component: HomeView,
