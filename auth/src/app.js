@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const PROTO_PATH = '../share/proto/helloworld.proto';
+const PROTO_PATH = ['../share/proto/helloworld.proto', '../share/proto/employee.proto'];
 const ValidUserRepository = require("../../database/repository/sqliteRepository/ValidUserRepository");
 const ValidUserService = require('../../database/repository/service/ValidUserService')
 
@@ -17,6 +17,8 @@ const packageDefinition = protoLoader.loadSync(
      oneofs: true
     });
 const helloworld_proto = grpc.loadPackageDefinition(packageDefinition).helloworld;
+const employee_proto = grpc.loadPackageDefinition(packageDefinition).employee;
+
 const app = express();
 
 require("dotenv").config();
@@ -55,7 +57,7 @@ app.get("/", (req, res) => {
 app.post("/", async (req, res) => {
     const { username, password } = req.body;
     const user =await validuser.validUserPassword(username, password);
-    console.log(user);
+
     if (user) {
         // Generate JWT token
 
@@ -86,4 +88,19 @@ app.post("/sayhi", async (req, res) => {
         res.json(response);
     }
     );
+})
+
+app.post("/register", async (req, res) => {
+    const { email } = req.body;
+    const client = new employee_proto.EmployeeService('localhost:50052', grpc.credentials.createInsecure());
+    client.FindEmployeeByEmail({email: email}, function(err, response) {
+        if (err) {
+            console.error('Error:', err);
+            return res.status(500).json({ message: 'Error in gRPC call' });
+        }
+        const token = jwt.sign(response, process.env.JWT_SECREAT_KEY, {
+            expiresIn: "2h",
+        });
+        res.json(token);
+    });
 })
