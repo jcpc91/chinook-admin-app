@@ -178,9 +178,107 @@ const router = createRouter({
       ]
     },
     {
-        path: '/inversiones',
-        name: 'inversiones',
-        meta: { requiresAuth: true },
+      path: '/inversiones',
+      name: 'inversiones-root',
+      component: () => import('../views/inversiones/DashboardView.vue'),
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '', // Dashboard (main)
+          name: 'inversiones-dashboard',
+          component: () => import('../views/inversiones/DashboardView.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'portafolio',
+          name: 'inversiones-portafolio',
+          component: () => import('../views/inversiones/PortafolioListView.vue'),
+          meta: { requiresAuth: true },
+          children: [
+
+              {
+                path: 'detalle',
+                name: 'inversiones-portafolio-detalle',
+                component: () => import('../views/inversiones/PortafolioDetalleView.vue'),
+                meta: { requiresAuth: true }
+              },
+              {
+                path: 'new',
+                name: 'inversiones-portafolio-new',
+                component: () => import('../views/inversiones/PortafolioFormView.vue'),
+                meta: { requiresAuth: true, mode: 'create' }
+              },
+              {
+                path: 'update',
+                name: 'inversiones-portafolio-update',
+                component: () => import('../views/inversiones/PortafolioFormView.vue'),
+                meta: { requiresAuth: true, mode: 'edit' }
+              },
+          ]
+        },
+        {
+          path: 'catalogos',
+          name: 'inversiones-catalogos',
+          component: () => import('../views/inversiones/catalogos/CatalogosHomeView.vue'),
+          meta: { requiresAuth: true },
+          children: [
+            {
+              path: 'tiposactivos',
+              name: 'inversiones-tiposactivos',
+              component: () => import('../views/inversiones/catalogos/TiposActivosListView.vue'),
+              meta: { requiresAuth: true },
+              children: [
+
+                  {
+                    path: 'detalle',
+                    name: 'inversiones-tiposactivos-detalle',
+                    component: () => import('../views/inversiones/catalogos/TiposActivosDetalleView.vue'),
+                    meta: { requiresAuth: true }
+                  },
+                  {
+                    path: 'new',
+                    name: 'inversiones-tiposactivos-new',
+                    component: () => import('../views/inversiones/catalogos/TiposActivosFormView.vue'),
+                    meta: { requiresAuth: true, mode: 'create' }
+                  },
+                  {
+                    path: 'update',
+                    name: 'inversiones-tiposactivos-update',
+                    component: () => import('../views/inversiones/catalogos/TiposActivosFormView.vue'),
+                    meta: { requiresAuth: true, mode: 'edit' }
+                  },
+              ]
+            },
+            {
+              path: 'activos',
+              name: 'inversiones-activos',
+              component: () => import('../views/inversiones/catalogos/ActivosListView.vue'),
+              meta: { requiresAuth: true },
+              children: [
+
+                  {
+                    path: 'detalle',
+                    name: 'inversiones-activos-detalle',
+                    component: () => import('../views/inversiones/catalogos/ActivosDetalleView.vue'),
+                    meta: { requiresAuth: true }
+                  },
+                  {
+                    path: 'new',
+                    name: 'inversiones-activos-new',
+                    component: () => import('../views/inversiones/catalogos/ActivosFormView.vue'),
+                    meta: { requiresAuth: true, mode: 'create' }
+                  },
+                  {
+                    path: 'update',
+                    name: 'inversiones-activos-update',
+                    component: () => import('../views/inversiones/catalogos/ActivosFormView.vue'),
+                    meta: { requiresAuth: true, mode: 'edit' }
+                  }
+              ]
+            },
+          ]
+        }
+      ]
     },
     {
       path: '/about',
