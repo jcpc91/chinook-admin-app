@@ -8,14 +8,14 @@ module.exports = {
   development: {
     client: 'sqlite3',
     connection: {
-      filename: '../../.db/catalogos.sqlite3'
+      filename: '../../.db/inversiones.sqlite3'
     }
   },
 
   staging: {
     client: 'postgresql',
     connection: {
-      database: 'catalogos',
+      database: 'inversiones',
       user:     'username',
       password: 'password'
     },
@@ -31,7 +31,7 @@ module.exports = {
   production: {
     client: 'postgresql',
     connection: {
-      database: 'catalogos',
+      database: 'inversiones',
       user:     'username',
       password: 'password'
     },

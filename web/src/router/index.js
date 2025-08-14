@@ -100,12 +100,12 @@ const router = createRouter({
             }
           ]
 
-              
-              
+
+
             },
           ],
-        
-      
+
+
     },
     {
       path: '/empleados',
@@ -176,6 +176,11 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+        path: '/inversiones',
+        name: 'inversiones',
+        meta: { requiresAuth: true },
     },
     {
       path: '/about',
