@@ -9,7 +9,7 @@
       {{ LastName }}
     </template>
   </vue3-easy-data-table>
-
+  <div>{{ itemSelected }}</div>
   <div class="flex justify-center items-center mt-6">
     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
       <a href="#" @click="prevPage"

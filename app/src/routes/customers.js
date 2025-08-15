@@ -5,10 +5,10 @@ const { isAdmin } = require("../../../share/middelware/rolles.js");
 const CustomerService = require("../../../database/repository/service/CustomerService.js");
 const CustomerRepository = require("../../../database/repository/sqliteRepository/CustomerRepository.js");
 
-const repository = new CustomerService(new CustomerRepository());
+const service = new CustomerService(new CustomerRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
-  repository
+  service
     .getCustomers()
     .then((customers) => {
       res.json(customers);
@@ -18,9 +18,10 @@ router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req,
     });
 });
 
-router.post("/", passport.authenticate('jwt', {session: false}), isAdmin, (req, res) => {
-    repository.createCustomer(req.body)
+router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
+  service
+    .createCustomer(req.body)
     .then((data) => res.json(data))
-    .catch(err => res.status(500).json({error: err.message}))
-})
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
 module.exports = router;

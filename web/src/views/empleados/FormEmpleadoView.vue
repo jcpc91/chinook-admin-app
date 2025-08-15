@@ -85,8 +85,6 @@
       </div>
 
     </form>
-    <div>{{ error }}</div>
-    <div>{{ form }}</div>
   </Panel>
 </template>
 

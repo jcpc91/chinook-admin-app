@@ -1,7 +1,7 @@
 <template>
 <div>
 
-    <vue3-easy-data-table ref="dataTable" v-model="itemSelected" :headers="headers" :items="props.items"
+    <vue3-easy-data-table ref="dataTable" :headers="headers" :items="props.items"
     table-class-name="tableClassName"
       @click-row="on_click_row" show-index :rows-per-page="10" hide-footer
       :header-item-class-name="headerItemClassNameFunction"

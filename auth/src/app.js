@@ -2,14 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const ValidUserRepository = require("../../database/repository/sqliteRepository/ValidUserRepository");
-const ValidUserService = require('../../database/repository/service/ValidUserService')
+const ValidUserService = require("../../database/repository/service/ValidUserService");
 
 const app = express();
 
 require("dotenv").config();
-console.log("env: ", process.env);
+
 const port = process.env.PORT || 3000;
-const allowedOrigins = process.env.CORS_ORIGIN.split(',')
+const allowedOrigins = process.env.CORS_ORIGIN.split(",");
 const validuser = new ValidUserService(new ValidUserRepository());
 
 // Enable CORS
@@ -41,7 +41,7 @@ app.get("/", (req, res) => {
 // Login route
 app.post("/", async (req, res) => {
     const { username, password } = req.body;
-    const user =await validuser.validUserPassword(username, password);
+    const user = await validuser.validUserPassword(username, password);
     console.log(user);
     if (user) {
         // Generate JWT token
