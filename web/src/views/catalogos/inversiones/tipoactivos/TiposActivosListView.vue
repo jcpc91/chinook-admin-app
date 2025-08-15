@@ -4,7 +4,7 @@
       <Button label="Nuevo" @click="router.push({ name: 'inversiones-tiposactivos-new' })"></Button>
     </template>
     <RouterView name="top" />
-    <TipoActivosDataTable v-model:item-selected="itemSelected" :items="items" />
+    <TipoActivosDataTable v-model:item-selected="itemSelected" :items="items" @click-row="on_row_clicked" />
     <RouterView name="bottom" />
   </Panel>
 </template>
@@ -22,4 +22,9 @@ const items = ref([
   { codigo: "1", categoria: "Acciones", subcategoria: "Acciones Ordinarias", nivelriesgo: "Alto", horizonteinversion: "Largo Plazo", liquidez: "Baja" },
   { codigo: "2", categoria: "Bonos", subcategoria: "Bonos Corporativos", nivelriesgo: "Medio", horizonteinversion: "Mediano Plazo", liquidez: "Media" },
 ])
+
+function on_row_clicked(item) {
+  console.log(item)
+  router.push({ name: 'inversiones-tiposactivos-detalle', query: { codigo: item.codigo } })
+}
 </script>

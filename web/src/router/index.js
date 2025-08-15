@@ -109,8 +109,9 @@ const router = createRouter({
             {
               path: 'detalle',
               name: 'inversiones-tiposactivos-detalle',
-              component: () =>
-                import('../views/catalogos/inversiones/tipoactivos/TiposActivosDetalleView.vue'),
+              components:{
+                bottom: () => import('../views/catalogos/inversiones/tipoactivos/TiposActivosDetalleView.vue')
+              },
               meta: { requiresAuth: true },
             },
             {
