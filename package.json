@@ -40,10 +40,10 @@
   },
   "scripts": {
     "app:dev": "npm run dev --workspace=chinook-app",
-    "app:jsonserver": "npm run jsonserver --workspace=chinook-app",
+    
     "auth:start": "npm run start --workspace=auth",
     "catalogos:dev": "npm run dev --workspace=catalogos",
-    "catalogos:start": "npm run start --workspace=catalogos",
+    
     "database:migrate-app": "npm run migrate-app --workspace=database",
     "database:migrate-auth": "npm run migrate-auth --workspace=database",
     "database:migrate-cat": "npm run migrate-cat --workspace=database",
