@@ -1,12 +1,23 @@
 {
   "name": "workspace",
   "version": "1.0.0",
+  "private": true,
   "description": "se reestructura el proyecto para incluir la app que contendrá el backend y web para el front",
   "main": "index.js",
+  "workspaces": [
+    "app",
+    "auth",
+    "catalogos",
+    "database",
+    "web",
+    "share"
+  ],
   "dependencies": {
     "buffer-equal-constant-time": "^1.0.1",
     "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
     "ecdsa-sig-formatter": "^1.0.11",
+    "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "jwa": "^1.4.2",
     "jws": "^3.2.2",
@@ -24,15 +35,30 @@
     "pause": "^0.0.1",
     "safe-buffer": "^5.2.1",
     "semver": "^7.7.2",
+    "sqlite3": "^5.1.7",
     "utils-merge": "^1.0.1"
   },
   "scripts": {
+    "app:dev": "npm run dev --workspace=chinook-app",
+    
+    "auth:start": "npm run start --workspace=auth",
+    "catalogos:dev": "npm run dev --workspace=catalogos",
+    
+    "database:migrate-app": "npm run migrate-app --workspace=database",
+    "database:migrate-auth": "npm run migrate-auth --workspace=database",
+    "database:migrate-cat": "npm run migrate-cat --workspace=database",
+    "web:dev": "npm run dev --workspace=chinookadminapp",
+    "web:build": "npm run build --workspace=chinookadminapp",
+    "web:test:unit": "npm run test:unit --workspace=chinookadminapp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "jest": "^30.0.2",
+    "knex": "^3.1.0",
+    "nodemon": "^3.1.10",
     "vitest": "^3.2.4"
   }
 }
