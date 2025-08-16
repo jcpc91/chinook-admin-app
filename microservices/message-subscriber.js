@@ -1,4 +1,4 @@
-const { sqs, QUEUE_NAME } = require('./share/sqs-config');
+const { sqs, QUEUE_NAME } = require('../share/sqs-config');
 
 class MessageSubscriber {
     constructor() {

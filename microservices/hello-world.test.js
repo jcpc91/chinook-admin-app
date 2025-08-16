@@ -1,5 +1,5 @@
-const MessageSender = require('./message-sender');
-const MessageSubscriber = require('./message-subscriber');
+const MessageSender = require('../share/message-sender');
+const MessageSubscriber = require('../message-subscriber');
 
 // Hello World Test Function
 async function helloWorldTest() {

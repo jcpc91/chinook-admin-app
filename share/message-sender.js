@@ -1,15 +1,16 @@
-const { sqs, QUEUE_NAME } = require('./share/sqs-config');
+const { sqs } = require('./sqs-config');
 
 class MessageSender {
-    constructor() {
+    constructor(queuename) {
         this.queueUrl = null;
+        this.QueueName = queuename
     }
 
     async initialize() {
         try {
             console.log('📝 Sender: Creating queue...');
             const result = await sqs.createQueue({
-                QueueName: QUEUE_NAME
+                QueueName: this.QueueName
             }).promise();
 
             this.queueUrl = result.QueueUrl;
@@ -50,12 +51,12 @@ class MessageSender {
         }
 
         console.log(`📤 Sender: Sending batch of ${messages.length} messages...`);
-        
+
         for (const msg of messages) {
             await this.sendMessage(msg);
             await new Promise(resolve => setTimeout(resolve, 500)); // Small delay
         }
-        
+
         console.log('✅ Sender: Batch sent successfully');
     }
 }
