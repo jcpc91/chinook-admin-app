@@ -1,7 +1,11 @@
-cd database 
+#!/bin/bash
+ORIGIN="*"
+
 npm install -loglevel verbose
-npm run migrate-app -loglevel verbose
-npm run migrate-auth -loglevel verbose
+
+npm run database:migrate-app -loglevel verbose
+npm run database:migrate-auth -loglevel verbose
+npm run database:migrate-cat -loglevel verbose
 echo "Database initialized"
 
 cd ..
@@ -16,23 +20,31 @@ echo "web intall"
 
 cd ..
 cd auth 
-npm install -loglevel verbose
 cat > .env << EOF
-CORS_ORIGIN=
-JWT_SECREAT_KEY=
+CORS_ORIGIN=$ORIGIN
+JWT_SECREAT_KEY=jwtsecretkey
 PORT=3000
 EOF
 echo "auth intall"
 
 cd ..
 cd app
-npm install -loglevel verbose
 cat > .env << EOF
-CORS_ORIGIN=
-JWT_SECREAT_KEY=
+CORS_ORIGIN=$ORIGIN
+JWT_SECREAT_KEY=jwtsecretkey
 PORT=3001
 EOF
 echo "app intall"
+
+cd ..
+cd catalogos
+cat > .env << EOF
+CORS_ORIGIN=$ORIGIN
+JWT_SECREAT_KEY=jwtsecretkey
+PORT=3002
+EOF
+echo "catalogos intall"
+
 
 npm install -g chance-cli -loglevel verbose
 
