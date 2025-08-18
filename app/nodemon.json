@@ -1,0 +1,9 @@
+{
+  "ignore": [
+    "../.db/data.json",
+    "repositories/jsonRepository/db.json"
+    ],
+    "env": {
+      "NODE_ENV": "development"
+    }
+}

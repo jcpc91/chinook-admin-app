@@ -1,0 +1,46 @@
+import { defineStore } from 'pinia'
+import { useServerAuth } from '@/services/authserver'
+import { useLocalStorage } from '@vueuse/core'
+
+export const useAuthStore = defineStore('auth', {
+  state: () => ({
+    isAuthenticated: useLocalStorage('isAuthenticated', false),
+    user: useLocalStorage('user', null), // Will store user information like username and token
+    error: null, // For storing login error messages
+  }),
+  getters: {
+    isLoggedIn: (state) => state.isAuthenticated,
+    currentUser: (state) => state.user,
+    authError: (state) => state.error,
+  },
+  actions: {
+    async login(username, password) {
+      this.error = null // Reset error before attempting login
+      const payload = {
+        username: username,
+        password: password,
+      }
+
+      return useServerAuth('')
+        .post(payload)
+        .json()
+        .then(({ data, error }) => {
+          if (error.value) {
+            throw error.value
+          }
+          this.user = data.value.token
+          this.isAuthenticated = true
+        })
+        .catch((err) => {
+          console.error('Login failed:', err)
+          this.error = err
+        })
+    },
+    logout() {
+      this.isAuthenticated = false
+      this.user = null
+      // useLocalStorage automatically syncs these changes to localStorage
+      console.log('User logged out.')
+    },
+  },
+})

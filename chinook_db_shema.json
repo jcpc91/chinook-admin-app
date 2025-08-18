@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "tracks": {
+      "type": "array"
+    },
+    "albums": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "artistid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "artistid",
+          "id",
+          "title"
+        ]
+      }
+    },
+    "mediatypes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      }
+    },
+    "generos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      }
+    },
+    "artistas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      }
+    },
+    "traks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "albumId": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "compositores": {
+            "type": "string"
+          },
+          "mediatype": {
+            "type": "string"
+          },
+          "genero": {
+            "type": "string"
+          },
+          "precio": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "employees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "EmployeeId": {
+            "type": "integer"
+          },
+          "LastName": {
+            "type": "string"
+          },
+          "FirstName": {
+            "type": "string"
+          },
+          "Title": {
+            "type": "string"
+          },
+          "ReportsTo": {
+            "type": "string"
+          },
+          "BirthDate": {
+            "type": "string"
+          },
+          "HireDate": {
+            "type": "string"
+          },
+          "Address": {
+            "type": "string"
+          },
+          "City": {
+            "type": "string"
+          },
+          "State": {
+            "type": "string"
+          },
+          "Country": {
+            "type": "string"
+          },
+          "PostalCode": {
+            "type": "string"
+          },
+          "Phone": {
+            "type": "string"
+          },
+          "Fax": {
+            "type": "string"
+          },
+          "Email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Address",
+          "BirthDate",
+          "City",
+          "Country",
+          "Email",
+          "EmployeeId",
+          "Fax",
+          "FirstName",
+          "HireDate",
+          "LastName",
+          "Phone",
+          "PostalCode",
+          "ReportsTo",
+          "State",
+          "Title"
+        ]
+      }
+    }
+  },
+  "required": [
+    "albums",
+    "artistas",
+    "employees",
+    "generos",
+    "mediatypes",
+    "tracks",
+    "traks"
+  ]
+}
