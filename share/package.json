@@ -1,19 +1,27 @@
 {
   "name": "share",
   "version": "1.0.0",
+  "description": "Shared code and utilities",
   "main": "mail.js",
   "scripts": {
-    "test": "node mail-test.js"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.370.0",
+    "@grpc/grpc-js": "^1.8.0",
+    "@grpc/proto-loader": "^0.7.7",
     "dotenv": "^17.2.1",
-    "nodemailer": "^7.0.5"
+    "nodemailer": "^7.0.5",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "sinon": "^21.0.0"
   },
-  "description": ""
+  "jest": {
+    "testEnvironment": "node"
+  }
 }
