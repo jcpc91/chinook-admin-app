@@ -1,12 +1,60 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const chance = require('chance').Chance();
 
-const passport = require("passport");
+require("dotenv").config();
+const PROTO_PATH = '../share/proto/employee.proto';
+
+const packageDefinition = protoLoader.loadSync(
+    PROTO_PATH,
+    {keepCase: true,
+     longs: String,
+     enums: String,
+     defaults: true,
+     oneofs: true
+    });
+const employee_proto = grpc.loadPackageDefinition(packageDefinition).employee;
+
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 
-require("dotenv").config();
+function FindEmployeeByEmail(call, callback) {
+  // Simulate a database lookup
+  const employee = {
+        "EmployeeId": chance.integer({ min: 1, max: 100 }),
+        "LastName": chance.last(),
+        "FirstName": chance.first(),
+        "Title": chance.pickone(['Manager', 'Sales Representative', 'Engineer']),
+        "ReportsTo": chance.integer({ min: 1, max: 10 }),
+        "BirthDate": chance.date({ year: chance.year({ min: 1950, max: 2000 }) }).toISOString(),
+        "HireDate": chance.date({ year: chance.year({ min: 2000, max: 2023 }) }).toISOString(),
+        "Address": chance.address(),
+        "City": chance.city(),
+        "State": chance.state(),
+        "Country": chance.country(),
+        "PostalCode": chance.postcode(),
+        "Phone": chance.phone(),
+        "Fax": chance.phone(),
+        "Email": chance.email(),
+        "Role": chance.pickone(['Admin', 'User', 'Guest']),
+    }
+
+    if (employee) {
+        callback(null, employee);
+    }
+    else {
+        callback({
+            code: grpc.status.NOT_FOUND,
+            details: "Employee not found"
+        });
+    }
+}
+
+const app = express();
+
+const passport = require("passport");
 
 app.use(
   cors({
@@ -59,32 +107,28 @@ passport.use(
 // This middleware initializes Passport within the Express application.
 app.use(passport.initialize());
 
-// Import routes
-//const mediaTypesRouter = require("./routes/mediatypes");
-//const generosRouter = require("./routes/generos");
-//const artistasRouter = require("./routes/artistas");
-//const albunesRouter = require("./routes/albunes");
-//const traksRouter = require("./routes/traks");
 const employeesRouter = require("./routes/employee");
 const customersRouter = require("./routes/customers");
-// Use routes
-//app.use("/mediatypes", mediaTypesRouter);
-//app.use("/generos", generosRouter);
-//app.use("/artistas", artistasRouter);
-//app.use("/albunes", albunesRouter);
-//app.use("/traks", traksRouter);
 app.use("/employees", employeesRouter);
 app.use("/customers", customersRouter);
 //error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-
+app.use((err, req, res, _next) => {
   res.status(500).send(err);
 });
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
+    const server = new grpc.Server();
+    server.addService(employee_proto.EmployeeService.service, {FindEmployeeByEmail: FindEmployeeByEmail});
+    server.bindAsync('0.0.0.0:50052', grpc.ServerCredentials.createInsecure(), (err, port) => {
+        if (err) {
+        console.error(err);
+        return;
+        }
+        server.start();
+        console.log('Servidor gRPC iniciado en el puerto', port);
+    });
 });
 
 module.exports = app;

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package employee;
+
+// The Employee service definition.
+service EmployeeService {
+    // Finds an employee by email and returns their ID.
+    rpc FindEmployeeByEmail (FindEmployeeByEmailRequest) returns (FindEmployeeByEmailResponse);
+}
+
+// The request message containing the email.
+message FindEmployeeByEmailRequest {
+    string email = 1;
+}
+
+// The response message containing the employee ID.
+//CREATE TABLE `employees` (
+// `EmployeeId` integer not null primary key autoincrement,
+// `LastName` varchar(255) not null,
+// `FirstName` varchar(255) not null,
+// `Title` varchar(255) not null,
+// `ReportsTo` varchar(255) not null,
+// `BirthDate` varchar(255) not null,
+// `HireDate` varchar(255) not null,
+// `Address` varchar(255) not null,
+// `City` varchar(255) not null,
+// `State` varchar(255) not null,
+// `Country` varchar(255) not null,
+// `PostalCode` varchar(255) not null,
+// `Phone` varchar(255) not null,
+// `Fax` varchar(255) not null,
+// `Email` varchar(255) not null
+// )
+message FindEmployeeByEmailResponse {
+    int32 EmployeeId = 1;
+    string LastName = 2;
+    string FirstName = 3;
+    string Title = 4;
+    string ReportsTo = 5;
+    string BirthDate = 6;
+    string HireDate = 7;
+    string Address = 8;
+    string City = 9;
+    string State = 10;
+    string Country = 11;
+    string PostalCode = 12;
+    string Phone = 13;
+    string Fax = 14;
+    string Email = 15;
+    string Role = 16; // Added role field
+}

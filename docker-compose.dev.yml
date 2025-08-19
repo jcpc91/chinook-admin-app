@@ -7,6 +7,13 @@ services:
     networks:
       - chinook-dev
   
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - chinook-dev
+  
 networks:
   chinook-dev:
     driver: bridge
