@@ -7,7 +7,7 @@ const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT;
 
 // Middleware
 app.use(
@@ -100,9 +100,9 @@ app.use((err, req, res, next) => {
 // 404 handler
 /*
 app.use("*", (req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: "Route not found",
-    path: req.originalUrl 
+    path: req.originalUrl
   });
 });
 */

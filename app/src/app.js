@@ -1,12 +1,18 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
 
-const passport = require("passport");
+
+require("dotenv").config();
+
+
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 
-require("dotenv").config();
+
+
+const app = express();
+
+const passport = require("passport");
 
 app.use(
   cors({
@@ -59,32 +65,19 @@ passport.use(
 // This middleware initializes Passport within the Express application.
 app.use(passport.initialize());
 
-// Import routes
-//const mediaTypesRouter = require("./routes/mediatypes");
-//const generosRouter = require("./routes/generos");
-//const artistasRouter = require("./routes/artistas");
-//const albunesRouter = require("./routes/albunes");
-//const traksRouter = require("./routes/traks");
 const employeesRouter = require("./routes/employee");
 const customersRouter = require("./routes/customers");
-// Use routes
-//app.use("/mediatypes", mediaTypesRouter);
-//app.use("/generos", generosRouter);
-//app.use("/artistas", artistasRouter);
-//app.use("/albunes", albunesRouter);
-//app.use("/traks", traksRouter);
 app.use("/employees", employeesRouter);
 app.use("/customers", customersRouter);
 //error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-
+app.use((err, req, res, _next) => {
   res.status(500).send(err);
 });
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
+
 });
 
 module.exports = app;

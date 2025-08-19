@@ -64,6 +64,28 @@ class EmployeeRepository extends BaseRepository {
         });
     }
 
+    async getByEmail(email) {
+        return new Promise((resolve, reject) => {
+            this.db.get(
+                `SELECT e.EmployeeId as id, e.LastName, e.FirstName, e.Title,
+                e.ReportsTo,
+                m.LastName as ReportsToText,
+                e.BirthDate,
+                e.HireDate, e.Address, e.City, e.State, e.Country, e.PostalCode, e.Phone, e.Fax, e.Email, e.role
+                FROM ${this.tableName} e
+                left join ${this.tableName} m on e.ReportsTo =  m.EmployeeId
+                WHERE e.Email = ?`,
+                [email],
+                (err, row) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(row);
+                },
+            );
+        });
+    }
+
     async create(entity) {
         const e = await super.create(entity)
         return await this.getById(e.id)

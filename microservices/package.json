@@ -5,20 +5,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "mailapp": "nodemon mail-app/app.js",
-    "sender-example": "node sender-example.js"
+    "employee_service": "nodemon employee_service.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "@aws-sdk/client-eventbridge": "^3.370.0",
-    "@aws-sdk/client-sns": "^3.370.0",
-    "@aws-sdk/client-sqs": "^3.370.0",
-    "dotenv": "^17.2.1",
-    "nodemailer": "^7.0.5"
-  },
   "devDependencies": {
+    "chance": "^1.1.13",
+    "jest": "^30.0.5",
     "nodemon": "^3.1.10"
   }
 }

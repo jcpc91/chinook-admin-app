@@ -48,6 +48,21 @@
             "type": "node",
             "cwd": "${workspaceFolder}/app",
             "sourceMaps": true
+        },
+        {
+            "name": "Launch cat",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}/catalogos",
+            "sourceMaps": true
         }
     ]
 }
