@@ -1,6 +1,17 @@
+/**
+ * server gRPC de employee expone servicios para acceder a la base de datos de employees
+ * @file employee_service.js
+ * @author
+ * @brief
+ * @version 0.1
+ * @date 2025-08-19
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
-const chance = require('chance').Chance();
+
 
 const EmployeeService = require('../database/repository/service/EmployeeService')
 const EmployeeRepository = require('../database/repository/sqliteRepository/EmployeeRepository')

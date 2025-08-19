@@ -11,17 +11,6 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "@aws-sdk/client-eventbridge": "^3.370.0",
-    "@aws-sdk/client-sns": "^3.370.0",
-    "@aws-sdk/client-sqs": "^3.370.0",
-    "@grpc/grpc-js": "^1.13.4",
-    "@grpc/proto-loader": "^0.8.0",
-    "dotenv": "^17.2.1",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^7.0.5",
-    "sqlite3": "^5.1.7"
-  },
   "devDependencies": {
     "chance": "^1.1.13",
     "jest": "^30.0.5",

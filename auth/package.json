@@ -11,18 +11,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@grpc/grpc-js": "^1.13.4",
-    "@grpc/proto-loader": "^0.8.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.0.0",
-    "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2",
-    "@aws-sdk/client-sns": "^3.370.0",
-    "@aws-sdk/client-sqs": "^3.370.0",
-    "@aws-sdk/client-eventbridge": "^3.370.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
