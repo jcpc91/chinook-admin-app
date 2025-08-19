@@ -2,6 +2,11 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const chance = require('chance').Chance();
 
+const EmployeeService = require('../database/repository/service/EmployeeService')
+const EmployeeRepository = require('../database/repository/sqliteRepository/EmployeeRepository')
+
+const repository = new EmployeeService(new EmployeeRepository());
+
 const PROTO_PATH = '../share/proto/employee.proto';
 
 const packageDefinition = protoLoader.loadSync(
@@ -15,26 +20,11 @@ const packageDefinition = protoLoader.loadSync(
 const employee_proto = grpc.loadPackageDefinition(packageDefinition).employee;
 
 
-function FindEmployeeByEmail(call, callback) {
+async function FindEmployeeByEmail(call, callback) {
+    const email = call.request.email;
   // Simulate a database lookup
-  const employee = {
-        "EmployeeId": chance.integer({ min: 1, max: 100 }),
-        "LastName": chance.last(),
-        "FirstName": chance.first(),
-        "Title": chance.pickone(['Manager', 'Sales Representative', 'Engineer']),
-        "ReportsTo": chance.integer({ min: 1, max: 10 }),
-        "BirthDate": chance.date({ year: chance.year({ min: 1950, max: 2000 }) }).toISOString(),
-        "HireDate": chance.date({ year: chance.year({ min: 2000, max: 2023 }) }).toISOString(),
-        "Address": chance.address(),
-        "City": chance.city(),
-        "State": chance.state(),
-        "Country": chance.country(),
-        "PostalCode": chance.postcode(),
-        "Phone": chance.phone(),
-        "Fax": chance.phone(),
-        "Email": chance.email(),
-        "Role": chance.pickone(['Admin', 'User', 'Guest']),
-    }
+  const employee = await repository.getEmployeeByEmail(email);
+  console.log(employee);
 
     if (employee) {
         callback(null, employee);

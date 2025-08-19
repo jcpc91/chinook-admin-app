@@ -56,6 +56,10 @@ class EmployeeService {
     }
     return null;
   }
+
+  async getEmployeeByEmail(email) {
+    return await this.customerRepository.getByEmail(email);
+  }
 }
 
 module.exports = EmployeeService;

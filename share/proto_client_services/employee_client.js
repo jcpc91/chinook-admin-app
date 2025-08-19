@@ -8,8 +8,10 @@ module.exports = {
         return new Promise((resolve, reject) => {
             client.FindEmployeeByEmail({email: email}, function(err, response) {
                 if (err) {
-                    console.error('Error:', err);
                     reject(err);
+                }
+                if(!response){
+                    reject(new Error('Employee not found'));
                 }
                 resolve(response);
             });
