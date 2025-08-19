@@ -4,7 +4,9 @@ class IEventBus {
         throw new Error("Can't instantiate abstract class!");
       }
     }
-
+    async initialize() {
+      throw new Error("Method 'initialize()' must be implemented.");
+    }
     async publish(topic, message) {
       throw new Error("Method 'publish()' must be implemented.");
     }

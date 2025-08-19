@@ -1,0 +1,19 @@
+{
+  "name": "share",
+  "version": "1.0.0",
+  "main": "mail.js",
+  "scripts": {
+    "test": "node mail-test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.370.0",
+    "dotenv": "^17.2.1",
+    "nodemailer": "^7.0.5"
+  },
+  "devDependencies": {
+    "sinon": "^21.0.0"
+  },
+  "description": ""
+}

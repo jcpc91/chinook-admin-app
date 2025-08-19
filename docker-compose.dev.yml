@@ -1,0 +1,13 @@
+services:
+  elasticmq:
+    image: softwaremill/elasticmq
+    ports:
+      - "9324:9324"
+      - "9325:9325"
+    networks:
+      - chinook-dev
+  
+networks:
+  chinook-dev:
+    driver: bridge
+    name: chinook-dev-network
