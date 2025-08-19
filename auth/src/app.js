@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 const ValidUserRepository = require("../../database/repository/sqliteRepository/ValidUserRepository");
 const ValidUserService = require('../../database/repository/service/ValidUserService')
 const {findEmployeeByEmail} = require('../../share/proto_client_services/employee_client')
+const {QUEUE_MAIL} = require('../../share/sqs-config')
+const MessageSender = require('../../share/message-sender')
 
 const app = express();
 
@@ -74,6 +76,14 @@ app.post("/register", async (req, res) => {
     const { email } = req.body;
     try {
         const employee = await findEmployeeByEmail(email);
+        const messageSender = new MessageSender(QUEUE_MAIL);
+        await messageSender.initialize();
+        const mail = {
+            to: employee.Email,
+            subject: "Welcome to our platform",
+            body: "Thank you for registering"
+        };
+        await messageSender.sendMessage(mail);
         const token = jwt.sign(employee, process.env.JWT_SECREAT_KEY, {
             expiresIn: "2h",
         });
