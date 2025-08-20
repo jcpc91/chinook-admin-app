@@ -1,0 +1,19 @@
+{
+    "name": "Hello Python",
+    "build": {
+        "dockerfile": ".devcontainer/Dockerfile",
+        "context": ".."
+    },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    },
+    "forwardPorts": [8000],
+    "postCreateCommand": "pip install --user -r requirements.txt",
+    "remoteUser": "vscode"
+}
