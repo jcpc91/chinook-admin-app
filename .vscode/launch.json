@@ -9,14 +9,14 @@
             "request": "launch",
             "runtimeArgs": [
                 "run",
-                "dev"
+                "web:dev"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node",
-            "cwd": "${workspaceFolder}/web",
+            "cwd": "${workspaceFolder}",
             "sourceMaps": true
         },
         {
@@ -24,14 +24,14 @@
             "request": "launch",
             "runtimeArgs": [
                 "run",
-                "start"
+                "auth:dev"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node",
-            "cwd": "${workspaceFolder}/auth",
+            "cwd": "${workspaceFolder}",
             "sourceMaps": true
         },
         {
@@ -39,14 +39,29 @@
             "request": "launch",
             "runtimeArgs": [
                 "run",
-                "dev"
+                "app:dev"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node",
-            "cwd": "${workspaceFolder}/app",
+            "cwd": "${workspaceFolder}",
+            "sourceMaps": true
+        },
+        {
+            "name": "Launch cat",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "catalogos:dev"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}",
             "sourceMaps": true
         }
     ]
