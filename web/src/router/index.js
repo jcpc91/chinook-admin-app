@@ -133,6 +133,32 @@ const router = createRouter({
             },
           ],
         },
+        {
+            path: 'activos',
+            name: 'inversiones-activos',
+            component: () => import('../views/catalogos/inversiones/activos/ActivosListView.vue'),
+            meta: { requiresAuth: true },
+            children: [
+                {
+                  path: 'detalle',
+                  name: 'inversiones-activos-detalle',
+                  component: () => import('../views/catalogos/inversiones/activos/ActivosDetalleView.vue'),
+                  meta: { requiresAuth: true },
+                },
+                {
+                  path: 'new',
+                  name: 'inversiones-activos-new',
+                  component: () => import('../views/catalogos/inversiones/activos/ActivosFormView.vue'),
+                  meta: { requiresAuth: true, mode: 'create' },
+                },
+                {
+                  path: 'update',
+                  name: 'inversiones-activos-update',
+                  component: () => import('../views/catalogos/inversiones/activos/ActivosFormView.vue'),
+                  meta: { requiresAuth: true, mode: 'edit' },
+                },
+            ],
+        }
       ],
     },
     {
