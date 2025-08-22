@@ -47,7 +47,7 @@
   "scripts": {
     "app:dev": "npm run dev --workspace=chinook-app",
     "auth:dev": "npm run start --workspace=auth",
-    "catalogos:dev": "npm run dev --workspace=catalogos",
+    "cat:dev": "npm run dev --workspace=catalogos",
     "web:dev": "npm run dev --workspace=chinookadminapp",
     "microservices:mailapp": "npm run mailapp --workspace=microservices",
     "microservices:employeeServ": "npm run employee_service --workspace=microservices",

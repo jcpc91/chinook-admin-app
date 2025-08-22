@@ -7,16 +7,15 @@ module.exports = {
     findEmployeeByEmail: (email) => {
         return new Promise((resolve, reject) => {
             client.FindEmployeeByEmail({email: email}, function(err, response) {
+
                 if (err) {
-                    if (err.code == 5) {
-                        reject('Employee not found🤷‍♀️');
-                    } else {
-                        reject(err);
-                    }
+                    reject(err.details);
+
                 }
                 if(!response){
                     reject('Employee not found🤷‍♀️');
                 }
+
                 resolve(response);
             });
         });

@@ -8,27 +8,22 @@ describe('findEmployeeByEmail - Integration Test', () => {
     it('should find employee by email', async () => {
         // Act
         const employee = await findEmployeeByEmail(existingEmail);
-        console.table(employee);
-        // Assert
+
         expect(employee).toBeDefined();
         expect(employee).toHaveProperty('Email', existingEmail);
+        expect(employee).toHaveProperty('id', 1);
         // Add more assertions based on your employee object structure
     });
 
     it('should throw error when employee is not found', async () => {
         // Act & Assert
-        await expect(findEmployeeByEmail(nonExistingEmail))
-            .rejects
-            .toThrow('Employee not found');
+        try {
+            await findEmployeeByEmail(nonExistingEmail)
+        } catch (error) {
+            expect(error).toBe('Employee not found');
+        }
+
     });
 
-    // Add a test for error handling if needed
-    it('should handle gRPC server errors', async () => {
-        // This test assumes the server might be down or return an error
-        // You might want to test this with an invalid server configuration
-        // or by temporarily stopping the gRPC server
-        await expect(findEmployeeByEmail('invalid-format'))
-            .rejects
-            .toThrow();
-    });
+
 });

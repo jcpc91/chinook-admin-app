@@ -10,32 +10,20 @@
  *
  */
 const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
-
-
 const EmployeeService = require('../database/repository/service/EmployeeService')
 const EmployeeRepository = require('../database/repository/sqliteRepository/EmployeeRepository')
 
+const employee_proto = require('../share/proto_client_services/protoloader');
 const repository = new EmployeeService(new EmployeeRepository());
 
-const PROTO_PATH = '../share/proto/employee.proto';
 
-const packageDefinition = protoLoader.loadSync(
-    PROTO_PATH,
-    {keepCase: true,
-     longs: String,
-     enums: String,
-     defaults: true,
-     oneofs: true
-    });
-const employee_proto = grpc.loadPackageDefinition(packageDefinition).employee;
 
 
 async function FindEmployeeByEmail(call, callback) {
     const email = call.request.email;
   // Simulate a database lookup
   const employee = await repository.getEmployeeByEmail(email);
-  console.log(employee);
+
 
     if (employee) {
         callback(null, employee);

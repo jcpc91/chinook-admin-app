@@ -57,6 +57,11 @@ class EmployeeService {
     return null;
   }
 
+  /**
+   * Obtiene un empleado por su email
+   * @param {string} email
+   * @returns {Promise<Object|null>}
+   */
   async getEmployeeByEmail(email) {
     return await this.customerRepository.getByEmail(email);
   }

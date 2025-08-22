@@ -1,23 +1,25 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-
+const passport = require("../../share/config-jwtStrategy");
 
 const ValidUserRepository = require("../../database/repository/sqliteRepository/ValidUserRepository");
 const ValidUserService = require('../../database/repository/service/ValidUserService')
 const {findEmployeeByEmail} = require('../../share/proto_client_services/employee_client')
 const {QUEUE_MAIL} = require('../../share/sqs-config')
 const MessageSender = require('../../share/message-sender')
-
+const RedisClient = require('../../share/redis-client')
 const app = express();
 
 require("dotenv").config();
 
 const port = process.env.PORT || 3000;
 process.env.EVENT_BUS_TYPE = 'elasticmq';
+console.log(process.env)
 const allowedOrigins = process.env.CORS_ORIGIN.split(',')
 const validuser = new ValidUserService(new ValidUserRepository());
 
+app.use(passport.initialize());
 // Enable CORS
 app.use(
     cors({
@@ -76,6 +78,11 @@ app.post("/register", async (req, res) => {
     const { email } = req.body;
     try {
         const employee = await findEmployeeByEmail(email);
+
+        const redisClient = new RedisClient();
+        await redisClient.connect();
+        await redisClient.set(employee.id.toString(), "12345" );
+
         const messageSender = new MessageSender(QUEUE_MAIL);
         await messageSender.initialize();
         const mail = {
@@ -84,11 +91,20 @@ app.post("/register", async (req, res) => {
             body: "Thank you for registering"
         };
         await messageSender.sendMessage(mail);
+        employee.type= "verify"
         const token = jwt.sign(employee, process.env.JWT_SECREAT_KEY, {
             expiresIn: "2h",
         });
         res.json({ token });
     } catch (err) {
-        res.status(404).json({ error: err });
+        console.error(err);
+        if (err === 'Employee not found')
+            res.status(404).json({ error: 'Employee not found 🤷' });
+        else
+            res.status(500).json({ error: err });
     }
+})
+
+app.post('/verify', async(req, res) => {
+
 })

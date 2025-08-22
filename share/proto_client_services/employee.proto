@@ -32,7 +32,7 @@ message FindEmployeeByEmailRequest {
 // `Email` varchar(255) not null
 // )
 message FindEmployeeByEmailResponse {
-    int32 EmployeeId = 1;
+    int32 id = 1;
     string LastName = 2;
     string FirstName = 3;
     string Title = 4;

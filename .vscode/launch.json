@@ -4,19 +4,21 @@
     // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+
         {
             "name": "Launch web",
             "request": "launch",
             "runtimeArgs": [
                 "run",
-                "dev"
+                "web:dev"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node",
-            "cwd": "${workspaceFolder}/web",
+            "cwd": "${workspaceFolder}",
             "sourceMaps": true
         },
         {
@@ -24,14 +26,14 @@
             "request": "launch",
             "runtimeArgs": [
                 "run",
-                "start"
+                "auth:dev"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node",
-            "cwd": "${workspaceFolder}/auth",
+            "cwd": "${workspaceFolder}",
             "sourceMaps": true
         },
         {
@@ -39,14 +41,14 @@
             "request": "launch",
             "runtimeArgs": [
                 "run",
-                "dev"
+                "app:dev"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node",
-            "cwd": "${workspaceFolder}/app",
+            "cwd": "${workspaceFolder}",
             "sourceMaps": true
         },
         {
@@ -54,14 +56,44 @@
             "request": "launch",
             "runtimeArgs": [
                 "run",
-                "dev"
+                "cat:dev"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node",
-            "cwd": "${workspaceFolder}/catalogos",
+            "cwd": "${workspaceFolder}",
+            "sourceMaps": true
+        },
+        {
+            "name": "employee_service",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "microservices:employeeServ"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}",
+            "sourceMaps": true
+        },
+        {
+            "name": "mail_service",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "microservices:mailapp"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}",
             "sourceMaps": true
         }
     ]
