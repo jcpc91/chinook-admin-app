@@ -1,32 +1,42 @@
 <template>
   <div class="w-2xl mx-auto">
-    <Details :headers="headers"
-
+    <Details  :headers="headers"
+      :value="activo"
       />
   </div>
 </template>
 <script setup>
-    import {  onMounted } from 'vue';
-    import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
-    import Details from "@/components/DetailsComponent.vue";
+import { ref, onMounted } from 'vue';
+import { useRoute, onBeforeRouteUpdate } from 'vue-router';
+import Details from "@/components/DetailsComponent.vue";
+import { useActivosStore } from '@/stores/activos';
 
+    const store = useActivosStore()
     const route = useRoute();
-    const router = useRouter();
+    //const router = useRouter();
     const headers =[
-      { text: "Código", value: "codigo" },
-      { text: "Categoría", value: "categoria" },
-      { text: "Subcategoría", value: "subcategoria" },
-      { text: "Nivel de Riesgo", value: "nivelriesgo" },
-      { text: "Horizonte de Inversión", value: "horizonteinversion" },
-      { text: "Liquidez", value: "liquidez" }
+      { text: "Ticker", value: "ticker" },
+      { text: "Nombre", value: "nombre" },
+      { text: "Tipo", value: "tipo" },
+      { text: "Valor Mercado", value: "valormercado" },
     ]
 
-onMounted(() => {
-  console.log('TiposActivosDetalleView.vue mounted')
-})
+    const activo = ref(null);
 
-  onBeforeRouteUpdate((to, from, next) => {
-    console.log('TiposActivosDetalleView.vue onBeforeRouteUpdate', to, from)
+    onMounted(async () => {
+      try {
+        activo.value = await store.fetchItemById(route.params.ticker);
+      } catch (error) {
+        console.error('Error fetching activo:', error);
+      }
+    })
+
+  onBeforeRouteUpdate(async (to, from, next) => {
+    try {
+        activo.value = await store.fetchItemById(to.params.ticker);
+      } catch (error) {
+        console.error('Error fetching activo:', error);
+      }
     next()
   })
 </script>
