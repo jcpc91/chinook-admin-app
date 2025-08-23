@@ -3,7 +3,7 @@
 </template>
 <script setup>
 import DropDown from "@/components/forms/InputSelect.vue";
-import { reactive, onMounted, computed } from "vue";
+import { reactive } from "vue";
 
 const modelValue = defineModel({ required: true });
 const data = reactive([

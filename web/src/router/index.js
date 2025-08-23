@@ -140,15 +140,19 @@ const router = createRouter({
             meta: { requiresAuth: true },
             children: [
                 {
-                  path: 'detalle',
+                  path: 'detalle/:ticker',
                   name: 'inversiones-activos-detalle',
-                  component: () => import('../views/catalogos/inversiones/activos/ActivosDetalleView.vue'),
+                  components: {
+                    bottom: () => import('../views/catalogos/inversiones/activos/ActivosDetalleView.vue')
+                },
                   meta: { requiresAuth: true },
                 },
                 {
                   path: 'new',
                   name: 'inversiones-activos-new',
-                  component: () => import('../views/catalogos/inversiones/activos/ActivosFormView.vue'),
+                  components:{
+                    top: () => import('../views/catalogos/inversiones/activos/ActivosFormView.vue')
+                },
                   meta: { requiresAuth: true, mode: 'create' },
                 },
                 {

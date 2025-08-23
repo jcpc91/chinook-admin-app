@@ -1,5 +1,4 @@
 <template>
-  <Panel title="Nuevo empleado">
     <form @submit.prevent="on_submit" class="grid grid-cols-1 lg:grid-cols-2 gap-3">
       <div class="lg:flex lg:flex-row gap-3">
         <Label label="Apellido" name="LastName" class="lg:w-2xs" />
@@ -85,12 +84,10 @@
       </div>
 
     </form>
-  </Panel>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import Panel from '@/components/common/PanelComponent.vue'
 import Button from '@/components/forms/InputButton.vue'
 import Label from "@/components/forms/EtiquetaLabel.vue";
 import InputText from '@/components/forms/InputText.vue'
@@ -98,8 +95,9 @@ import RolesDropDown from "@/components/forms/RolesDropDown.vue"
 import EmployeeDropDown from "@/components/forms/EmployeeDropDown.vue";
 import { useRouter, useRoute } from 'vue-router';
 import { useEmpleadosStore } from "@/store/empleados";
+import Chance from 'chance'
 
-const error = ref(null)
+const chance = new Chance()
 const empleadosStore = useEmpleadosStore()
 const router = useRouter();
 const route = useRoute();

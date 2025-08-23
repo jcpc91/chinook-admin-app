@@ -1,12 +1,12 @@
 <template>
   <div class="w-2xl mx-auto">
-    <Details :headers="headers" 
-      @edit="router.push({ name: 'inversiones-tiposactivos-update', query: { codigo: route.query.codigo } })"
+    <Details :headers="headers"
+      @edit="router.push({ name: 'inversiones-tiposactivos-update', params: { codigo: route.query.codigo } })"
       />
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
+import {  onMounted } from 'vue';
   import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
   import Details from "@/components/DetailsComponent.vue";
 
@@ -20,7 +20,7 @@ import { ref, onMounted } from 'vue';
     { text: "Horizonte de Inversión", value: "horizonteinversion" },
     { text: "Liquidez", value: "liquidez" }
   ]
-  
+
 onMounted(() => {
   console.log('TiposActivosDetalleView.vue mounted')
 })
