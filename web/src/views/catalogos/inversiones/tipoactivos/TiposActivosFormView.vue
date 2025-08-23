@@ -52,18 +52,22 @@ import Button from '@/components/forms/InputButton.vue'
 import Label from "@/components/forms/EtiquetaLabel.vue";
 import InputText from '@/components/forms/InputText.vue'
 import { useRouter, useRoute } from 'vue-router';
+import { useTipoActivosStore } from '@/stores/tiposActivos';
 
+const store = useTipoActivosStore()
 const router = useRouter();
 const route = useRoute();
 const form = ref({});
 
 async function on_submit() {
-    if (route.meta.type == 'insert') {
-        console.log('Formulario enviado:', form.value);
-        await router.back()
+    if (route.meta.mode == 'create') {
 
-    } else if (route.meta.type == 'update') {
-        console.log('Formulario enviado:', form.value);
+        store.addItem(form.value)
+        await router.push({name: 'inversiones-tiposactivos-detalle', params: { codigo: form.value.codigo }})
+
+    } else if (route.meta.mode == 'edit') {
+
+        store.updateItem(form.value)
         await router.back()
     }
 }

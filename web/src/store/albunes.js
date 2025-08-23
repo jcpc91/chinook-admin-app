@@ -1,16 +1,14 @@
 // stores/crudStore.js
 import { defineStore } from 'pinia'
 import { useCatalogoFetch } from '@/services/api'
-import { ref, computed, reactive } from 'vue'
+import { ref, computed } from 'vue'
 
 export const useAlbunesStore = defineStore('albunesStore', () => {
   const items = ref([])
 
   const getItems = computed(() => items.value)
 
-  const fetchItems = () => {
-    // Fetch logic here
-  }
+
 
   const fetchItemsByArtistId = (artistId) => {
     return useCatalogoFetch(`albunes?artistid=${artistId}`)
@@ -61,7 +59,6 @@ export const useAlbunesStore = defineStore('albunesStore', () => {
   return {
     items,
     getItems,
-    fetchItems,
     addItem,
     updateItem,
     deleteItem,

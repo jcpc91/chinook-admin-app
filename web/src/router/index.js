@@ -107,7 +107,7 @@ const router = createRouter({
           meta: { requiresAuth: true },
           children: [
             {
-              path: 'detalle',
+              path: 'detalle/:codigo',
               name: 'inversiones-tiposactivos-detalle',
               components:{
                 bottom: () => import('../views/catalogos/inversiones/tipoactivos/TiposActivosDetalleView.vue')
@@ -124,7 +124,7 @@ const router = createRouter({
               meta: { requiresAuth: true, mode: 'create' },
             },
             {
-              path: 'update',
+              path: 'update/:codigo',
               name: 'inversiones-tiposactivos-update',
               components: {
                 bottom: () => import('../views/catalogos/inversiones/tipoactivos/TiposActivosFormView.vue')
