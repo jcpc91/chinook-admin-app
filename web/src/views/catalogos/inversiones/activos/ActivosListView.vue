@@ -11,7 +11,7 @@
   </Panel>
 </template>
 <script setup>
-
+import { onMounted } from "vue";
 import ActivosDataTable from "@/components/ActivosDataTable.vue";
 import Panel from "@/components/common/PanelComponent.vue";
 import Button from '@/components/forms/InputButton.vue'
@@ -25,4 +25,8 @@ const router = useRouter()
 function on_row_clicked(item) {
   router.push({ name: 'inversiones-activos-detalle', params: { ticker: item.ticker } })
 }
+
+onMounted(() => {
+  store.fetchItems()
+})
 </script>

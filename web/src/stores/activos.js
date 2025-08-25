@@ -1,30 +1,33 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, reactive, shallowReactive, computed } from 'vue'
+import { useInversionesFetch } from '@/services/api'
 
 export const useActivosStore = defineStore('activosStore', () => {
-    const items = ref([
-        { ticker: "AAPL", nombre: "Apple Inc.", tipo: "Acciones", valormercado: 150.75 },
-        { ticker: "MSFT", nombre: "Microsoft Corporation", tipo: "Acciones", valormercado: 250.25 },
-        { ticker: "GOOGL", nombre: "Alphabet Inc.", tipo: "Acciones", valormercado: 120.50 },
-      ])
-    const getItems = computed(() => items.value)
+    const items = shallowReactive([])
+    const getItems = computed(() => items)
     const fetchItems = () => {
-        items.value = []
+        const data =[
+            { ticker: "AAPL", nombre: "Apple Inc.", tipo: "Acciones", valormercado: 150.75 },
+            { ticker: "MSFT", nombre: "Microsoft Corporation", tipo: "Acciones", valormercado: 250.25 },
+            { ticker: "GOOGL", nombre: "Alphabet Inc.", tipo: "Acciones", valormercado: 120.50 },
+          ]
+          items.push( ...data)
     }
     const fetchItemById = (ticker) => {
-        return items.value.find((item) => item.ticker == ticker)
+        return items.find((item) => item.ticker == ticker)
     }
     const addItem = (item) => {
-        items.value.push(item)
+        items.push(item)
     }
     const updateItem = (item) => {
-        const index = items.value.findIndex((i) => i.ticker == item.ticker)
+        const index = items.findIndex((i) => i.ticker == item.ticker)
         if (index !== -1) {
-            items.value[index] = item
+            items[index] = item
         }
     }
     const deleteItem = (item) => {
-        items.value = items.value.filter((i) => i.ticker !== item.ticker)
+        const data = items.filter((i) => i.ticker !== item.ticker)
+        items.push(...data)
     }
     return {
         items,

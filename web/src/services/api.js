@@ -7,7 +7,7 @@ export const useMyFetch = createFetch({
     options: {
         beforeFetch: ({ options }) => {
             const token = authStore.user
-            
+
             options.headers = {
                 'Content-Type': 'application/json',
                 ...(token && { Authorization: `Bearer ${token}` }),
@@ -18,6 +18,21 @@ export const useMyFetch = createFetch({
 })
 export const useCatalogoFetch = createFetch({
     baseUrl: import.meta.env.VITE_URL_CAT,
+    options: {
+        beforeFetch: ({ options }) => {
+            const token = authStore.user
+
+            options.headers = {
+                'Content-Type': 'application/json',
+                ...(token && { Authorization: `Bearer ${token}` }),
+            }
+            return { options }
+        },
+    },
+})
+
+export const useInversionesFetch = createFetch({
+    baseUrl: import.meta.env.VITE_URL_INV,
     options: {
         beforeFetch: ({ options }) => {
             const token = authStore.user
