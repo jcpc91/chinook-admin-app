@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
-import { useServerAuth } from '@/services/authserver'
+import { useServerAuth, useServerTokenRegister } from '@/services/authserver'
 import { useLocalStorage } from '@vueuse/core'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: useLocalStorage('isAuthenticated', false),
     user: useLocalStorage('user', null), // Will store user information like username and token
-    error: null, // For storing login error messages
+
+    tokenRegister: null // token de registro
   }),
   getters: {
     isLoggedIn: (state) => state.isAuthenticated,
@@ -24,16 +25,13 @@ export const useAuthStore = defineStore('auth', {
       return useServerAuth('')
         .post(payload)
         .json()
-        .then(({ data, error }) => {
+        .then(({ data, error, _statusCode }) => {
           if (error.value) {
             throw error.value
           }
+
           this.user = data.value.token
           this.isAuthenticated = true
-        })
-        .catch((err) => {
-          console.error('Login failed:', err)
-          this.error = err
         })
     },
     logout() {
@@ -42,5 +40,32 @@ export const useAuthStore = defineStore('auth', {
       // useLocalStorage automatically syncs these changes to localStorage
       console.log('User logged out.')
     },
+    async register(payload) {
+      return useServerAuth('/register')
+        .post(payload)
+        .json()
+        .then(({ _data, error, statusCode }) => {
+
+          if (statusCode.value >= 400) {
+            throw error.value
+          }
+        })
+    },
+    async verifyToken(token) {
+      return useServerTokenRegister('/verify')
+        .post(token)
+        .json()
+        .then(({ data, error, statusCode }) => {
+
+          if (error.value) {
+            throw error.value
+          }
+
+          if (statusCode.value >= 400) {
+            throw error.value
+          }
+          this.tokenRegister = data.value.token
+        })
+    }
   },
 })

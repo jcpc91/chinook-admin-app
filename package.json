@@ -39,6 +39,7 @@
     "passport-jwt": "^4.0.1",
     "passport-strategy": "^1.0.0",
     "pause": "^0.0.1",
+    "redis": "^5.8.2",
     "safe-buffer": "^5.2.1",
     "semver": "^7.7.2",
     "sqlite3": "^5.1.7",
@@ -51,7 +52,6 @@
     "web:dev": "npm run dev --workspace=chinookadminapp",
     "microservices:mailapp": "npm run mailapp --workspace=microservices",
     "microservices:employeeServ": "npm run employee_service --workspace=microservices",
-    
     "database:migrate-app": "npm run migrate-app --workspace=database",
     "database:migrate-auth": "npm run migrate-auth --workspace=database",
     "database:migrate-cat": "npm run migrate-cat --workspace=database",
@@ -63,6 +63,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "chance": "^1.1.13",
     "jest": "^30.0.2",
     "knex": "^3.1.0",
     "nodemon": "^3.1.10",

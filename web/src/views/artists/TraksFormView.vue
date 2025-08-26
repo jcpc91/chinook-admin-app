@@ -45,7 +45,7 @@ const router = useRouter()
 const route = useRoute();
 const traksStore = useTraksStore();
 const track = ref({})
-const { state, isReady, isLoading, error, execute } = useAsyncState(action, {}, { immediate: false})
+const { error, execute } = useAsyncState(action, {}, { immediate: false})
 
 
   onMounted(async () => {

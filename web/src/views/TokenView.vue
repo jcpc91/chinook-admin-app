@@ -5,13 +5,13 @@
         <form @submit.prevent="handleTokenSubmit">
             <div class="form-group">
                 <label for="token">Enter Token (Numbers only)</label>
-                <input 
-                    type="text" 
-                    id="token" 
-                    v-model="token" 
+                <input
+                    type="text"
+                    id="token"
+                    v-model="token"
                     @input="validateInput"
                     placeholder="Enter numeric token"
-                    required 
+                    required
                 />
             </div>
             <div v-if="error" class="error-message">{{ error }}</div>
@@ -27,9 +27,13 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useAsyncState } from '@vueuse/core'
+
+const authStore = useAuthStore();
+const { error, execute } = useAsyncState(action, {}, { immediate: false})
 
 const token = ref('');
-const error = ref('');
 const success = ref('');
 const router = useRouter();
 
@@ -55,20 +59,23 @@ const handleTokenSubmit = async () => {
         return;
     }
 
+    await execute()
+
+};
+async function action() {
     try {
-        // TODO: Implement token verification API call
-        // For now, just show success message
+        await authStore.verifyToken({token: token.value})
         success.value = 'Token verified successfully! Redirecting to password setup...';
-        
+
         // Redirect to password view after successful verification
         setTimeout(() => {
             router.push({ name: 'password' });
         }, 1500);
-        
+
     } catch (err) {
         error.value = err.message || 'Failed to verify token. Please try again.';
     }
-};
+}
 </script>
 
 <style scoped>

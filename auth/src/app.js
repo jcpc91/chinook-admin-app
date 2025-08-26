@@ -43,6 +43,7 @@ app.use(express.json());
 app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
 });
+
 app.get("/", (req, res) => {
     res.send("hola mundo auth");
 });
@@ -77,34 +78,48 @@ app.post("/", async (req, res) => {
 app.post("/register", async (req, res) => {
     const { email } = req.body;
     try {
-        const employee = await findEmployeeByEmail(email);
+
 
         const redisClient = new RedisClient();
         await redisClient.connect();
-        await redisClient.set(employee.id.toString(), "12345" );
+        //TODO: Generate random token
+        const token = "12345"
+        await redisClient.set(token, email );
 
         const messageSender = new MessageSender(QUEUE_MAIL);
         await messageSender.initialize();
         const mail = {
-            to: employee.Email,
+            to: email,
             subject: "Welcome to our platform",
-            body: "Thank you for registering"
+            body: "Thank you for registering, Token: " + token
         };
         await messageSender.sendMessage(mail);
-        employee.type= "verify"
-        const token = jwt.sign(employee, process.env.JWT_SECREAT_KEY, {
-            expiresIn: "2h",
-        });
-        res.json({ token });
+
+        res.send(mail)
     } catch (err) {
-        console.error(err);
-        if (err === 'Employee not found')
-            res.status(404).json({ error: 'Employee not found 🤷' });
-        else
-            res.status(500).json({ error: err });
+        console.error(err)
+        res.status(500).json({ error: err });
     }
 })
 
 app.post('/verify', async(req, res) => {
 
+    const { token } = req.body;
+
+    const redisClient = new RedisClient();
+    await redisClient.connect();
+    const email = await redisClient.get(token);
+    const employee = await findEmployeeByEmail(email);
+    if (employee) {
+        employee.type= "verify"
+        const jwtToken = jwt.sign(employee, process.env.JWT_SECREAT_KEY, {
+            expiresIn: "2h",
+        });
+
+
+
+        res.json({ token: jwtToken });
+    } else {
+        res.status(401).json({ message: "Employee not found" });
+    }
 })

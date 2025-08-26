@@ -8,9 +8,10 @@
                 <label for="email">Email</label>
                 <input type="email" id="email" v-model="email" required />
             </div>
-            
+
             <div v-if="error" class="error-message">{{ error }}</div>
             <div v-if="success" class="success-message">{{ success }}</div>
+
             <div class="flex justify-between">
                 <button type="submit">Register</button>
                 <button type="button" @click="router.push('/login')">Back to Login</button>
@@ -22,10 +23,14 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useAsyncState } from '@vueuse/core'
+
+const authStore = useAuthStore();
+const { error, execute } = useAsyncState(action, {}, { immediate: false})
 
 const email = ref('');
-    
-const error = ref('');
+
 const success = ref('');
 const router = useRouter();
 
@@ -33,19 +38,24 @@ const handleRegister = async () => {
     error.value = '';
     success.value = '';
 
-    
 
+    await execute()
+
+
+};
+
+async function action() {
+    console.log('action')
     try {
-        // TODO: Implement registration API call
-        // For now, just show success message
+        await authStore.register({email: email.value})
         success.value = 'Registration successful! Redirecting to login...';
 
-        // Redirect to login after 2 seconds
+
         router.push({name: 'token'})
     } catch (err) {
-        error.value = err.message || 'Failed to register. Please try again.';
+        error.value = err || 'Failed to register. Please try again.';
     }
-};
+}
 </script>
 
 <style scoped>

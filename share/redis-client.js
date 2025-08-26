@@ -18,10 +18,22 @@ class RedisClient {
         await this.client.quit();
     }
 
+    /**
+     * Set a key with a value and an expiration time of 1 hour
+     * @param {string} key
+     * @param {string} value
+     */
     async set(key, value) {
-        await this.client.set(key, value);
+        await this.client.set(key, value, {
+            expiration: 60 * 60 * 60
+        });
     }
 
+    /**
+     *
+     * @param {string} key
+     * @returns {string}
+     */
     async get(key) {
         return await this.client.get(key);
     }

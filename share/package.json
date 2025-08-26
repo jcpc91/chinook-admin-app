@@ -9,9 +9,6 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-
-  },
   "devDependencies": {
     "jest": "^29.7.0",
     "sinon": "^21.0.0"
