@@ -10,9 +10,11 @@
     "catalogos",
     "database",
     "web",
-    "share"
+    "share",
+    "inversiones"
   ],
   "dependencies": {
+    "ajv": "^8.17.1",
     "buffer-equal-constant-time": "^1.0.1",
     "cors": "^2.8.5",
     "dotenv": "^17.0.0",
@@ -43,7 +45,7 @@
     "auth:dev": "npm run start --workspace=auth",
     "catalogos:dev": "npm run dev --workspace=catalogos",
     "web:dev": "npm run dev --workspace=chinookadminapp",
-    
+    "inversiones:dev": "npm run dev --workspace=inversiones",
     "database:migrate-app": "npm run migrate-app --workspace=database",
     "database:migrate-auth": "npm run migrate-auth --workspace=database",
     "database:migrate-cat": "npm run migrate-cat --workspace=database",

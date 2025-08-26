@@ -6,18 +6,23 @@ export const useActivosStore = defineStore('activosStore', () => {
     const items = shallowReactive([])
     const getItems = computed(() => items)
     const fetchItems = () => {
-        const data =[
-            { ticker: "AAPL", nombre: "Apple Inc.", tipo: "Acciones", valormercado: 150.75 },
-            { ticker: "MSFT", nombre: "Microsoft Corporation", tipo: "Acciones", valormercado: 250.25 },
-            { ticker: "GOOGL", nombre: "Alphabet Inc.", tipo: "Acciones", valormercado: 120.50 },
-          ]
-          items.push( ...data)
+        items.splice(0, items.length)
+        return useInversionesFetch('activos')
+          .get()
+          .json()
+          .then(({ data }) => items.push(...data.value))
     }
     const fetchItemById = (ticker) => {
         return items.find((item) => item.ticker == ticker)
     }
     const addItem = (item) => {
-        items.push(item)
+        return useInversionesFetch('activos')
+          .post(item)
+          .json()
+          .then(({ data }) => {
+            items.push(data.value)
+            return data.value
+          })
     }
     const updateItem = (item) => {
         const index = items.findIndex((i) => i.ticker == item.ticker)

@@ -4,7 +4,6 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "jsonserver": "npx json-server ../.db/data.json --port 3000",
     "devexpress": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
