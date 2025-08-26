@@ -77,6 +77,10 @@ app.post("/", async (req, res) => {
 
 app.post("/register", async (req, res) => {
     const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+    }
     try {
 
 
@@ -85,7 +89,7 @@ app.post("/register", async (req, res) => {
         //TODO: Generate random token
         const token = "12345"
         await redisClient.set(token, email );
-
+        await redisClient.disconnect();
         const messageSender = new MessageSender(QUEUE_MAIL);
         await messageSender.initialize();
         const mail = {
@@ -95,7 +99,7 @@ app.post("/register", async (req, res) => {
         };
         await messageSender.sendMessage(mail);
 
-        res.send(mail)
+        res.send({message: "Email sent successfully"})
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: err });
@@ -109,6 +113,7 @@ app.post('/verify', async(req, res) => {
     const redisClient = new RedisClient();
     await redisClient.connect();
     const email = await redisClient.get(token);
+    await redisClient.disconnect();
     const employee = await findEmployeeByEmail(email);
     if (employee) {
         employee.type= "verify"

@@ -5,9 +5,13 @@ class RedisClient {
         this.client = createClient({
             url: 'redis://localhost:6379'
         });
+        this.client.on('connect', () => {
+            console.log('Redis Client Connected');
+        });
         this.client.on('error', (err) => {
             console.error('Redis Client Error:', err);
         });
+
     }
 
     async connect() {
@@ -24,9 +28,8 @@ class RedisClient {
      * @param {string} value
      */
     async set(key, value) {
-        await this.client.set(key, value, {
-            expiration: 60 * 60 * 60
-        });
+        await this.client.set(key, value);
+        await this.client.expire(key, 60 * 60 * 60);
     }
 
     /**
