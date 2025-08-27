@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "se reestructura el proyecto para incluir la app que contendrá el backend y web para el front",
-  "main": "index.js",
   "workspaces": [
     "app",
     "auth",
@@ -44,11 +43,12 @@
     "app:dev": "npm run dev --workspace=chinook-app",
     "auth:dev": "npm run start --workspace=auth",
     "catalogos:dev": "npm run dev --workspace=catalogos",
-    "web:dev": "npm run dev --workspace=chinookadminapp",
     "inversiones:dev": "npm run dev --workspace=inversiones",
+    "web:dev": "npm run dev --workspace=chinookadminapp",
     "database:migrate-app": "npm run migrate-app --workspace=database",
     "database:migrate-auth": "npm run migrate-auth --workspace=database",
     "database:migrate-cat": "npm run migrate-cat --workspace=database",
+    "database:migrate-inv": "npm run migrate-inv --workspace=database",
     "web:build": "npm run build --workspace=chinookadminapp",
     "web:test:unit": "npm run test:unit --workspace=chinookadminapp",
     "test": "echo \"Error: no test specified\" && exit 1"

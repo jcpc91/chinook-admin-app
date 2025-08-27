@@ -1,0 +1,39 @@
+[
+  {
+    "codigo": "RV",
+    "categoria": "Renta Variable",
+    "subcategoria": "Acciones individuales",
+    "descripcion": "AAPL; AMZN; BMV; AMXL"
+  },
+  {
+    "codigo": "RV-ETF",
+    "categoria": "Renta Variable",
+    "subcategoria": "ETF de acciones",
+    "descripcion": "SPY; QQQ; IWM"
+  },
+  {
+    "codigo": "RV-FI",
+    "categoria": "Renta Variable",
+    "subcategoria": "Fondos de Inversion",
+    "descripcion": "VFIN; VFINX; VTSMX"
+  },
+  {
+    "codigo": "RF",
+    "categoria": "Renta Fija",
+    "subcategoria": "Bonos gubernamentales",
+    "descripcion": "Bonos del Tesoro; CETES"
+  },
+  {
+    "codigo": "RF-C",
+    "categoria": "Renta Fija",
+    "subcategoria": "Bonos corporativos",
+    "descripcion": "Bonos de empresas; Bonos de empresas extranjeras"
+  },
+  {
+    "codigo": "RF-ETF",
+    "categoria": "Renta Fija",
+    "subcategoria": "ETF de bonos",
+    "descripcion": "AGG; LQD; SHV"
+    
+  }
+]

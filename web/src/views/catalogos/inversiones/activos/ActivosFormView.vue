@@ -36,6 +36,7 @@
  */
 import {  reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import InputSelect from '@/components/forms/InputSelect.vue'
 import Button from '@/components/forms/InputButton.vue';
 import Label from "@/components/forms/EtiquetaLabel.vue";
 import InputText from '@/components/forms/InputText.vue';

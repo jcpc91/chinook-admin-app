@@ -18,6 +18,14 @@ localPort = 3002
 externalPort = 3003
 
 [[ports]]
+localPort = 3003
+externalPort = 4200
+
+[[ports]]
+localPort = 3004
+externalPort = 5000
+
+[[ports]]
 localPort = 5173
 externalPort = 80
 
@@ -39,16 +47,20 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd web && npm run dev"
+args = "npm run app:dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd app && npm run dev"
+args = "npm run auth:dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd auth && npm run start"
+args = "npm run catalogos:dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd catalogos && npm run dev"
+args = "npm run inversiones:dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run web:dev"
