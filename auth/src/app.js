@@ -78,18 +78,25 @@ app.post("/", async (req, res) => {
 app.post("/register", async (req, res) => {
     const { email } = req.body;
 
-    if (!email) {
-        return res.status(400).json({ message: 'Email is required' });
-    }
     try {
+        const employee = await findEmployeeByEmail(email);
 
+        const token = "12345"
+        const key = `employee_${employee.id}`
+        const values = {
+            id: employee.id,
+            email: employee.Email,
+            role: employee.Role,
+            type: "register",
+            token: token
+        }
 
         const redisClient = new RedisClient();
         await redisClient.connect();
-        //TODO: Generate random token
-        const token = "12345"
-        await redisClient.set(token, email );
+
+        await redisClient.hset(key, values);
         await redisClient.disconnect();
+
         const messageSender = new MessageSender(QUEUE_MAIL);
         await messageSender.initialize();
         const mail = {
@@ -99,14 +106,19 @@ app.post("/register", async (req, res) => {
         };
         await messageSender.sendMessage(mail);
 
-        res.send({message: "Email sent successfully"})
+
+        const jwtToken = jwt.sign(employee, process.env.JWT_SECREAT_KEY, {
+            expiresIn: "2h",
+        });
+
+        res.json({ token: jwtToken });
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: err });
     }
 })
 
-app.post('/verify', async(req, res) => {
+app.post('/verify', passport.authenticate("jwt", { session: false }), async(req, res) => {
 
     const { token } = req.body;
 
@@ -114,17 +126,20 @@ app.post('/verify', async(req, res) => {
     await redisClient.connect();
     const email = await redisClient.get(token);
     await redisClient.disconnect();
-    const employee = await findEmployeeByEmail(email);
-    if (employee) {
-        employee.type= "verify"
-        const jwtToken = jwt.sign(employee, process.env.JWT_SECREAT_KEY, {
-            expiresIn: "2h",
-        });
+    if (email) {
+        let employee = null
+        try {
 
+        } catch (error) {
+            console.log(error)
+        }
+        if (employee) {
+            employee.type= "verify"
 
-
-        res.json({ token: jwtToken });
-    } else {
-        res.status(401).json({ message: "Employee not found" });
+        } else {
+            res.status(401).json({ message: "Employee not found" });
+        }
+    } else{
+        res.status(401).json({ message: "Invalid token" });
     }
 })

@@ -32,6 +32,14 @@ class RedisClient {
         await this.client.expire(key, 60 * 60 * 60);
     }
 
+    async hset(key, value) {
+        await this.client.hSet(key, value);
+        await this.client.expire(key, 60 * 60 * 60);
+    }
+    async hget(key, field) {
+        return await this.client.hGet(key, field);
+    }
+
     /**
      *
      * @param {string} key

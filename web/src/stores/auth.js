@@ -44,11 +44,12 @@ export const useAuthStore = defineStore('auth', {
       return useServerAuth('/register')
         .post(payload)
         .json()
-        .then(({ _data, error, statusCode }) => {
+        .then(({ data, error, statusCode }) => {
 
           if (statusCode.value >= 400) {
             throw error.value
           }
+          this.tokenRegister = data.value.token
         })
     },
     async verifyToken(token) {
