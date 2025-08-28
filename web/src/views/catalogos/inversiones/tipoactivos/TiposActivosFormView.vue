@@ -8,19 +8,8 @@
 
       <div class="lg:flex lg:flex-row gap-3">
         <Label label="Categoría Principal:" name="categoria_principal" class="lg:w-2xs" />
-        <select
-          name="categoria_principal"
-          v-model="form.categoria_principal"
-          class="border border-gray-300 rounded-md px-3 py-2 w-full"
-          required
-          @change="updateSubcategorias"
-        >
-          <option value="">Seleccione una categoría</option>
-          <option value="Renta Variable">Renta Variable</option>
-          <option value="Renta Fija">Renta Fija</option>
-          <option value="Inmuebles">Inmuebles</option>
-          <option value="Materias Primas">Materias Primas</option>
-        </select>
+        <CategoriasDropDown name="categoria_principal" v-model="form.categoria_principal" required class="basis-full" />
+        
       </div>
 
       <div class="lg:flex lg:flex-row gap-3">
@@ -84,6 +73,7 @@ import InputSelect from '@/components/forms/InputSelect.vue'
 import Button from '@/components/forms/InputButton.vue'
 import Label from "@/components/forms/EtiquetaLabel.vue";
 import InputText from '@/components/forms/InputText.vue'
+import CategoriasDropDown from '@/components/forms/CategoriaDropDown.vue'
 import { useRouter, useRoute } from 'vue-router';
 import { useTipoActivosStore } from '@/stores/tiposActivos';
 

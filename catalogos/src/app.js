@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -7,7 +8,7 @@ const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 
-const PORT = process.env.PORT || 3002;
+
 
 // Middleware
 app.use(
@@ -18,6 +19,8 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+console.log(path.join("../", "public"));
+app.use(express.static(path.join("../", "public")));
 
 const jwtSecret = process.env.JWT_SECREAT_KEY;
 const jwtOptions = {
@@ -107,8 +110,5 @@ app.use("*", (req, res) => {
 });
 */
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Catalogos API server running on http://0.0.0.0:${PORT}`);
-});
 
 module.exports = app;
