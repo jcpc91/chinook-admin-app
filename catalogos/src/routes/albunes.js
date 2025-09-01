@@ -3,10 +3,9 @@ const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../../../share/middelware/rolles.js");
 const AlbumService = require("../../../database/repository/service/AlbumService");
+const CatalogosRepositoryFactory = require("../../../database/repository/CatalogosRepositoryFactory.js");
 
-const AlbumRepository = require("../../../database/repository/sqliteRepository/AlbumRepository.js");
-
-const repository = new AlbumService(new AlbumRepository());
+const repository = new AlbumService(CatalogosRepositoryFactory.createAlbumRepository());
 
 //get albunes by artistid route get /albunes?artistid=1
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {

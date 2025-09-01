@@ -1,0 +1,359 @@
+# Staging Docker Compose Configuration
+# Full service containerization with PostgreSQL database
+# All services run in containers with internal Docker networking
+
+services:
+  # PostgreSQL Database Service
+  postgres:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.postgres
+    container_name: chinook-postgres-staging
+    environment:
+      - POSTGRES_DB=chinook
+      - POSTGRES_USER=${DB_USER:-chinook_user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-secure_staging_password}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+      - ./database/init-scripts:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - chinook-staging
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-chinook_user} -d chinook"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c max_connections=100
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+
+  # Database Migration Service
+  db-migrate:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.migrate
+    container_name: chinook-migrate-staging
+    environment:
+      - NODE_ENV=staging
+      - DB_HOST=postgres
+      - DB_USER=${DB_USER:-chinook_user}
+      - DB_PASSWORD=${DB_PASSWORD:-secure_staging_password}
+      - DB_PORT=5432
+      - DB_POOL_MIN=2
+      - DB_POOL_MAX=10
+      - DB_TIMEOUT=30000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - chinook-staging
+    restart: "no"
+
+  # Authentication Service
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: production
+    container_name: chinook-auth-staging
+    environment:
+      # CORS Configuration
+      - CORS_ORIGIN=http://web:5173,http://localhost:80
+      # JWT Configuration
+      - JWT_SECREAT_KEY=${JWT_SECREAT_KEY:-staging_jwt_secret_key_change_in_production}
+      # Service Configuration
+      - PORT=3000
+      - NODE_ENV=staging
+      # Database Configuration (PostgreSQL)
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_NAME=chinook_auth
+      - DB_USER=${DB_USER:-chinook_user}
+      - DB_PASSWORD=${DB_PASSWORD:-secure_staging_password}
+      - DB_PORT=5432
+      - DB_POOL_MIN=2
+      - DB_POOL_MAX=10
+      - DB_TIMEOUT=30000
+      # Service Communication
+      - APP_SERVICE_URL=http://app:3001
+      - CATALOGOS_SERVICE_URL=http://catalogos:3002
+      # Logging
+      - LOG_LEVEL=info
+      - ENABLE_REQUEST_LOGGING=true
+    ports:
+      - "3000:3000"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    networks:
+      - chinook-staging
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "docker.chinook.auth"
+        labels: "service,environment,container_name"
+        env: "NODE_ENV"
+    labels:
+      - "service=auth"
+      - "environment=staging"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Main Application Service
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: production
+    container_name: chinook-app-staging
+    environment:
+      # CORS Configuration
+      - CORS_ORIGIN=http://web:5173,http://localhost:80
+      # JWT Configuration
+      - JWT_SECREAT_KEY=${JWT_SECREAT_KEY:-staging_jwt_secret_key_change_in_production}
+      # Service Configuration
+      - PORT=3001
+      - NODE_ENV=staging
+      # Database Configuration (PostgreSQL)
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_NAME=chinook_app
+      - DB_USER=${DB_USER:-chinook_user}
+      - DB_PASSWORD=${DB_PASSWORD:-secure_staging_password}
+      - DB_PORT=5432
+      - DB_POOL_MIN=2
+      - DB_POOL_MAX=10
+      - DB_TIMEOUT=30000
+      # Service Communication
+      - AUTH_SERVICE_URL=http://auth:3000
+      - CATALOGOS_SERVICE_URL=http://catalogos:3002
+      # Logging
+      - LOG_LEVEL=info
+      - ENABLE_REQUEST_LOGGING=true
+    ports:
+      - "3001:3001"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+    networks:
+      - chinook-staging
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "docker.chinook.app"
+        labels: "service,environment,container_name"
+        env: "NODE_ENV"
+    labels:
+      - "service=app"
+      - "environment=staging"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Catalogos Service
+  catalogos:
+    build:
+      context: ./catalogos
+      dockerfile: Dockerfile
+      target: production
+    container_name: chinook-catalogos-staging
+    environment:
+      # CORS Configuration
+      - CORS_ORIGIN=http://web:5173,http://localhost:80
+      # JWT Configuration
+      - JWT_SECREAT_KEY=${JWT_SECREAT_KEY:-staging_jwt_secret_key_change_in_production}
+      # Service Configuration
+      - PORT=3002
+      - NODE_ENV=staging
+      # Database Configuration (PostgreSQL)
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_NAME=chinook_catalogos
+      - DB_USER=${DB_USER:-chinook_user}
+      - DB_PASSWORD=${DB_PASSWORD:-secure_staging_password}
+      - DB_PORT=5432
+      - DB_POOL_MIN=2
+      - DB_POOL_MAX=10
+      - DB_TIMEOUT=30000
+      # Service Communication
+      - AUTH_SERVICE_URL=http://auth:3000
+      - APP_SERVICE_URL=http://app:3001
+      # Logging
+      - LOG_LEVEL=info
+      - ENABLE_REQUEST_LOGGING=true
+    ports:
+      - "3002:3002"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+    networks:
+      - chinook-staging
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "docker.chinook.catalogos"
+        labels: "service,environment,container_name"
+        env: "NODE_ENV"
+    labels:
+      - "service=catalogos"
+      - "environment=staging"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Web Frontend Service
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: development
+      args:
+        # Build-time environment variables for Vite
+        - VITE_MODE=staging
+        - VITE_BASE_URL=http://app:3001
+        - VITE_URL_AUTH=http://auth:3000
+        - VITE_CATALOGOS_URL=http://catalogos:3002
+        - VITE_PORT=5173
+        - VITE_PREVIEW_PORT=4173
+        - VITE_USE_PROXY=false
+        - VITE_CORS_ORIGIN=http://web:5173
+        - VITE_API_TIMEOUT=15000
+        - VITE_AUTH_TIMEOUT=8000
+        - VITE_ENABLE_DEBUG=false
+        - VITE_LOG_LEVEL=warn
+        - VITE_SECURE_COOKIES=false
+        - VITE_ENABLE_HTTPS=false
+    container_name: chinook-web-staging
+    environment:
+      # Runtime environment variables
+      - VITE_MODE=staging
+      - VITE_BASE_URL=http://app:3001
+      - VITE_URL_AUTH=http://auth:3000
+      - VITE_CATALOGOS_URL=http://catalogos:3002
+      - VITE_PORT=5173
+      - VITE_PREVIEW_PORT=4173
+      - VITE_USE_PROXY=false
+      - VITE_CORS_ORIGIN=http://web:5173
+      - VITE_API_TIMEOUT=15000
+      - VITE_AUTH_TIMEOUT=8000
+      - VITE_ENABLE_DEBUG=false
+      - VITE_LOG_LEVEL=warn
+      - VITE_SECURE_COOKIES=false
+      - VITE_ENABLE_HTTPS=false
+    ports:
+      - "80:5173"
+    depends_on:
+      auth:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+      catalogos:
+        condition: service_healthy
+    networks:
+      - chinook-staging
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "docker.chinook.web"
+        labels: "service,environment,container_name"
+        env: "VITE_MODE"
+    labels:
+      - "service=web"
+      - "environment=staging"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  # ElasticMQ Service (for message queuing if needed)
+  elasticmq:
+    image: softwaremill/elasticmq:1.7.0
+    container_name: chinook-elasticmq-staging
+    ports:
+      - "9324:9324"
+    networks:
+      - chinook-staging
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9324/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+# Network Configuration
+networks:
+  chinook-staging:
+    driver: bridge
+    name: chinook-staging-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Volume Configuration
+volumes:
+  postgres_staging_data:
+    driver: local
+    name: chinook_postgres_staging_data
+
+# Environment Variables Documentation
+# Create a .env.staging file with the following variables:
+# JWT_SECREAT_KEY=your_secure_staging_jwt_secret_key
+# DB_USER=chinook_user
+# DB_PASSWORD=your_secure_staging_db_password
+#
+# Usage:
+# docker-compose -f docker-compose.staging.yml --env-file .env.staging up -d
+#
+# Service URLs (internal Docker network):
+# - Web Frontend: http://web:5173
+# - Auth Service: http://auth:3000
+# - App Service: http://app:3001
+# - Catalogos Service: http://catalogos:3002
+# - PostgreSQL: postgres:5432
+# - ElasticMQ: http://elasticmq:9324
+#
+# External Access (from host):
+# - Web Frontend: http://localhost:80
+# - Auth Service: http://localhost:3000
+# - App Service: http://localhost:3001
+# - Catalogos Service: http://localhost:3002
+# - PostgreSQL: localhost:5432
+# - ElasticMQ: http://localhost:9324

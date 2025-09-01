@@ -1,0 +1,25 @@
+FROM node:24-alpine
+
+# Install dockerize for waiting on PostgreSQL
+RUN apk add --no-cache wget \
+    && wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
+    && rm dockerize-alpine-linux-amd64-v0.6.1.tar.gz
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy database configuration and migrations
+COPY . .
+
+# Create migration script
+COPY migrate.sh /app/migrate.sh
+RUN chmod +x /app/migrate.sh
+
+# Default command
+CMD ["/app/migrate.sh"]

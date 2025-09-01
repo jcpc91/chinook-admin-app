@@ -1,0 +1,295 @@
+# PostgreSQL Exporter Custom Queries for Chinook Application
+# Monitors database performance, connections, and application-specific metrics
+
+# Database size metrics
+pg_database_size:
+  query: "SELECT pg_database.datname, pg_database_size(pg_database.datname) as size FROM pg_database"
+  master: true
+  cache_seconds: 30
+  metrics:
+    - datname:
+        usage: "LABEL"
+        description: "Name of the database"
+    - size:
+        usage: "GAUGE"
+        description: "Disk space used by the database in bytes"
+
+# Table size metrics for Chinook tables
+pg_table_size:
+  query: |
+    SELECT 
+      schemaname,
+      tablename,
+      pg_total_relation_size(schemaname||'.'||tablename) as size,
+      pg_relation_size(schemaname||'.'||tablename) as table_size,
+      pg_total_relation_size(schemaname||'.'||tablename) - pg_relation_size(schemaname||'.'||tablename) as index_size
+    FROM pg_tables 
+    WHERE schemaname NOT IN ('information_schema', 'pg_catalog')
+  master: true
+  cache_seconds: 60
+  metrics:
+    - schemaname:
+        usage: "LABEL"
+        description: "Schema name"
+    - tablename:
+        usage: "LABEL"
+        description: "Table name"
+    - size:
+        usage: "GAUGE"
+        description: "Total size of table including indexes in bytes"
+    - table_size:
+        usage: "GAUGE"
+        description: "Size of table data in bytes"
+    - index_size:
+        usage: "GAUGE"
+        description: "Size of table indexes in bytes"
+
+# Connection metrics
+pg_stat_database:
+  query: |
+    SELECT 
+      datname,
+      numbackends,
+      xact_commit,
+      xact_rollback,
+      blks_read,
+      blks_hit,
+      tup_returned,
+      tup_fetched,
+      tup_inserted,
+      tup_updated,
+      tup_deleted,
+      conflicts,
+      temp_files,
+      temp_bytes,
+      deadlocks
+    FROM pg_stat_database 
+    WHERE datname NOT IN ('template0', 'template1', 'postgres')
+  master: true
+  cache_seconds: 30
+  metrics:
+    - datname:
+        usage: "LABEL"
+        description: "Database name"
+    - numbackends:
+        usage: "GAUGE"
+        description: "Number of backends currently connected to this database"
+    - xact_commit:
+        usage: "COUNTER"
+        description: "Number of transactions in this database that have been committed"
+    - xact_rollback:
+        usage: "COUNTER"
+        description: "Number of transactions in this database that have been rolled back"
+    - blks_read:
+        usage: "COUNTER"
+        description: "Number of disk blocks read in this database"
+    - blks_hit:
+        usage: "COUNTER"
+        description: "Number of times disk blocks were found already in the buffer cache"
+    - tup_returned:
+        usage: "COUNTER"
+        description: "Number of rows returned by queries in this database"
+    - tup_fetched:
+        usage: "COUNTER"
+        description: "Number of rows fetched by queries in this database"
+    - tup_inserted:
+        usage: "COUNTER"
+        description: "Number of rows inserted by queries in this database"
+    - tup_updated:
+        usage: "COUNTER"
+        description: "Number of rows updated by queries in this database"
+    - tup_deleted:
+        usage: "COUNTER"
+        description: "Number of rows deleted by queries in this database"
+    - conflicts:
+        usage: "COUNTER"
+        description: "Number of queries canceled due to conflicts with recovery"
+    - temp_files:
+        usage: "COUNTER"
+        description: "Number of temporary files created by queries"
+    - temp_bytes:
+        usage: "COUNTER"
+        description: "Total amount of data written to temporary files by queries"
+    - deadlocks:
+        usage: "COUNTER"
+        description: "Number of deadlocks detected in this database"
+
+# Active connections and locks
+pg_stat_activity:
+  query: |
+    SELECT 
+      datname,
+      state,
+      COUNT(*) as count,
+      MAX(EXTRACT(EPOCH FROM (now() - query_start))) as max_duration,
+      AVG(EXTRACT(EPOCH FROM (now() - query_start))) as avg_duration
+    FROM pg_stat_activity 
+    WHERE datname IS NOT NULL
+    GROUP BY datname, state
+  master: true
+  cache_seconds: 15
+  metrics:
+    - datname:
+        usage: "LABEL"
+        description: "Database name"
+    - state:
+        usage: "LABEL"
+        description: "Connection state"
+    - count:
+        usage: "GAUGE"
+        description: "Number of connections in this state"
+    - max_duration:
+        usage: "GAUGE"
+        description: "Maximum query duration in seconds"
+    - avg_duration:
+        usage: "GAUGE"
+        description: "Average query duration in seconds"
+
+# Slow queries (queries running longer than 1 second)
+pg_slow_queries:
+  query: |
+    SELECT 
+      datname,
+      usename,
+      COUNT(*) as count,
+      MAX(EXTRACT(EPOCH FROM (now() - query_start))) as max_duration
+    FROM pg_stat_activity 
+    WHERE state = 'active' 
+      AND query_start < now() - interval '1 second'
+      AND datname IS NOT NULL
+    GROUP BY datname, usename
+  master: true
+  cache_seconds: 15
+  metrics:
+    - datname:
+        usage: "LABEL"
+        description: "Database name"
+    - usename:
+        usage: "LABEL"
+        description: "Username"
+    - count:
+        usage: "GAUGE"
+        description: "Number of slow queries"
+    - max_duration:
+        usage: "GAUGE"
+        description: "Maximum slow query duration in seconds"
+
+# Index usage statistics
+pg_stat_user_indexes:
+  query: |
+    SELECT 
+      schemaname,
+      tablename,
+      indexrelname,
+      idx_scan,
+      idx_tup_read,
+      idx_tup_fetch
+    FROM pg_stat_user_indexes
+  master: true
+  cache_seconds: 60
+  metrics:
+    - schemaname:
+        usage: "LABEL"
+        description: "Schema name"
+    - tablename:
+        usage: "LABEL"
+        description: "Table name"
+    - indexrelname:
+        usage: "LABEL"
+        description: "Index name"
+    - idx_scan:
+        usage: "COUNTER"
+        description: "Number of index scans initiated on this index"
+    - idx_tup_read:
+        usage: "COUNTER"
+        description: "Number of index entries returned by scans on this index"
+    - idx_tup_fetch:
+        usage: "COUNTER"
+        description: "Number of live table rows fetched by simple index scans using this index"
+
+# Replication lag (if applicable)
+pg_replication_lag:
+  query: |
+    SELECT 
+      client_addr,
+      application_name,
+      state,
+      EXTRACT(EPOCH FROM (now() - backend_start)) as backend_age,
+      CASE 
+        WHEN pg_is_in_recovery() THEN NULL
+        ELSE EXTRACT(EPOCH FROM (now() - pg_stat_get_wal_senders().flush_lsn::text::pg_lsn))
+      END as lag_seconds
+    FROM pg_stat_replication
+  master: true
+  cache_seconds: 30
+  metrics:
+    - client_addr:
+        usage: "LABEL"
+        description: "IP address of the client connected to this WAL sender"
+    - application_name:
+        usage: "LABEL"
+        description: "Name of the application that is connected to this WAL sender"
+    - state:
+        usage: "LABEL"
+        description: "Current WAL sender state"
+    - backend_age:
+        usage: "GAUGE"
+        description: "Time since backend start in seconds"
+    - lag_seconds:
+        usage: "GAUGE"
+        description: "Replication lag in seconds"
+
+# Chinook-specific application metrics
+chinook_user_activity:
+  query: |
+    SELECT 
+      'auth' as service,
+      COUNT(*) as total_users,
+      COUNT(CASE WHEN created_at > now() - interval '24 hours' THEN 1 END) as new_users_24h,
+      COUNT(CASE WHEN last_login > now() - interval '24 hours' THEN 1 END) as active_users_24h
+    FROM chinook_auth.users
+    UNION ALL
+    SELECT 
+      'app' as service,
+      COUNT(*) as total_records,
+      0 as new_records_24h,
+      0 as active_records_24h
+    FROM chinook_app.artists
+  master: true
+  cache_seconds: 300
+  metrics:
+    - service:
+        usage: "LABEL"
+        description: "Service name"
+    - total_users:
+        usage: "GAUGE"
+        description: "Total number of users/records"
+    - new_users_24h:
+        usage: "GAUGE"
+        description: "New users/records in last 24 hours"
+    - active_users_24h:
+        usage: "GAUGE"
+        description: "Active users in last 24 hours"
+
+# Database locks
+pg_locks:
+  query: |
+    SELECT 
+      mode,
+      locktype,
+      COUNT(*) as count
+    FROM pg_locks 
+    WHERE NOT granted
+    GROUP BY mode, locktype
+  master: true
+  cache_seconds: 15
+  metrics:
+    - mode:
+        usage: "LABEL"
+        description: "Lock mode"
+    - locktype:
+        usage: "LABEL"
+        description: "Lock type"
+    - count:
+        usage: "GAUGE"
+        description: "Number of locks"

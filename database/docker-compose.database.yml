@@ -1,0 +1,43 @@
+# Database services for Docker Compose
+# This file can be included in the main docker-compose files
+
+services:
+  postgres:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.postgres
+    environment:
+      - POSTGRES_DB=chinook
+      - POSTGRES_USER=${DB_USER:-chinook_user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-secure_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-chinook_user} -d chinook"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  db-migrate:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.migrate
+    environment:
+      - NODE_ENV=${NODE_ENV:-staging}
+      - DB_HOST=postgres
+      - DB_USER=${DB_USER:-chinook_user}
+      - DB_PASSWORD=${DB_PASSWORD:-secure_password}
+      - DB_PORT=5432
+      - DB_POOL_MIN=${DB_POOL_MIN:-2}
+      - DB_POOL_MAX=${DB_POOL_MAX:-10}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  postgres_data:

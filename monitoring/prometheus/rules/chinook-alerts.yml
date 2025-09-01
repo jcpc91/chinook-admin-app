@@ -1,0 +1,296 @@
+# Prometheus Alerting Rules for Chinook Application
+# Defines alerts for application health, performance, and infrastructure monitoring
+
+groups:
+  # Application Service Health Alerts
+  - name: chinook.application.health
+    interval: 30s
+    rules:
+      # Service down alerts
+      - alert: ServiceDown
+        expr: up{job=~"chinook-(auth|app|catalogos|web)"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "Chinook service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on instance {{ $labels.instance }} has been down for more than 1 minute."
+          runbook_url: "https://docs.chinook-app.local/runbooks/service-down"
+
+      # Health check failures
+      - alert: HealthCheckFailing
+        expr: probe_success{job=~"chinook-(auth|app|catalogos|web)"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "Health check failing for {{ $labels.job }}"
+          description: "Health check for service {{ $labels.job }} on {{ $labels.instance }} has been failing for more than 2 minutes."
+
+      # High response time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"chinook-(auth|app|catalogos)"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "High response time for {{ $labels.job }}"
+          description: "95th percentile response time for {{ $labels.job }} is {{ $value }}s, which is above the 2s threshold."
+          value: "{{ $value }}"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{job=~"chinook-(auth|app|catalogos)",status=~"5.."}[5m]) / rate(http_requests_total{job=~"chinook-(auth|app|catalogos)"}[5m]) > 0.05
+        for: 3m
+        labels:
+          severity: critical
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "High error rate for {{ $labels.job }}"
+          description: "Error rate for {{ $labels.job }} is {{ $value | humanizePercentage }}, which is above the 5% threshold."
+          value: "{{ $value }}"
+
+  # Database Alerts
+  - name: chinook.database
+    interval: 30s
+    rules:
+      # PostgreSQL down
+      - alert: PostgreSQLDown
+        expr: up{job="postgres-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: postgres
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "PostgreSQL database has been down for more than 1 minute."
+          runbook_url: "https://docs.chinook-app.local/runbooks/postgres-down"
+
+      # Too many connections
+      - alert: PostgreSQLTooManyConnections
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "PostgreSQL has too many connections"
+          description: "PostgreSQL database {{ $labels.datname }} is using {{ $value | humanizePercentage }} of available connections."
+          value: "{{ $value }}"
+
+      # High connection usage
+      - alert: PostgreSQLHighConnectionUsage
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.9
+        for: 2m
+        labels:
+          severity: critical
+          service: postgres
+        annotations:
+          summary: "PostgreSQL connection usage is critically high"
+          description: "PostgreSQL database {{ $labels.datname }} is using {{ $value | humanizePercentage }} of available connections."
+          value: "{{ $value }}"
+
+      # Slow queries
+      - alert: PostgreSQLSlowQueries
+        expr: pg_slow_queries_count > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "PostgreSQL has slow queries"
+          description: "Database {{ $labels.datname }} has {{ $value }} slow queries running for more than 1 second."
+          value: "{{ $value }}"
+
+      # Deadlocks
+      - alert: PostgreSQLDeadlocks
+        expr: increase(pg_stat_database_deadlocks[1h]) > 5
+        for: 0m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "PostgreSQL deadlocks detected"
+          description: "Database {{ $labels.datname }} has had {{ $value }} deadlocks in the last hour."
+          value: "{{ $value }}"
+
+      # Database size growth
+      - alert: PostgreSQLDatabaseSizeGrowth
+        expr: increase(pg_database_size_bytes[24h]) > 1073741824  # 1GB
+        for: 0m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "PostgreSQL database size growing rapidly"
+          description: "Database {{ $labels.datname }} has grown by {{ $value | humanizeBytes }} in the last 24 hours."
+          value: "{{ $value }}"
+
+  # Infrastructure Alerts
+  - name: chinook.infrastructure
+    interval: 30s
+    rules:
+      # Node down
+      - alert: NodeDown
+        expr: up{job="node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node {{ $labels.instance }} is down"
+          description: "Node {{ $labels.instance }} has been down for more than 1 minute."
+
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage on {{ $labels.instance }} is {{ $value }}% for more than 5 minutes."
+          value: "{{ $value }}"
+
+      # Critical CPU usage
+      - alert: CriticalCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical CPU usage on {{ $labels.instance }}"
+          description: "CPU usage on {{ $labels.instance }} is {{ $value }}% for more than 2 minutes."
+          value: "{{ $value }}"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage on {{ $labels.instance }} is {{ $value }}% for more than 5 minutes."
+          value: "{{ $value }}"
+
+      # Critical memory usage
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical memory usage on {{ $labels.instance }}"
+          description: "Memory usage on {{ $labels.instance }} is {{ $value }}% for more than 2 minutes."
+          value: "{{ $value }}"
+
+      # Low disk space
+      - alert: DiskSpaceLow
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk usage on {{ $labels.instance }} mount {{ $labels.mountpoint }} is {{ $value }}%."
+          value: "{{ $value }}"
+
+      # Critical disk space
+      - alert: CriticalDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical disk space on {{ $labels.instance }}"
+          description: "Disk usage on {{ $labels.instance }} mount {{ $labels.mountpoint }} is {{ $value }}%."
+          value: "{{ $value }}"
+
+  # Container Alerts
+  - name: chinook.containers
+    interval: 30s
+    rules:
+      # Container down
+      - alert: ContainerDown
+        expr: absent(container_last_seen{name=~"chinook-.*"})
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.name }} is down"
+          description: "Container {{ $labels.name }} has been down for more than 1 minute."
+
+      # High container CPU usage
+      - alert: ContainerHighCPU
+        expr: rate(container_cpu_usage_seconds_total{name=~"chinook-.*"}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage in container {{ $labels.name }}"
+          description: "Container {{ $labels.name }} CPU usage is {{ $value }}% for more than 5 minutes."
+          value: "{{ $value }}"
+
+      # High container memory usage
+      - alert: ContainerHighMemory
+        expr: (container_memory_usage_bytes{name=~"chinook-.*"} / container_spec_memory_limit_bytes{name=~"chinook-.*"}) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage in container {{ $labels.name }}"
+          description: "Container {{ $labels.name }} memory usage is {{ $value }}% of limit for more than 5 minutes."
+          value: "{{ $value }}"
+
+      # Container restart
+      - alert: ContainerRestarted
+        expr: increase(container_start_time_seconds{name=~"chinook-.*"}[10m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ $labels.name }} restarted"
+          description: "Container {{ $labels.name }} has restarted {{ $value }} times in the last 10 minutes."
+          value: "{{ $value }}"
+
+  # Redis Alerts (if using Redis)
+  - name: chinook.redis
+    interval: 30s
+    rules:
+      # Redis down
+      - alert: RedisDown
+        expr: up{job="redis-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis has been down for more than 1 minute."
+
+      # High memory usage
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis memory usage is high"
+          description: "Redis memory usage is {{ $value | humanizePercentage }} of maximum."
+          value: "{{ $value }}"
+
+      # Too many connections
+      - alert: RedisTooManyConnections
+        expr: redis_connected_clients > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis has too many connections"
+          description: "Redis has {{ $value }} connected clients."
+          value: "{{ $value }}"

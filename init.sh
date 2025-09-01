@@ -2,6 +2,7 @@ cd database
 npm install -loglevel verbose
 npm run migrate-app -loglevel verbose
 npm run migrate-auth -loglevel verbose
+npm run migrate-cat -loglevel verbose
 echo "Database initialized"
 
 cd ..

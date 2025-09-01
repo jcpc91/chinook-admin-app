@@ -4,9 +4,14 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest --testTimeout=10000",
+    "test:watch": "jest --watch",
+    "test:container": "jest --config=jest.config.container.js",
+    "test:container:watch": "jest --config=jest.config.container.js --watch",
     "jsonserver": "npx json-server ../.db/data.json --port 3000",
-    "devexpress": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "devexpress": "node src/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,13 +21,16 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "pg": "^8.13.1",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "jest": "^30.0.2",
     "json-server": "^1.0.0-beta.3",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.0.0"
   }
 }

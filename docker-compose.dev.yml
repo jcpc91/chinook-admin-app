@@ -1,0 +1,81 @@
+# Development Docker Compose Configuration
+# Only web service is containerized, backend services run locally
+# This allows for hybrid development with containerized frontend and local backend services
+
+services:
+  elasticmq:
+    image: softwaremill/elasticmq:1.7.0
+    ports:
+      - "9324:9324"
+    networks:
+      - chinook-dev
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: development
+    container_name: chinook-web-dev
+    ports:
+      - "5173:5173"
+    environment:
+      # Development environment variables
+      - VITE_MODE=desarrollo
+      - VITE_BASE_URL=http://host.docker.internal:3001
+      - VITE_URL_AUTH=http://host.docker.internal:3000
+      - VITE_CATALOGOS_URL=http://host.docker.internal:3002
+      - VITE_PORT=5173
+      - VITE_PREVIEW_PORT=4173
+      - VITE_USE_PROXY=false
+      - VITE_CORS_ORIGIN=http://localhost:5173,http://host.docker.internal:5173,http://127.0.0.1:5173
+      - VITE_API_TIMEOUT=10000
+      - VITE_AUTH_TIMEOUT=5000
+      - VITE_ENABLE_DEBUG=true
+      - VITE_LOG_LEVEL=info
+      - VITE_SECURE_COOKIES=false
+      - VITE_ENABLE_HTTPS=false
+    volumes:
+      # Mount source code for hot reload
+      - ./web/src:/app/src:cached
+      - ./web/public:/app/public:cached
+      - ./web/index.html:/app/index.html:cached
+      - ./web/vite.config.js:/app/vite.config.js:cached
+      - ./web/tailwind.config.js:/app/tailwind.config.js:cached
+      - ./web/jsconfig.json:/app/jsconfig.json:cached
+      - ./web/.env.development:/app/.env.development:cached
+      # Mount package.json for dependency changes (requires container rebuild)
+      - ./web/package.json:/app/package.json:ro
+      - ./web/package-lock.json:/app/package-lock.json:ro
+      # Exclude node_modules to avoid conflicts
+      - /app/node_modules
+    extra_hosts:
+      # Enable communication with local backend services
+      - "host.docker.internal:host-gateway"
+    networks:
+      - chinook-dev
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service,environment"
+    labels:
+      - "service=web"
+      - "environment=development"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  chinook-dev:
+    driver: bridge
+    name: chinook-dev-network
+
+# Note: Backend services (auth, app, catalogos) run locally outside of Docker
+# Use the provided scripts to start them:
+# 1. Run ./init.sh to initialize all services and databases
+# 2. Start backend services locally with: cd auth && npm run dev & cd app && npm run dev &
+# 3. Start containerized web service with: docker-compose -f docker-compose.dev.yml up

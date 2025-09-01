@@ -1,0 +1,132 @@
+# Prometheus Configuration for Production Monitoring
+# Monitors all Chinook application services and infrastructure
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'chinook-prod'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - "rules/*.yml"
+
+# Scrape configuration
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Node Exporter (if deployed)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # PostgreSQL Exporter
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Redis Exporter
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Nginx Exporter
+  - job_name: 'nginx-exporter'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Application Services Health Checks
+  - job_name: 'chinook-auth'
+    static_configs:
+      - targets: ['auth:3000']
+    scrape_interval: 30s
+    metrics_path: /health
+    scheme: http
+    params:
+      format: ['prometheus']
+
+  - job_name: 'chinook-app'
+    static_configs:
+      - targets: ['app:3001']
+    scrape_interval: 30s
+    metrics_path: /health
+    scheme: http
+    params:
+      format: ['prometheus']
+
+  - job_name: 'chinook-catalogos'
+    static_configs:
+      - targets: ['catalogos:3002']
+    scrape_interval: 30s
+    metrics_path: /health
+    scheme: http
+    params:
+      format: ['prometheus']
+
+  # Web Frontend Health Check
+  - job_name: 'chinook-web'
+    static_configs:
+      - targets: ['web:80']
+    scrape_interval: 30s
+    metrics_path: /health
+    scheme: http
+
+  # Load Balancer Health Check
+  - job_name: 'nginx-lb'
+    static_configs:
+      - targets: ['nginx-lb:8080']
+    scrape_interval: 30s
+    metrics_path: /nginx-status
+    scheme: http
+
+  # Docker Container Metrics (if cAdvisor is deployed)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Custom Application Metrics (if implemented)
+  - job_name: 'chinook-metrics'
+    static_configs:
+      - targets: 
+        - 'auth:3000'
+        - 'app:3001'
+        - 'catalogos:3002'
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scheme: http
+
+# Remote write configuration (for external monitoring services)
+# remote_write:
+#   - url: "https://your-monitoring-service.com/api/v1/write"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 10GB

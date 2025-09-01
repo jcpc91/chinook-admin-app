@@ -1,0 +1,33 @@
+version: '3.8'
+
+# Default configuration - Development mode (web service only containerized)
+# Backend services should run locally for easier debugging
+# Use docker-compose.dev.yml for explicit development configuration
+# Use docker-compose.staging.yml for full containerization with PostgreSQL
+# Use docker-compose.prod.yml for production deployment
+
+services:
+  # Web frontend service (Vue.js) - containerized for consistency
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      - VITE_MODE=desarrollo
+      - VITE_BASE_URL=http://host.docker.internal:3001
+      - VITE_URL_AUTH=http://host.docker.internal:3000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - chinook-dev-network
+    restart: "no"  # No restart for development debugging
+
+networks:
+  chinook-dev-network:
+    driver: bridge

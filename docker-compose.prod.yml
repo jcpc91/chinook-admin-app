@@ -1,0 +1,729 @@
+# Production Docker Compose Configuration
+# Optimized for production deployment with security, performance, and reliability features
+# Full service containerization with PostgreSQL database and backup strategies
+
+services:
+  # PostgreSQL Database Service - Production Configuration
+  postgres:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.postgres
+    container_name: chinook-postgres-prod
+    environment:
+      - POSTGRES_DB=chinook
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+      # Production PostgreSQL optimizations
+      - POSTGRES_SHARED_PRELOAD_LIBRARIES=pg_stat_statements
+      - POSTGRES_MAX_CONNECTIONS=200
+      - POSTGRES_SHARED_BUFFERS=512MB
+      - POSTGRES_EFFECTIVE_CACHE_SIZE=2GB
+      - POSTGRES_MAINTENANCE_WORK_MEM=128MB
+      - POSTGRES_WAL_BUFFERS=32MB
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - postgres_prod_backups:/var/lib/postgresql/backups
+      - ./database/init-scripts:/docker-entrypoint-initdb.d:ro
+      # Production backup scripts
+      - ./database/backup-scripts:/backup-scripts:ro
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d chinook"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=512MB
+      -c effective_cache_size=2GB
+      -c maintenance_work_mem=128MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=32MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+      -c max_worker_processes=8
+      -c max_parallel_workers_per_gather=4
+      -c max_parallel_workers=8
+      -c max_parallel_maintenance_workers=4
+      -c log_min_duration_statement=1000
+      -c log_checkpoints=on
+      -c log_connections=on
+      -c log_disconnections=on
+      -c log_lock_waits=on
+      -c log_temp_files=0
+      -c track_activities=on
+      -c track_counts=on
+      -c track_io_timing=on
+      -c track_functions=pl
+      -c checkpoint_timeout=15min
+      -c archive_mode=on
+      -c archive_command='test ! -f /var/lib/postgresql/backups/archive/%f && cp %p /var/lib/postgresql/backups/archive/%f'
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+
+  # Database Backup Service
+  postgres-backup:
+    image: postgres:16-alpine
+    container_name: chinook-postgres-backup-prod
+    environment:
+      - PGUSER=${DB_USER}
+      - PGPASSWORD=${DB_PASSWORD}
+      - PGHOST=postgres
+      - PGDATABASE=chinook
+      - BACKUP_RETENTION_DAYS=30
+      - BACKUP_SCHEDULE=0 2 * * *
+    volumes:
+      - postgres_prod_backups:/backups
+      - ./database/backup-scripts:/scripts:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    command: >
+      sh -c "
+      echo '${BACKUP_SCHEDULE} /scripts/backup.sh' > /var/spool/cron/crontabs/root &&
+      crond -f -l 2
+      "
+    security_opt:
+      - no-new-privileges:true
+
+  # Database Migration Service
+  db-migrate:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.migrate
+    container_name: chinook-migrate-prod
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+      - DB_POOL_MIN=2
+      - DB_POOL_MAX=20
+      - DB_TIMEOUT=60000
+      - DB_ACQUIRE_TIMEOUT=60000
+      - DB_IDLE_TIMEOUT=300000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - chinook-prod
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
+  # Authentication Service - Production Configuration
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: production
+    container_name: chinook-auth-prod
+    environment:
+      # CORS Configuration
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      # JWT Configuration
+      - JWT_SECREAT_KEY=${JWT_SECREAT_KEY}
+      # Service Configuration
+      - PORT=3000
+      - NODE_ENV=production
+      # Database Configuration (PostgreSQL)
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_NAME=chinook_auth
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+      - DB_POOL_MIN=5
+      - DB_POOL_MAX=50
+      - DB_TIMEOUT=60000
+      - DB_ACQUIRE_TIMEOUT=60000
+      - DB_IDLE_TIMEOUT=300000
+      # Service Communication
+      - APP_SERVICE_URL=http://app:3001
+      - CATALOGOS_SERVICE_URL=http://catalogos:3002
+      # Logging
+      - LOG_LEVEL=warn
+      - LOG_FORMAT=json
+      - ENABLE_REQUEST_LOGGING=false
+      # Security
+      - TRUST_PROXY=true
+      - SECURE_COOKIES=true
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+    expose:
+      - "3000"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 0s
+        failure_action: pause
+        order: stop-first
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache
+      - /var/log
+
+  # Main Application Service - Production Configuration
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: production
+    container_name: chinook-app-prod
+    environment:
+      # CORS Configuration
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      # JWT Configuration
+      - JWT_SECREAT_KEY=${JWT_SECREAT_KEY}
+      # Service Configuration
+      - PORT=3001
+      - NODE_ENV=production
+      # Database Configuration (PostgreSQL)
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_NAME=chinook_app
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+      - DB_POOL_MIN=5
+      - DB_POOL_MAX=50
+      - DB_TIMEOUT=60000
+      - DB_ACQUIRE_TIMEOUT=60000
+      - DB_IDLE_TIMEOUT=300000
+      # Service Communication
+      - AUTH_SERVICE_URL=http://auth:3000
+      - CATALOGOS_SERVICE_URL=http://catalogos:3002
+      # Logging
+      - LOG_LEVEL=warn
+      - LOG_FORMAT=json
+      - ENABLE_REQUEST_LOGGING=false
+      # Security
+      - TRUST_PROXY=true
+      - SECURE_COOKIES=true
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=1000
+    expose:
+      - "3001"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 0s
+        failure_action: pause
+        order: stop-first
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache
+      - /var/log
+
+  # Catalogos Service - Production Configuration
+  catalogos:
+    build:
+      context: ./catalogos
+      dockerfile: Dockerfile
+      target: production
+    container_name: chinook-catalogos-prod
+    environment:
+      # CORS Configuration
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      # JWT Configuration
+      - JWT_SECREAT_KEY=${JWT_SECREAT_KEY}
+      # Service Configuration
+      - PORT=3002
+      - NODE_ENV=production
+      # Database Configuration (PostgreSQL)
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_NAME=chinook_catalogos
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+      - DB_POOL_MIN=5
+      - DB_POOL_MAX=50
+      - DB_TIMEOUT=60000
+      - DB_ACQUIRE_TIMEOUT=60000
+      - DB_IDLE_TIMEOUT=300000
+      # Service Communication
+      - AUTH_SERVICE_URL=http://auth:3000
+      - APP_SERVICE_URL=http://app:3001
+      # Logging
+      - LOG_LEVEL=warn
+      - LOG_FORMAT=json
+      - ENABLE_REQUEST_LOGGING=false
+      # Security
+      - TRUST_PROXY=true
+      - SECURE_COOKIES=true
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=500
+    expose:
+      - "3002"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 0s
+        failure_action: pause
+        order: stop-first
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache
+      - /var/log
+
+  # Web Frontend Service - Production Configuration
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: production
+      args:
+        # Build-time environment variables for Vite
+        - VITE_MODE=production
+        - VITE_BASE_URL=http://app:3001
+        - VITE_URL_AUTH=http://auth:3000
+        - VITE_CATALOGOS_URL=http://catalogos:3002
+        - VITE_PORT=80
+        - VITE_PREVIEW_PORT=80
+        - VITE_USE_PROXY=false
+        - VITE_CORS_ORIGIN=${CORS_ORIGIN}
+        - VITE_API_TIMEOUT=30000
+        - VITE_AUTH_TIMEOUT=15000
+        - VITE_ENABLE_DEBUG=false
+        - VITE_LOG_LEVEL=error
+        - VITE_SECURE_COOKIES=true
+        - VITE_ENABLE_HTTPS=true
+        - VITE_CSP_ENABLED=true
+        - VITE_HSTS_ENABLED=true
+    container_name: chinook-web-prod
+    environment:
+      # Runtime environment variables
+      - VITE_MODE=production
+      - VITE_BASE_URL=http://app:3001
+      - VITE_URL_AUTH=http://auth:3000
+      - VITE_CATALOGOS_URL=http://catalogos:3002
+      - VITE_PORT=80
+      - VITE_PREVIEW_PORT=80
+      - VITE_USE_PROXY=false
+      - VITE_CORS_ORIGIN=${CORS_ORIGIN}
+      - VITE_API_TIMEOUT=30000
+      - VITE_AUTH_TIMEOUT=15000
+      - VITE_ENABLE_DEBUG=false
+      - VITE_LOG_LEVEL=error
+      - VITE_SECURE_COOKIES=true
+      - VITE_ENABLE_HTTPS=true
+      - VITE_CSP_ENABLED=true
+      - VITE_HSTS_ENABLED=true
+      # Nginx Configuration
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=1024
+      - NGINX_KEEPALIVE_TIMEOUT=65
+      - NGINX_CLIENT_MAX_BODY_SIZE=10m
+      - NGINX_GZIP_ENABLED=true
+      - NGINX_BROTLI_ENABLED=true
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      auth:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+      catalogos:
+        condition: service_healthy
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 0s
+        failure_action: pause
+        order: stop-first
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+
+  # Load Balancer (Nginx) - Production Configuration
+  nginx-lb:
+    image: nginx:1.25-alpine
+    container_name: chinook-nginx-lb-prod
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+      - nginx_logs:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+  # Redis Cache Service - Production Configuration
+  redis:
+    image: redis:7-alpine
+    container_name: chinook-redis-prod
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --tcp-keepalive 60
+      --timeout 300
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+  # Monitoring Service (Prometheus) - Production Configuration
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: chinook-prometheus-prod
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - chinook-prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+# Network Configuration - Production Optimized
+networks:
+  chinook-prod:
+    driver: bridge
+    name: chinook-prod-network
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/16
+          gateway: 172.30.0.1
+    driver_opts:
+      com.docker.network.bridge.name: chinook-prod-br
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      com.docker.network.driver.mtu: "1500"
+
+# Volume Configuration - Production with Backup Support
+volumes:
+  # PostgreSQL Data and Backups
+  postgres_prod_data:
+    driver: local
+    name: chinook_postgres_prod_data
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/docker/volumes/chinook_postgres_prod_data/_data
+
+  postgres_prod_backups:
+    driver: local
+    name: chinook_postgres_prod_backups
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/docker/volumes/chinook_postgres_prod_backups/_data
+
+  # Redis Data
+  redis_prod_data:
+    driver: local
+    name: chinook_redis_prod_data
+
+  # Nginx Cache and Logs
+  nginx_cache:
+    driver: local
+    name: chinook_nginx_cache
+
+  nginx_logs:
+    driver: local
+    name: chinook_nginx_logs
+
+  # Monitoring Data
+  prometheus_data:
+    driver: local
+    name: chinook_prometheus_data
+
+# Production Environment Variables Documentation
+# Create a .env.production file with the following variables:
+#
+# Required Variables:
+# JWT_SECREAT_KEY=your_production_jwt_secret_key_minimum_32_characters
+# DB_USER=chinook_user
+# DB_PASSWORD=your_secure_production_db_password_minimum_16_characters
+# CORS_ORIGIN=https://your-production-domain.com,https://www.your-production-domain.com
+#
+# Optional Variables (with defaults):
+# BACKUP_RETENTION_DAYS=30
+# LOG_LEVEL=warn
+# RATE_LIMIT_WINDOW_MS=900000
+# RATE_LIMIT_MAX_REQUESTS_AUTH=100
+# RATE_LIMIT_MAX_REQUESTS_APP=1000
+# RATE_LIMIT_MAX_REQUESTS_CATALOGOS=500
+#
+# SSL Configuration (if using HTTPS):
+# SSL_CERT_PATH=/etc/nginx/ssl/cert.pem
+# SSL_KEY_PATH=/etc/nginx/ssl/private.key
+#
+# Usage:
+# docker-compose -f docker-compose.prod.yml --env-file .env.production up -d
+#
+# Production Deployment Commands:
+# 1. Build and start all services:
+#    docker-compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+#
+# 2. Scale services for high availability:
+#    docker-compose -f docker-compose.prod.yml --env-file .env.production up -d --scale auth=3 --scale app=5 --scale catalogos=3 --scale web=3
+#
+# 3. Update services with zero downtime:
+#    docker-compose -f docker-compose.prod.yml --env-file .env.production up -d --no-deps --build <service_name>
+#
+# 4. View logs:
+#    docker-compose -f docker-compose.prod.yml logs -f <service_name>
+#
+# 5. Backup database:
+#    docker-compose -f docker-compose.prod.yml exec postgres-backup /scripts/backup.sh
+#
+# 6. Restore database:
+#    docker-compose -f docker-compose.prod.yml exec postgres-backup /scripts/restore.sh <backup_file>
+#
+# Service URLs (internal Docker network):
+# - Web Frontend: http://web:80, https://web:443
+# - Auth Service: http://auth:3000
+# - App Service: http://app:3001
+# - Catalogos Service: http://catalogos:3002
+# - PostgreSQL: postgres:5432
+# - Redis: redis:6379
+# - Prometheus: http://prometheus:9090
+#
+# External Access (from host):
+# - Web Frontend: http://localhost:80, https://localhost:443
+# - Load Balancer: http://localhost:80, https://localhost:443
+# - Prometheus: http://localhost:9090 (if exposed)
+#
+# Security Features:
+# - All containers run as non-root users
+# - Read-only filesystems where possible
+# - No new privileges security option
+# - Resource limits and reservations
+# - Health checks for all services
+# - Automatic restart policies
+# - Network isolation
+# - Secret management via environment variables
+# - SSL/TLS termination at load balancer
+# - Rate limiting on all API endpoints
+# - CORS protection
+# - Security headers (CSP, HSTS)
+# - Automated database backups
+# - Log aggregation and monitoring

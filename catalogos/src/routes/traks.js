@@ -2,10 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const { isAdmin } = require("../../../share/middelware/rolles.js");
 const TrakService = require("../../../database/repository/service/TraksService.js");
-const TrakRepository = require("../../../database/repository/sqliteRepository/TrackRepository.js");
+const CatalogosRepositoryFactory = require("../../../database/repository/CatalogosRepositoryFactory.js");
 
 const router = express.Router();
-const repository = new TrakService(new TrakRepository());
+const repository = new TrakService(CatalogosRepositoryFactory.createTrackRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     if (req.query.albumid) {

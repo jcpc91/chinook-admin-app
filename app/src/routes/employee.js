@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { isAdmin } = require("../middelware/rolles.js");
+const { isAdmin } = require("../../../share/middelware/rolles.js");
 const EmployeeService = require("../../../database/repository/service/EmployeeService.js");
-const EmployeeRepository = require("../../../database/repository/sqliteRepository/EmployeeRepository.js");
+const AppDatabaseFactory = require("../../../database/repository/AppDatabaseFactory.js");
 
-const repository = new EmployeeService(new EmployeeRepository());
+const repository = new EmployeeService(AppDatabaseFactory.createEmployeeRepository());
 
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
   repository

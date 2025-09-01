@@ -7,7 +7,27 @@
     "migrate-app": "knex migrate:latest --cwd app",
     "migrate-auth": "knex migrate:latest --cwd auth",
     "migrate-cat": "knex migrate:latest --cwd catalogos",
-    "up": "knex migrate:up"
+    "migrate-app-test": "DB_NAME=chinook_app_test knex migrate:latest --env test --cwd app",
+    "migrate-auth-test": "DB_NAME=chinook_auth_test knex migrate:latest --env test --cwd auth",
+    "migrate-cat-test": "DB_NAME=chinook_catalogos_test knex migrate:latest --env test --cwd catalogos",
+    "up": "knex migrate:up",
+    "migrate-staging": "NODE_ENV=staging ./migrate.sh",
+    "migrate-production": "NODE_ENV=production ./migrate.sh",
+    "migrate-app-staging": "DB_NAME=chinook_app knex migrate:latest --env staging --cwd app",
+    "migrate-auth-staging": "DB_NAME=chinook_auth knex migrate:latest --env staging --cwd auth",
+    "migrate-cat-staging": "DB_NAME=chinook_catalogos knex migrate:latest --env staging --cwd catalogos",
+    "migrate-app-production": "DB_NAME=chinook_app knex migrate:latest --env production --cwd app",
+    "migrate-auth-production": "DB_NAME=chinook_auth knex migrate:latest --env production --cwd auth",
+    "migrate-cat-production": "DB_NAME=chinook_catalogos knex migrate:latest --env production --cwd catalogos",
+    "migrate-app-e2e": "DB_NAME=chinook_app_e2e knex migrate:latest --env test --cwd app",
+    "migrate-auth-e2e": "DB_NAME=chinook_auth_e2e knex migrate:latest --env test --cwd auth",
+    "migrate-cat-e2e": "DB_NAME=chinook_catalogos_e2e knex migrate:latest --env test --cwd catalogos",
+    "migrate-all": "npm run migrate-app && npm run migrate-auth && npm run migrate-cat",
+    "migrate-all-test": "npm run migrate-app-test && npm run migrate-auth-test && npm run migrate-cat-test",
+    "migrate-all-e2e": "npm run migrate-app-e2e && npm run migrate-auth-e2e && npm run migrate-cat-e2e",
+    "health-check": "node health-check.js",
+    "health-check-staging": "NODE_ENV=staging node health-check.js",
+    "health-check-production": "NODE_ENV=production node health-check.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +36,7 @@
     "knex": "^3.1.0"
   },
   "dependencies": {
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "pg": "^8.11.3"
   }
 }

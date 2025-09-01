@@ -1,0 +1,407 @@
+# Centralized Logging and Monitoring Stack
+# This compose file adds logging and monitoring services to the Chinook application
+# Use with: docker-compose -f docker-compose.yml -f monitoring/docker-compose.logging.yml up
+
+services:
+  # Fluentd for log aggregation
+  fluentd:
+    image: fluent/fluentd:v1.16-debian-1
+    container_name: chinook-fluentd
+    volumes:
+      - ./monitoring/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
+      - ./monitoring/fluentd/plugins:/fluentd/plugins:ro
+      - fluentd_logs:/var/log/fluentd
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    environment:
+      - FLUENTD_CONF=fluent.conf
+      - FLUENTD_OPT=-v
+    networks:
+      - chinook-logging
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:24220/api/plugins.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Elasticsearch for log storage
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: chinook-elasticsearch
+    environment:
+      - node.name=chinook-es-node
+      - cluster.name=chinook-logs
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch_logs:/usr/share/elasticsearch/logs
+    ports:
+      - "9200:9200"
+    networks:
+      - chinook-logging
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Kibana for log visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: chinook-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_NAME=chinook-kibana
+      - SERVER_HOST=0.0.0.0
+      - LOGGING_ROOT_LEVEL=warn
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - chinook-logging
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: chinook-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+      - GF_SERVER_ROOT_URL=http://localhost:3000/grafana
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_LOG_LEVEL=warn
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - elasticsearch
+    networks:
+      - chinook-logging
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Prometheus for metrics collection (enhanced configuration)
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: chinook-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=10GB'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+      - '--web.external-url=http://localhost:9090'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Node Exporter for system metrics
+  node-exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: chinook-node-exporter
+    command:
+      - '--path.rootfs=/host'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /:/host:ro,rslave
+    ports:
+      - "9100:9100"
+    networks:
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # cAdvisor for container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: chinook-cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # PostgreSQL Exporter for database metrics
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: chinook-postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${DB_USER:-chinook_user}:${DB_PASSWORD:-secure_password}@postgres:5432/chinook?sslmode=disable
+      - PG_EXPORTER_EXTEND_QUERY_PATH=/etc/postgres_exporter/queries.yaml
+    volumes:
+      - ./monitoring/postgres-exporter/queries.yaml:/etc/postgres_exporter/queries.yaml:ro
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+    networks:
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9187/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Redis Exporter for cache metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    container_name: chinook-redis-exporter
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+      - REDIS_EXPORTER_LOG_FORMAT=json
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
+    networks:
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 64M
+        reservations:
+          cpus: '0.05'
+          memory: 32M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9121/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Nginx Exporter for web server metrics
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:0.11.0
+    container_name: chinook-nginx-exporter
+    command:
+      - '-nginx.scrape-uri=http://nginx-lb:8080/nginx-status'
+    ports:
+      - "9113:9113"
+    depends_on:
+      - nginx-lb
+    networks:
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 32M
+        reservations:
+          cpus: '0.05'
+          memory: 16M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9113/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Alertmanager for alert handling
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: chinook-alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+      - '--web.route-prefix=/'
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - chinook-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  chinook-logging:
+    driver: bridge
+    name: chinook-logging-network
+  
+  chinook-monitoring:
+    driver: bridge
+    name: chinook-monitoring-network
+
+volumes:
+  # Logging volumes
+  fluentd_logs:
+    driver: local
+    name: chinook_fluentd_logs
+  
+  elasticsearch_data:
+    driver: local
+    name: chinook_elasticsearch_data
+  
+  elasticsearch_logs:
+    driver: local
+    name: chinook_elasticsearch_logs
+  
+  # Monitoring volumes
+  prometheus_data:
+    driver: local
+    name: chinook_prometheus_data
+  
+  grafana_data:
+    driver: local
+    name: chinook_grafana_data
+  
+  alertmanager_data:
+    driver: local
+    name: chinook_alertmanager_data

@@ -1,0 +1,100 @@
+# Dependencies and caches
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Environment files (handled via environment variables)
+.env
+.env.local
+.env.development
+.env.staging
+.env.production
+.env.test
+
+# Testing outputs
+coverage/
+.nyc_output/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker files (not needed in build context)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation (not needed for runtime)
+README.md
+*.md
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional eslint cache
+.eslintcache
+
+# Build caches
+.cache
+.parcel-cache
+*.tsbuildinfo
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Dependency directories
+jspm_packages/
+
+# Framework build outputs
+.next
+.nuxt
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Kiro configuration
+.kiro/
+
+# Database files (not needed in container)
+.db/
+*.sqlite3

@@ -5,7 +5,11 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --detectOpenHandles --forceExit",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:container": "jest --config=jest.config.container.js",
+    "test:container:watch": "jest --config=jest.config.container.js --watch"
   },
   "author": "",
   "license": "ISC",
@@ -15,12 +19,15 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "jest": "^30.0.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.0.0"
   }
 }

@@ -1,12 +1,16 @@
 import { createFetch } from '@vueuse/core';
-const base = import.meta.env.VITE_URL_AUTH
+import { environment as config } from '@/config/environment.js';
+
 export const useServerAuth = createFetch({
-    baseUrl: base,
+    baseUrl: config.api.authUrl,
     options: {
         beforeFetch: ({ options }) => {
+            const corsSettings = config.getCorsSettings();
             options.headers = {
                 'Content-Type': 'application/json',
-            }
+            };
+            options.credentials = corsSettings.credentials;
+            options.mode = corsSettings.mode;
             return { options }
         }
     }

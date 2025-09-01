@@ -3,9 +3,9 @@ const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../../../share/middelware/rolles.js");
 const GenerosService = require("../../../database/repository/service/GenerosService.js");
-const GenreRepository = require("../../../database/repository/sqliteRepository/GenreRepository.js");
+const CatalogosRepositoryFactory = require("../../../database/repository/CatalogosRepositoryFactory.js");
 
-const repository = new GenerosService(new GenreRepository());
+const repository = new GenerosService(CatalogosRepositoryFactory.createGenreRepository());
 // GET all genres
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
     repository

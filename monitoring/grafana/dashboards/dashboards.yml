@@ -1,0 +1,37 @@
+# Grafana Dashboard Provisioning Configuration
+
+apiVersion: 1
+
+providers:
+  # Chinook Application Dashboards
+  - name: 'chinook-dashboards'
+    orgId: 1
+    folder: 'Chinook Application'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/chinook
+
+  # Infrastructure Dashboards
+  - name: 'infrastructure-dashboards'
+    orgId: 1
+    folder: 'Infrastructure'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/infrastructure
+
+  # Logging Dashboards
+  - name: 'logging-dashboards'
+    orgId: 1
+    folder: 'Logging'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/logging

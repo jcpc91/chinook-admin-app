@@ -25,4 +25,16 @@ module.exports = class UserRepository extends IValidUserRepository {
             });
         })
     }
+
+    testConnection() {
+        return new Promise((resolve, reject) => {
+            this.db.get(`SELECT 1 as test`, (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
+            });
+        });
+    }
 }

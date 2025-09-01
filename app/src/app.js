@@ -17,6 +17,47 @@ app.use(
 
 app.use(express.json());
 
+// Health check endpoint with database connectivity check
+app.get("/health", async (req, res) => {
+  const healthCheck = {
+    status: "OK",
+    service: "chinook-app",
+    timestamp: new Date().toISOString(),
+    port: process.env.PORT || 3001,
+    environment: process.env.NODE_ENV || 'development',
+    database: {
+      status: "unknown",
+      type: process.env.DB_TYPE || "sqlite3"
+    }
+  };
+
+  try {
+    // Test database connectivity
+    const knex = require('knex');
+    const path = require('path');
+    const environment = process.env.NODE_ENV || 'development';
+    const knexConfig = require(path.resolve(__dirname, '../../database/app/knexfile.js'));
+
+    const db = knex(knexConfig[environment]);
+
+    // Simple connectivity test
+    await db.raw('SELECT 1 as test');
+    healthCheck.database.status = "connected";
+
+    // Clean up connection
+    await db.destroy();
+  } catch (error) {
+    console.error('Health check database error:', error.message);
+    healthCheck.database.status = "error";
+    healthCheck.database.error = error.message;
+    healthCheck.status = "DEGRADED";
+  }
+
+  // Return appropriate HTTP status based on health
+  const httpStatus = healthCheck.status === "OK" ? 200 : 503;
+  res.status(httpStatus).json(healthCheck);
+});
+
 const jwtSecret = process.env.JWT_SECREAT_KEY;
 const jwtOptions = {
   // Tells the strategy how to extract the JWT from the request
@@ -82,10 +123,35 @@ app.use((err, req, res, next) => {
 
   res.status(500).send(err);
 });
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Graceful shutdown handling for containerized environments
+const gracefulShutdown = (signal) => {
+  console.log(`Received ${signal}. Starting graceful shutdown...`);
+
+  server.close((err) => {
+    if (err) {
+      console.error('Error during server shutdown:', err);
+      process.exit(1);
+    }
+
+    console.log('Server closed successfully');
+    process.exit(0);
+  });
+
+  // Force shutdown after 10 seconds
+  setTimeout(() => {
+    console.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000);
+};
+
+// Handle container shutdown signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 module.exports = app;

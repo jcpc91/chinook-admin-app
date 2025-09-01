@@ -1,0 +1,239 @@
+services:
+  # PostgreSQL test database
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: chinook-postgres-test
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts with dev database
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./database/init-scripts/01-init-test-databases.sql:/docker-entrypoint-initdb.d/01-init-test-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+  # Database migration service for auth tests
+  db-migrate-auth-test:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.migrate
+    container_name: chinook-db-migrate-auth-test
+    environment:
+      NODE_ENV: test
+      DB_HOST: postgres-test
+      DB_PORT: 5432
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_NAME: chinook_auth_test
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    command: >
+      sh -c "
+        echo '🔄 Running auth database migrations...' &&
+        dockerize -wait tcp://postgres-test:5432 -timeout 60s &&
+        npm run migrate-auth-test &&
+        echo '✅ Auth database migrations completed'
+      "
+
+  # Database migration service for app tests
+  db-migrate-app-test:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.migrate
+    container_name: chinook-db-migrate-app-test
+    environment:
+      NODE_ENV: test
+      DB_HOST: postgres-test
+      DB_PORT: 5432
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_NAME: chinook_app_test
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    command: >
+      sh -c "
+        echo '🔄 Running app database migrations...' &&
+        dockerize -wait tcp://postgres-test:5432 -timeout 60s &&
+        npm run migrate-app-test &&
+        echo '✅ App database migrations completed'
+      "
+
+  # Database migration service for catalogos tests (may fail due to schema issues)
+  db-migrate-catalogos-test:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.migrate
+    container_name: chinook-db-migrate-catalogos-test
+    environment:
+      NODE_ENV: test
+      DB_HOST: postgres-test
+      DB_PORT: 5432
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_NAME: chinook_catalogos_test
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    command: >
+      sh -c "
+        echo '🔄 Running catalogos database migrations...' &&
+        dockerize -wait tcp://postgres-test:5432 -timeout 60s &&
+        npm run migrate-cat-test &&
+        echo '✅ Catalogos database migrations completed'
+      "
+
+  # Auth service test container
+  auth-test:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: test
+    container_name: chinook-auth-test
+    environment:
+      NODE_ENV: test
+      PORT: 3000
+      CORS_ORIGIN: http://web-test:5173
+      JWT_SECREAT_KEY: test-secret-key-for-containers
+      DB_TYPE: postgresql
+      DB_HOST: postgres-test
+      DB_NAME: chinook_auth_test
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_PORT: 5432
+      DB_POOL_MIN: 1
+      DB_POOL_MAX: 5
+      DB_TIMEOUT: 10000
+      VERBOSE_TESTS: "false"
+    ports:
+      - "3010:3000"  # Different port for test environment
+    depends_on:
+      db-migrate-auth-test:
+        condition: service_completed_successfully
+    networks:
+      - test-network
+    volumes:
+      - ./auth/tests:/app/tests
+      - ./auth/src:/app/src
+    command: npm run test:container
+
+  # App service test container
+  app-test:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: test
+    container_name: chinook-app-test
+    environment:
+      NODE_ENV: test
+      PORT: 3001
+      CORS_ORIGIN: http://web-test:5173
+      JWT_SECREAT_KEY: test-secret-key-for-containers
+      DB_TYPE: postgresql
+      DB_HOST: postgres-test
+      DB_NAME: chinook_app_test
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_PORT: 5432
+      DB_POOL_MIN: 1
+      DB_POOL_MAX: 5
+      DB_TIMEOUT: 10000
+      VERBOSE_TESTS: "false"
+    ports:
+      - "3011:3001"  # Different port for test environment
+    depends_on:
+      db-migrate-app-test:
+        condition: service_completed_successfully
+    networks:
+      - test-network
+    volumes:
+      - ./app/tests:/app/tests
+      - ./app/src:/app/src
+    command: npm run test:container
+
+  # Catalogos service test container
+  catalogos-test:
+    build:
+      context: ./catalogos
+      dockerfile: Dockerfile
+      target: test
+    container_name: chinook-catalogos-test
+    environment:
+      NODE_ENV: test
+      PORT: 3002
+      CORS_ORIGIN: http://web-test:5173
+      JWT_SECREAT_KEY: test-secret-key-for-containers
+      DB_TYPE: postgresql
+      DB_HOST: postgres-test
+      DB_NAME: chinook_catalogos_test
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_PORT: 5432
+      DB_POOL_MIN: 1
+      DB_POOL_MAX: 5
+      DB_TIMEOUT: 10000
+      VERBOSE_TESTS: "false"
+    ports:
+      - "3012:3002"  # Different port for test environment
+    depends_on:
+      db-migrate-catalogos-test:
+        condition: service_completed_successfully
+    networks:
+      - test-network
+    volumes:
+      - ./catalogos/tests:/app/tests
+      - ./catalogos/src:/app/src
+    command: npm run test:container
+
+  # Web service test container
+  web-test:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: test
+    container_name: chinook-web-test
+    environment:
+      NODE_ENV: test
+      VITE_MODE: test
+      VITE_BASE_URL: http://app-test:3001
+      VITE_URL_AUTH: http://auth-test:3000
+      VITE_CATALOGOS_URL: http://catalogos-test:3002
+      VITE_PORT: 5173
+      VITE_USE_PROXY: "false"
+      VITE_CORS_ORIGIN: http://web-test:5173
+      VITE_API_TIMEOUT: 20000
+      VITE_AUTH_TIMEOUT: 10000
+      VITE_ENABLE_DEBUG: "false"
+      VITE_LOG_LEVEL: error
+    ports:
+      - "5174:5173"  # Different port for test environment
+    # Web tests don't need backend services for unit tests
+    networks:
+      - test-network
+    volumes:
+      - ./web/src:/app/src
+      - ./web/tests:/app/tests
+    command: npm run test:unit:container
+
+volumes:
+  postgres_test_data:
+    driver: local
+
+networks:
+  test-network:
+    driver: bridge

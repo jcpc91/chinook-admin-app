@@ -3,9 +3,9 @@ const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../../../share/middelware/rolles.js");
 const MediaTypeService = require("../../../database/repository/service/MediaTypeService.js");
-const MediaTypeRepository = require("../../../database/repository/sqliteRepository/MediaTypeRepository.js");
+const CatalogosRepositoryFactory = require("../../../database/repository/CatalogosRepositoryFactory.js");
 
-const repository = new MediaTypeService(new MediaTypeRepository());
+const repository = new MediaTypeService(CatalogosRepositoryFactory.createMediaTypeRepository());
 
 // GET all media types
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {

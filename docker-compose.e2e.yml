@@ -1,0 +1,291 @@
+# Docker Compose Configuration for E2E Integration Testing
+# Provides isolated test environment with test databases and services
+
+services:
+  # PostgreSQL Test Database
+  postgres-e2e:
+    image: postgres:16-alpine
+    container_name: chinook-postgres-e2e
+    environment:
+      POSTGRES_DB: chinook_e2e
+      POSTGRES_USER: e2e_user
+      POSTGRES_PASSWORD: e2e_password
+    ports:
+      - "5434:5432"  # Different port to avoid conflicts
+    volumes:
+      - postgres_e2e_data:/var/lib/postgresql/data
+      - ./database/init-scripts/01-init-e2e-databases.sql:/docker-entrypoint-initdb.d/01-init-e2e-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U e2e_user -d chinook_e2e"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - e2e-network
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c max_connections=50
+      -c shared_buffers=128MB
+      -c effective_cache_size=512MB
+
+  # Database Migration Service for E2E
+  db-migrate-e2e:
+    build:
+      context: ./database
+      dockerfile: Dockerfile.migrate
+    container_name: chinook-db-migrate-e2e
+    environment:
+      NODE_ENV: test
+      DB_HOST: postgres-e2e
+      DB_PORT: 5432
+      DB_USER: e2e_user
+      DB_PASSWORD: e2e_password
+      DB_NAME_AUTH: chinook_auth_e2e
+      DB_NAME_APP: chinook_app_e2e
+      DB_NAME_CATALOGOS: chinook_catalogos_e2e
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+    networks:
+      - e2e-network
+    command: >
+      sh -c "
+        echo '🔄 Running E2E database migrations...' &&
+        dockerize -wait tcp://postgres-e2e:5432 -timeout 60s &&
+        npm run migrate-auth-e2e &&
+        npm run migrate-app-e2e &&
+        npm run migrate-cat-e2e &&
+        echo '✅ E2E database migrations completed'
+      "
+
+  # Auth Service for E2E Testing
+  auth-e2e:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: development
+    container_name: chinook-auth-e2e
+    environment:
+      NODE_ENV: test
+      PORT: 3000
+      CORS_ORIGIN: http://web-e2e:5173,http://localhost:5175
+      JWT_SECREAT_KEY: e2e_test_jwt_secret_key_for_integration_testing
+      DB_TYPE: postgresql
+      DB_HOST: postgres-e2e
+      DB_NAME: chinook_auth_e2e
+      DB_USER: e2e_user
+      DB_PASSWORD: e2e_password
+      DB_PORT: 5432
+      DB_POOL_MIN: 1
+      DB_POOL_MAX: 5
+      DB_TIMEOUT: 10000
+      LOG_LEVEL: error
+      ENABLE_REQUEST_LOGGING: false
+    ports:
+      - "3010:3000"  # Different port for E2E
+    depends_on:
+      db-migrate-e2e:
+        condition: service_completed_successfully
+    networks:
+      - e2e-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # App Service for E2E Testing
+  app-e2e:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: development
+    container_name: chinook-app-e2e
+    environment:
+      NODE_ENV: test
+      PORT: 3001
+      CORS_ORIGIN: http://web-e2e:5173,http://localhost:5175
+      JWT_SECREAT_KEY: e2e_test_jwt_secret_key_for_integration_testing
+      DB_TYPE: postgresql
+      DB_HOST: postgres-e2e
+      DB_NAME: chinook_app_e2e
+      DB_USER: e2e_user
+      DB_PASSWORD: e2e_password
+      DB_PORT: 5432
+      DB_POOL_MIN: 1
+      DB_POOL_MAX: 5
+      DB_TIMEOUT: 10000
+      AUTH_SERVICE_URL: http://auth-e2e:3000
+      CATALOGOS_SERVICE_URL: http://catalogos-e2e:3002
+      LOG_LEVEL: error
+      ENABLE_REQUEST_LOGGING: false
+    ports:
+      - "3011:3001"  # Different port for E2E
+    depends_on:
+      db-migrate-e2e:
+        condition: service_completed_successfully
+      auth-e2e:
+        condition: service_healthy
+    networks:
+      - e2e-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Catalogos Service for E2E Testing
+  catalogos-e2e:
+    build:
+      context: ./catalogos
+      dockerfile: Dockerfile
+      target: development
+    container_name: chinook-catalogos-e2e
+    environment:
+      NODE_ENV: test
+      PORT: 3002
+      CORS_ORIGIN: http://web-e2e:5173,http://localhost:5175
+      JWT_SECREAT_KEY: e2e_test_jwt_secret_key_for_integration_testing
+      DB_TYPE: postgresql
+      DB_HOST: postgres-e2e
+      DB_NAME: chinook_catalogos_e2e
+      DB_USER: e2e_user
+      DB_PASSWORD: e2e_password
+      DB_PORT: 5432
+      DB_POOL_MIN: 1
+      DB_POOL_MAX: 5
+      DB_TIMEOUT: 10000
+      AUTH_SERVICE_URL: http://auth-e2e:3000
+      APP_SERVICE_URL: http://app-e2e:3001
+      LOG_LEVEL: error
+      ENABLE_REQUEST_LOGGING: false
+    ports:
+      - "3012:3002"  # Different port for E2E
+    depends_on:
+      db-migrate-e2e:
+        condition: service_completed_successfully
+      auth-e2e:
+        condition: service_healthy
+    networks:
+      - e2e-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Web Service for E2E Testing
+  web-e2e:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: development
+    container_name: chinook-web-e2e
+    environment:
+      VITE_MODE: test
+      VITE_BASE_URL: http://app-e2e:3001
+      VITE_URL_AUTH: http://auth-e2e:3000
+      VITE_CATALOGOS_URL: http://catalogos-e2e:3002
+      VITE_PORT: 5173
+      VITE_USE_PROXY: false
+      VITE_CORS_ORIGIN: http://web-e2e:5173
+      VITE_API_TIMEOUT: 15000
+      VITE_AUTH_TIMEOUT: 8000
+      VITE_ENABLE_DEBUG: false
+      VITE_LOG_LEVEL: error
+    ports:
+      - "5175:5173"  # Different port for E2E
+    depends_on:
+      auth-e2e:
+        condition: service_healthy
+      app-e2e:
+        condition: service_healthy
+      catalogos-e2e:
+        condition: service_healthy
+    networks:
+      - e2e-network
+    volumes:
+      # Mount source code for development
+      - ./web/src:/app/src:cached
+      - ./web/public:/app/public:cached
+      - ./web/index.html:/app/index.html:cached
+      - ./web/vite.config.js:/app/vite.config.js:cached
+      # Exclude node_modules
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Playwright Test Runner
+  playwright-e2e:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.playwright
+    container_name: chinook-playwright-e2e
+    environment:
+      NODE_ENV: test
+      CI: true
+      PLAYWRIGHT_BASE_URL: http://web-e2e:5173
+    depends_on:
+      web-e2e:
+        condition: service_healthy
+    networks:
+      - e2e-network
+    volumes:
+      - ./web/e2e:/app/e2e:cached
+      - ./web/test-results:/app/test-results
+      - ./web/playwright.config.staging.js:/app/playwright.config.js:ro
+    command: >
+      sh -c "
+        echo '🎭 Starting Playwright E2E tests...' &&
+        npx playwright test --config=playwright.config.js &&
+        echo '✅ Playwright E2E tests completed'
+      "
+
+# Network Configuration
+networks:
+  e2e-network:
+    driver: bridge
+    name: chinook-e2e-network
+
+# Volume Configuration
+volumes:
+  postgres_e2e_data:
+    driver: local
+    name: chinook_postgres_e2e_data
+
+# Usage Instructions:
+#
+# 1. Start E2E environment:
+#    docker-compose -f docker-compose.e2e.yml up -d
+#
+# 2. Run E2E tests:
+#    docker-compose -f docker-compose.e2e.yml up playwright-e2e
+#
+# 3. Run specific test suites:
+#    docker-compose -f docker-compose.e2e.yml exec web-e2e npm run test:e2e:dev
+#    docker-compose -f docker-compose.e2e.yml exec web-e2e npm run test:e2e:staging
+#
+# 4. Clean up:
+#    docker-compose -f docker-compose.e2e.yml down -v
+#
+# Service URLs for E2E testing:
+# - Web Frontend: http://localhost:5175
+# - Auth Service: http://localhost:3010
+# - App Service: http://localhost:3011
+# - Catalogos Service: http://localhost:3012
+# - PostgreSQL: localhost:5434
+#
+# Internal Docker network URLs:
+# - Web Frontend: http://web-e2e:5173
+# - Auth Service: http://auth-e2e:3000
+# - App Service: http://app-e2e:3001
+# - Catalogos Service: http://catalogos-e2e:3002
+# - PostgreSQL: postgres-e2e:5432
