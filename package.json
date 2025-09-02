@@ -36,6 +36,7 @@
     "pause": "^0.0.1",
     "safe-buffer": "^5.2.1",
     "semver": "^7.7.2",
+    "serve-index": "^1.9.1",
     "sqlite3": "^5.1.7",
     "utils-merge": "^1.0.1"
   },

@@ -32,9 +32,9 @@ const error = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
 
-        onMounted(() => {
-        console.log('authStore:', import.meta.env.VITE_URL_AUTH);
-    })
+onMounted(() => {
+    console.log('authStore:', import.meta.env.VITE_URL_AUTH);
+})
 const handleLogin = async () => {
     error.value = ''; // Reset error message
     try {

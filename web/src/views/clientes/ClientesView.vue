@@ -22,8 +22,8 @@ import ClientesDataTable from '@/components/ClientesDataTable.vue'
 
 const router = useRouter()
 const store = useClientesStore()
-onMounted(() => {
-  store.fetchCustomers()
+onMounted(async() => {
+  await store.fetchCustomers()
 })
 
 function on_selected(item) {
