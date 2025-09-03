@@ -1,30 +1,29 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 
 export const useTipoActivosStore = defineStore('tiposActivosStore', () => {
-    const items = ref([
-        { codigo: "1", categoria: "Acciones", subcategoria: "Acciones Ordinarias", nivelriesgo: "Alto", horizonteinversion: "Largo Plazo", liquidez: "Baja" },
-        { codigo: "2", categoria: "Bonos", subcategoria: "Bonos Corporativos", nivelriesgo: "Medio", horizonteinversion: "Mediano Plazo", liquidez: "Media" },
-    ])
-    const getItems = computed(() => items.value)
+    const items = reactive([])
+    const getItems = computed(() => items)
 
     function fetchItems() {
-
+        items.push(...[
+            { "categoria": "Renta Variable", "subcategoria": "Acciones individuales", "codigo": "4f23", "horizonteinversion": "Mediano Plazo", "nivelriesgo": "Medio", "liquidez": "Media" }
+        ])
     }
     function fetchItemById(codigo) {
-        return items.value.find((item) => item.codigo == codigo)
+        return items.find((item) => item.codigo == codigo)
     }
     function addItem(item) {
-        items.value.push(item)
+        items.push(item)
     }
     function updateItem(item) {
-        const index = items.value.findIndex((i) => i.codigo == item.codigo)
+        const index = items.findIndex((i) => i.codigo == item.codigo)
         if (index !== -1) {
-            items.value[index] = item
+            items[index] = item
         }
     }
     function deleteItem(item) {
-        items.value = items.value.filter((i) => i.codigo !== item.codigo)
+        items.filter((i) => i.codigo !== item.codigo)
     }
 
     return {

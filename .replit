@@ -64,3 +64,6 @@ args = "npm run inversiones:dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run web:dev"
+
+[agent]
+expertMode = true

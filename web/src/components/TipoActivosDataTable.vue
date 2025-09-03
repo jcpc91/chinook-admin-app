@@ -14,9 +14,11 @@
 
 </template>
 <script setup>
-  import { ref, defineModel, defineEmits } from 'vue';
+  import { ref, defineModel, defineEmits, onMounted } from 'vue';
+  import { useTipoActivosStore } from '@/stores/tiposActivos';
   import Vue3EasyDataTable from "vue3-easy-data-table";
 
+  const store = useTipoActivosStore()
   const dataTable = ref();
   const emit = defineEmits(["clickRow"])
   const itemSelected = defineModel('itemSelected');
@@ -41,6 +43,10 @@
     emit("clickRow", item)
   }
   function headerItemClassNameFunction() {}
+
+  onMounted(() => {
+    store.fetchItems()
+  })
 
 </script>
 <style >

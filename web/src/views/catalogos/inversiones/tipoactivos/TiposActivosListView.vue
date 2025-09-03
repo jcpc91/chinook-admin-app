@@ -21,7 +21,6 @@ const router = useRouter()
 
 
 function on_row_clicked(item) {
-  console.log(item)
   router.push({ name: 'inversiones-tiposactivos-detalle', params: { codigo: item.codigo } })
 }
 </script>

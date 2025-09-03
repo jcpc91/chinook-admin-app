@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
 import { useCatalogoFetch } from '@/services/api'
-import { useAsyncState } from '@vueuse/core'
 
 export const useCatalogosStore = defineStore('catalogos', () => {
   /**
@@ -13,6 +12,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
    */
   const items = reactive([])
   const categorias = computed(() => [...new Set(items.map((item) => item.categoria))].sort())
+  const getsubcategorias = (categoria) => items.filter(f => f.categoria == categoria)
   /*const getcategorias = useCatalogoFetch('artistas')
   .get()
   .json()
@@ -32,5 +32,6 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     items,
     getcategorias,
     categorias,
+    getsubcategorias
   }
 })

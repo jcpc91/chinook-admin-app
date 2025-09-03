@@ -26,7 +26,5 @@ function on_row_clicked(item) {
   router.push({ name: 'inversiones-activos-detalle', params: { ticker: item.ticker } })
 }
 
-onMounted(() => {
-  store.fetchItems()
-})
+
 </script>
