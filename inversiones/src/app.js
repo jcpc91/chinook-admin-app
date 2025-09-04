@@ -36,7 +36,6 @@ passport.use(
     // For this example, we'll just log the payload and assume authentication is successful
     // if the token is valid (signed with the correct secret).
 
-
     // Example: If a 'userId' existed in the payload and you wanted to find the user:
     // User.findById(jwtPayload.userId, (err, user) => {
     //   if (err) { return done(err, false); }
@@ -60,21 +59,30 @@ passport.use(
 app.use(passport.initialize());
 
 app.get("/", (_req, res) => {
-    res.json({
-        message: "Inversiones API is running",
-        version: "1.0.0",
-    });
+  res.json({
+    message: "Inversiones API is running",
+    version: "1.0.0",
+  });
 });
 
-app.use((err, req, res, _next) => {
-    console.error(err);
-    res.status(500).send(err);
+app.get("/error", (req, res) => {
+  throw "Error test";
 });
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Resource Not Found" });
+});
+
+// Optional: Global error handling middleware (for other errors)
+app.use((err, req, res, next) => {
+  console.error(err); // Log the error for debugging
+  res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
+});
+const activosRoutes = require("./routes/activos");
+app.use("/activos", activosRoutes);
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
-
-const activosRoutes = require("./routes/activos");
-app.use("/activos", activosRoutes);

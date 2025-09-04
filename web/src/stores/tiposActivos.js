@@ -1,15 +1,25 @@
 import { defineStore } from 'pinia'
 import { ref, computed, reactive } from 'vue'
+import { useInversionesFetch } from '@/services/api'
 
 export const useTipoActivosStore = defineStore('tiposActivosStore', () => {
     const items = reactive([])
     const getItems = computed(() => items)
 
-    function fetchItems() {
-        items.push(...[
-            { "categoria": "Renta Variable", "subcategoria": "Acciones individuales", "codigo": "4f23", "horizonteinversion": "Mediano Plazo", "nivelriesgo": "Medio", "liquidez": "Media" }
-        ])
-    }
+    const fetchItems = async () =>
+        useInversionesFetch('tiposactivos', { immediate: false })
+            .get()
+            .json()
+            .then(({ data, error, response, statusCode }) => {
+                if (statusCode.value >= 400) {
+                    throw new Error(error.value)
+                }
+                items.splice(0, items.length)
+                items.push(...data.value)
+            })
+            .catch((error) => {
+                console.error(error)
+            })
     function fetchItemById(codigo) {
         return items.find((item) => item.codigo == codigo)
     }

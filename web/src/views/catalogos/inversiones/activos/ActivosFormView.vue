@@ -1,5 +1,4 @@
 <template>
-
     <form @submit.prevent="on_submit" class="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <!--ticker-->
         <div class="lg:flex lg:flex-row gap-3">
@@ -14,7 +13,7 @@
         <!--tipo-->
         <div class="lg:flex lg:flex-row gap-3">
             <Label label="Tipo:" name="tipo" class="lg:w-2xs" />
-            <InputText name="tipo" v-model="form.tipo" required class="basis-full" />
+            <TipoActivoDropDown name="tipo" v-model="form.tipo" required class="basis-full" />
         </div>
         <!--valormercado-->
         <div class="lg:flex lg:flex-row gap-3">
@@ -23,10 +22,11 @@
         </div>
         <div class="col-span-1 lg:col-span-2">
             <div class="flex justify-end">
-            <Button label="Guardar" type="submit" class="mt-4" />
-            <Button label="Cancelar" type="button" class="mt-4 ml-2" @click="router.back()" />
+                <Button label="Guardar" type="submit" class="mt-4" />
+                <Button label="Cancelar" type="button" class="mt-4 ml-2" @click="router.back()" />
             </div>
         </div>
+        <div>{{ form }}</div>
     </form>
 </template>
 
@@ -34,9 +34,9 @@
 /**
  * @file share\schemas\activos.schema.js
  */
-import {  reactive, onMounted } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import InputSelect from '@/components/forms/InputSelect.vue'
+import TipoActivoDropDown from '@/components/forms/TipoActivoDropDown.vue'
 import Button from '@/components/forms/InputButton.vue';
 import Label from "@/components/forms/EtiquetaLabel.vue";
 import InputText from '@/components/forms/InputText.vue';
@@ -53,26 +53,26 @@ const form = reactive({
 
 
 const on_submit = async () => {
-  try {
-    if (route.meta.type === 'create') {
-      store.addItem(form.value)
-      await router.push({name: 'inversiones-activos-detalle', params: { ticker: form.value.ticker }})
-    } else if (route.meta.type === 'update') {
-      store.updateItem(form.value)
-      await router.back()
+    try {
+        if (route.meta.type === 'create') {
+            store.addItem(form.value)
+            await router.push({ name: 'inversiones-activos-detalle', params: { ticker: form.value.ticker } })
+        } else if (route.meta.type === 'update') {
+            store.updateItem(form.value)
+            await router.back()
+        }
+    } catch (error) {
+        console.error('Error al guardar el activo:', error);
     }
-  } catch (error) {
-    console.error('Error al guardar el activo:', error);
-  }
 };
 
 onMounted(() => {
-  if (route.meta.type === 'update') {
-    // TODO: Cargar datos existentes del activo
-    // form.codigo = datosExistentes.codigo;
-    // form.categoria_principal = datosExistentes.categoria_principal;
-    // ...etc
-  }
+    if (route.meta.type === 'update') {
+        // TODO: Cargar datos existentes del activo
+        // form.codigo = datosExistentes.codigo;
+        // form.categoria_principal = datosExistentes.categoria_principal;
+        // ...etc
+    }
 });
 </script>
 
