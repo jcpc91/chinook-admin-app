@@ -55,6 +55,7 @@
     "database:migrate-app": "npm run migrate-app --workspace=database",
     "database:migrate-auth": "npm run migrate-auth --workspace=database",
     "database:migrate-cat": "npm run migrate-cat --workspace=database",
+    "database:seed": "npm run migrate-seed --workspace=database",
     "web:build": "npm run build --workspace=chinookadminapp",
     "web:test:unit": "npm run test:unit --workspace=chinookadminapp",
     "test": "echo \"Error: no test specified\" && exit 1"
