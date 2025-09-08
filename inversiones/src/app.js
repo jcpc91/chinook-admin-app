@@ -69,6 +69,11 @@ app.get("/error", (req, res) => {
   throw "Error test";
 });
 
+const activosRoutes = require("./routes/activos");
+const tiposActivosRoutes = require("./routes/tipoactivos");
+app.use("/activos", activosRoutes);
+app.use("/tiposactivos", tiposActivosRoutes);
+
 app.use((req, res, next) => {
   res.status(404).json({ message: "Resource Not Found" });
 });
@@ -78,8 +83,7 @@ app.use((err, req, res, next) => {
   console.error(err); // Log the error for debugging
   res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
 });
-const activosRoutes = require("./routes/activos");
-app.use("/activos", activosRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 

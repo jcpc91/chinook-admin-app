@@ -6,8 +6,34 @@ export const useTipoActivosStore = defineStore('tiposActivosStore', () => {
     const items = reactive([])
     const getItems = computed(() => items)
 
-    const fetchItems = async () =>
-        useInversionesFetch('tiposactivos', { immediate: false })
+    const fetchItems = () => {
+        
+        return useInversionesFetch('tiposactivos', {
+            immediate: false,
+            beforeFetch: (p) => {
+                console.log('beforeFetch', p)
+            },
+            onFetchError: (p) => {
+                console.log('onFetchError', p)
+            },
+            afterFetch: ({ data }) => {
+                console.log('afterFetch', data)
+                items.splice(0, items.length)
+                items.push(...data)
+            },
+        })
+            .get()
+            .json()
+        /*.then(({ data, error, response, statusCode }) => {
+            if (statusCode.value >= 400) {
+                throw new Error(error.value)
+            }
+            items.splice(0, items.length)
+            items.push(...data.value)
+        })
+          */
+    }
+    /* useInversionesFetch('tiposactivos', { immediate: false })
             .get()
             .json()
             .then(({ data, error, response, statusCode }) => {
@@ -20,11 +46,19 @@ export const useTipoActivosStore = defineStore('tiposActivosStore', () => {
             .catch((error) => {
                 console.error(error)
             })
+            */
     function fetchItemById(codigo) {
         return items.find((item) => item.codigo == codigo)
     }
     function addItem(item) {
-        items.push(item)
+        return useInversionesFetch('tiposactivos')
+        .post(item)
+        .json()
+        .then(({ data, error, response, statusCode }) => {
+            if (statusCode.value >= 400) {
+                throw new Error(error.value)
+            }
+        })
     }
     function updateItem(item) {
         const index = items.findIndex((i) => i.codigo == item.codigo)

@@ -6,6 +6,7 @@
     body-item-class-name=" px-3 py-2 whitespace-nowrap">
 
   </vue3-easy-data-table>
+  
 </template>
 <script setup>
 import { ref, defineModel, defineEmits, onMounted } from 'vue';
@@ -13,6 +14,7 @@ import { useTipoActivosStore } from '@/stores/tiposActivos';
 import Vue3EasyDataTable from "vue3-easy-data-table";
 
 const store = useTipoActivosStore()
+const fetch = store.fetchItems()
 const dataTable = ref();
 const emit = defineEmits(["clickRow"])
 const itemSelected = defineModel('itemSelected');
@@ -39,8 +41,8 @@ function on_click_row(item) {
 function headerItemClassNameFunction() { }
 
 onMounted(async () => {
-  const result = await store.fetchItems()
-  console.log(result)
+
+  fetch.execute()
 })
 
 </script>
