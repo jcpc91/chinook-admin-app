@@ -7,7 +7,7 @@
     "migrate-app": "knex migrate:latest --cwd app",
     "migrate-auth": "knex migrate:latest --cwd auth",
     "migrate-cat": "knex migrate:latest --cwd catalogos",
-    "migrate-inv": "knex migrate:latest --cwd inversiones",
+    "migrate-seed": "knex seed:run --cwd auth",
     "up": "knex migrate:up"
   },
   "author": "",
