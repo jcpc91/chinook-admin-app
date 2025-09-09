@@ -14,31 +14,23 @@ localPort = 3000
 externalPort = 3000
 
 [[ports]]
-localPort = 3002
-externalPort = 3003
-
-[[ports]]
-localPort = 3003
-externalPort = 4200
-
-[[ports]]
-localPort = 3004
-externalPort = 5000
-
-[[ports]]
-localPort = 5173
-externalPort = 80
-
-[[ports]]
-localPort = 5174
+localPort = 3001
 externalPort = 3001
 
 [[ports]]
-localPort = 5175
+localPort = 3002
 externalPort = 3002
 
+[[ports]]
+localPort = 3003
+externalPort = 3003
+
+[[ports]]
+localPort = 5173
+externalPort = 5173
+
 [workflows]
-runButton = "Full Stack Dev"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Full Stack Dev"
@@ -64,6 +56,27 @@ args = "npm run inversiones:dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run web:dev"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Vue Frontend"
+
+[[workflows.workflow]]
+name = "Vue Frontend"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run web:dev"
+waitForPort = 3003
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 expertMode = true

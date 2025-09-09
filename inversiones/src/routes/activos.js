@@ -12,7 +12,7 @@ const ajv = new AVJ()
 const activosSchema = require("../../../share/schemas/activos.schema.js")
 const validate = ajv.compile(activosSchema)
 
-router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
+router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (_req, res) => {
     repository.getAll().then((activos) => {
         res.json(activos);
     });
