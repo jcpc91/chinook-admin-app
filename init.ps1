@@ -28,15 +28,25 @@ function Write-Header {
 }
 
 function Write-Phase {
-    param([string]$Message)
+    param([string]$Message, [int]$PhaseNumber = 0)
+    $totalPhases = 5
     Write-Host ""
-    Write-Host "[PHASE] $Message" -ForegroundColor Blue
+    if ($PhaseNumber -gt 0) {
+        Write-Host "[PHASE $PhaseNumber/$totalPhases] $Message" -ForegroundColor Blue
+    } else {
+        Write-Host "[PHASE] $Message" -ForegroundColor Blue
+    }
     Write-Host "----------------------------------------" -ForegroundColor Blue
 }
 
 function Write-Step {
     param([string]$Message)
     Write-Host "[STEP] $Message" -ForegroundColor Green
+}
+
+function Write-SubStep {
+    param([string]$Message)
+    Write-Host "  → $Message" -ForegroundColor Green
 }
 
 function Write-Success {
@@ -56,6 +66,11 @@ function Write-Error {
     $script:Errors += $Message
 }
 
+function Write-Troubleshooting {
+    param([string]$Message)
+    Write-Host "[TROUBLESHOOTING] $Message" -ForegroundColor Yellow
+}
+
 # Error handling function
 function Handle-Error {
     param([string]$ErrorMessage, [string]$Command = "", [bool]$ExitScript = $true)
@@ -70,9 +85,53 @@ function Handle-Error {
     if ($ExitScript) {
         Write-Host ""
         Write-Host "Setup failed. Please check the errors above and try again." -ForegroundColor Red
-        Write-Host "For troubleshooting help, please refer to the project documentation." -ForegroundColor Yellow
+        
+        # Provide specific troubleshooting guidance
+        Write-Host ""
+        Write-Host "Troubleshooting Tips:" -ForegroundColor Yellow
+        Write-Host "  • Check if you have proper file permissions in this directory"
+        Write-Host "  • Ensure you're running the script from the project root directory"
+        Write-Host "  • Verify that npm and Node.js are properly installed"
+        Write-Host "  • Try running individual commands manually to identify the issue"
+        Write-Host "  • Check if any antivirus software is blocking file operations"
+        Write-Host "  • Try running PowerShell as Administrator"
+        Write-Host "  • Ensure Windows execution policy allows script execution:"
+        Write-Host "    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser" -ForegroundColor Green
+        
         exit 1
     }
+}
+
+# Platform-specific error handling for Windows
+function Handle-PermissionError {
+    param([string]$FilePath, [string]$Operation)
+    
+    Write-Error "Permission denied while trying to $Operation`: $FilePath"
+    Write-Troubleshooting "File permission issue detected"
+    
+    Write-Host "  • Try running PowerShell as Administrator" -ForegroundColor Green
+    Write-Host "  • Check if the directory is read-only in Windows Explorer"
+    Write-Host "  • Disable any antivirus real-time protection temporarily"
+    Write-Host "  • Verify Windows execution policy: Get-ExecutionPolicy" -ForegroundColor Green
+    Write-Host "  • Check file/folder properties for security restrictions"
+    Write-Host "  • Ensure you have write access to: $(Split-Path $FilePath -Parent)" -ForegroundColor Green
+}
+
+# Network/dependency error handling
+function Handle-DependencyError {
+    param([string]$ErrorType)
+    
+    Write-Error "Dependency installation failed: $ErrorType"
+    Write-Troubleshooting "Dependency installation issue detected"
+    
+    Write-Host "  • Check your internet connection"
+    Write-Host "  • Try clearing npm cache: npm cache clean --force" -ForegroundColor Green
+    Write-Host "  • Try using a different npm registry: npm install --registry https://registry.npmjs.org/" -ForegroundColor Green
+    Write-Host "  • Check if you're behind a corporate firewall or proxy"
+    Write-Host "  • Verify Node.js version compatibility: node --version" -ForegroundColor Green
+    Write-Host "  • Try deleting node_modules and package-lock.json, then retry"
+    Write-Host "  • Run with verbose logging: npm install --verbose" -ForegroundColor Green
+    Write-Host "  • Check Windows Defender or antivirus interference"
 }
 
 # Template processing functions
@@ -146,6 +205,8 @@ function New-ServiceEnvironmentFile {
     $envFile = Join-Path $serviceDir ".env"
     $templateFile = ".env.development.example"
     
+    Write-SubStep "Processing $Service service (PORT=$Port)..."
+    
     # Check if file already exists
     if (Test-FileExists $envFile "$Service service") {
         return $true
@@ -154,6 +215,10 @@ function New-ServiceEnvironmentFile {
     # Read template file
     $templateContent = Read-TemplateFile $templateFile
     if ($null -eq $templateContent) {
+        Write-Error "Failed to read template file for $Service service"
+        Write-Troubleshooting "Template file issue"
+        Write-Host "  • Verify $templateFile exists and is readable"
+        Write-Host "  • Check file permissions: Get-Acl $templateFile" -ForegroundColor Green
         return $false
     }
     
@@ -172,14 +237,25 @@ function New-ServiceEnvironmentFile {
         
         Write-Success "Created environment file for $Service service (PORT=$Port)"
         $script:CreatedFiles += $envFile
+        Write-Host "    ✓ File: $envFile" -ForegroundColor Green
         return $true
     }
     catch [System.UnauthorizedAccessException] {
-        Write-Error "Permission denied creating environment file for $Service service. Try running PowerShell as Administrator."
+        Handle-PermissionError $envFile "create file"
+        return $false
+    }
+    catch [System.IO.DirectoryNotFoundException] {
+        Write-Error "Directory path not found: $serviceDir"
+        Write-Troubleshooting "Directory creation failed"
+        Write-Host "  • Check if parent directory exists and is accessible"
+        Write-Host "  • Verify path length is not too long for Windows"
         return $false
     }
     catch {
         Write-Error "Failed to create environment file for $Service service: $_"
+        Write-Troubleshooting "File creation failed"
+        Write-Host "  • Check available disk space: Get-WmiObject -Class Win32_LogicalDisk" -ForegroundColor Green
+        Write-Host "  • Verify directory exists: Test-Path $(Split-Path $envFile -Parent)" -ForegroundColor Green
         return $false
     }
 }
@@ -226,116 +302,260 @@ function New-MicroservicesEnvironmentFile {
 
 # Phase 1: Initialization
 function Initialize-Setup {
-    Write-Phase "Initializing Setup"
+    Write-Phase "Initializing Setup" 1
     
     Write-Step "Checking prerequisites..."
     
     # Check if npm is installed
+    Write-SubStep "Verifying npm installation..."
     try {
-        $null = Get-Command npm -ErrorAction Stop
-        Write-Host "  ✓ npm found" -ForegroundColor Green
+        $npmVersion = npm --version 2>$null
+        Write-Host "    ✓ npm found (version: $npmVersion)" -ForegroundColor Green
     }
     catch {
+        Write-Troubleshooting "npm not found in PATH"
+        Write-Host "  • Download Node.js from: https://nodejs.org/" -ForegroundColor Green
+        Write-Host "  • Or use a package manager:"
+        Write-Host "    - Chocolatey: choco install nodejs" -ForegroundColor Green
+        Write-Host "    - Winget: winget install OpenJS.NodeJS" -ForegroundColor Green
+        Write-Host "    - Scoop: scoop install nodejs" -ForegroundColor Green
         Handle-Error "npm is not installed. Please install Node.js and npm first."
     }
     
-    # Check if we're in the correct directory
-    if (-not (Test-Path "package.json")) {
-        Handle-Error "package.json not found. Please run this script from the project root directory."
+    # Check Node.js version
+    Write-SubStep "Checking Node.js version..."
+    try {
+        $nodeVersion = node --version 2>$null
+        Write-Host "    ✓ Node.js version: $nodeVersion" -ForegroundColor Green
     }
-    else {
-        Write-Host "  ✓ package.json found" -ForegroundColor Green
+    catch {
+        Write-Host "    ⚠ Node.js version check failed" -ForegroundColor Yellow
     }
     
-    # Check for required template files
-    if (-not (Test-Path ".env.development.example")) {
-        Handle-Error "Required template file .env.development.example not found."
+    # Check if we're in the correct directory
+    Write-SubStep "Verifying project structure..."
+    if (-not (Test-Path "package.json")) {
+        Write-Troubleshooting "Incorrect working directory"
+        Write-Host "  • Current directory: $(Get-Location)" -ForegroundColor Green
+        Write-Host "  • Navigate to the project root where package.json is located"
+        Write-Host "  • Use: cd C:\path\to\chinook-project" -ForegroundColor Green
+        Handle-Error "package.json not found. Please run this script from the project root directory."
     }
-    else {
-        Write-Host "  ✓ .env.development.example found" -ForegroundColor Green
+    Write-Host "    ✓ package.json found" -ForegroundColor Green
+    
+    # Check for required template files
+    Write-SubStep "Checking required template files..."
+    $missingFiles = @()
+    
+    if (-not (Test-Path ".env.development.example")) {
+        $missingFiles += ".env.development.example"
+    } else {
+        Write-Host "    ✓ .env.development.example found" -ForegroundColor Green
     }
     
     if (-not (Test-Path ".env.microservice.example")) {
-        Handle-Error "Required template file .env.microservice.example not found."
-    }
-    else {
-        Write-Host "  ✓ .env.microservice.example found" -ForegroundColor Green
+        $missingFiles += ".env.microservice.example"
+    } else {
+        Write-Host "    ✓ .env.microservice.example found" -ForegroundColor Green
     }
     
-    Write-Success "Prerequisites check completed"
+    if ($missingFiles.Count -gt 0) {
+        Write-Error "Required template files are missing:"
+        foreach ($file in $missingFiles) {
+            Write-Host "  • $file" -ForegroundColor Red
+        }
+        Write-Troubleshooting "Missing template files"
+        Write-Host "  • Ensure you have cloned the complete repository"
+        Write-Host "  • Check if files were excluded by .gitignore"
+        Write-Host "  • Verify the repository integrity"
+        Handle-Error "Required template files not found."
+    }
+    
+    # Check write permissions
+    Write-SubStep "Checking write permissions..."
+    try {
+        $testFile = ".permission_test"
+        "test" | Out-File -FilePath $testFile -ErrorAction Stop
+        Remove-Item $testFile -ErrorAction SilentlyContinue
+        Write-Host "    ✓ Write permissions confirmed" -ForegroundColor Green
+    }
+    catch [System.UnauthorizedAccessException] {
+        Handle-PermissionError (Get-Location).Path "write to directory"
+        Handle-Error "Insufficient permissions to write files in current directory."
+    }
+    catch {
+        Write-Warning "Could not verify write permissions: $_"
+    }
+    
+    Write-Success "Prerequisites check completed successfully"
     
     Write-Host ""
-    Write-Host "This script will:"
-    Write-Host "  • Install all project dependencies"
-    Write-Host "  • Create environment files for all services"
-    Write-Host "  • Set up microservices configuration"
-    Write-Host "  • Initialize database with migrations and seed data"
-    Write-Host "  • Provide you with next steps to start development"
+    Write-Host "Setup Overview:" -ForegroundColor Blue
+    Write-Host "This script will perform the following operations:"
+    Write-Host "  1. Install all project dependencies (~2-5 minutes)" -ForegroundColor Green
+    Write-Host "  2. Create environment files for all services" -ForegroundColor Green
+    Write-Host "  3. Set up microservices configuration" -ForegroundColor Green
+    Write-Host "  4. Initialize database with migrations and seed data" -ForegroundColor Green
+    Write-Host "  5. Provide you with next steps to start development" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Estimated total time: 3-7 minutes" -ForegroundColor Yellow
     Write-Host ""
 }
 
 # Phase 2: Dependency Installation
 function Install-Dependencies {
-    Write-Phase "Installing Dependencies"
+    Write-Phase "Installing Dependencies" 2
     
     Write-Step "Installing root-level dependencies..."
+    Write-SubStep "This may take a few minutes depending on your internet connection..."
+    
+    # Show progress indicator
+    Write-Host "  Running npm install..." -ForegroundColor Blue
     
     try {
-        $process = Start-Process -FilePath "npm" -ArgumentList "install" -Wait -PassThru -NoNewWindow
-        if ($process.ExitCode -eq 0) {
+        # Capture both stdout and stderr
+        $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $processInfo.FileName = "npm"
+        $processInfo.Arguments = "install"
+        $processInfo.RedirectStandardOutput = $true
+        $processInfo.RedirectStandardError = $true
+        $processInfo.UseShellExecute = $false
+        $processInfo.CreateNoWindow = $true
+        
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $processInfo
+        $process.Start() | Out-Null
+        
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        
+        $npmOutput = $stdout + $stderr
+        $exitCode = $process.ExitCode
+        
+        if ($exitCode -eq 0) {
             Write-Success "Dependencies installed successfully"
+            
+            # Show summary of installed packages
+            if ($npmOutput -match "added|updated|removed") {
+                Write-Host "  → Package operations completed" -ForegroundColor Green
+            }
+            
+            # Check for any warnings
+            if ($npmOutput -match "WARN") {
+                Write-Warning "npm install completed with warnings (this is usually normal)"
+                Write-Host "  → Check npm output above for details" -ForegroundColor Yellow
+            }
         }
         else {
-            throw "npm install failed with exit code $($process.ExitCode)"
+            throw "npm install failed with exit code $exitCode"
         }
     }
     catch {
-        Handle-Error "Failed to install dependencies. Try running 'npm install --verbose' for more details." "npm install"
+        Write-Error "Failed to install dependencies (exit code: $exitCode)"
+        
+        # Analyze the error and provide specific guidance
+        if ($npmOutput -match "EACCES|permission denied|UnauthorizedAccessException") {
+            Handle-PermissionError "node_modules" "install dependencies"
+        }
+        elseif ($npmOutput -match "ENOTFOUND|network|timeout|getaddrinfo") {
+            Handle-DependencyError "network"
+        }
+        elseif ($npmOutput -match "ENOSPC|insufficient space") {
+            Write-Troubleshooting "Insufficient disk space"
+            Write-Host "  • Free up disk space and try again"
+            Write-Host "  • Check available space: Get-WmiObject -Class Win32_LogicalDisk" -ForegroundColor Green
+        }
+        else {
+            Handle-DependencyError "unknown"
+        }
+        
+        # Show the actual npm error output
+        Write-Host ""
+        Write-Host "npm output:" -ForegroundColor Red
+        $npmOutput.Split("`n") | Select-Object -Last 20 | ForEach-Object { Write-Host $_ }
+        
+        Handle-Error "Dependency installation failed" "npm install"
     }
 }
 
 # Phase 3: Environment File Generation
 function New-EnvironmentFiles {
-    Write-Phase "Creating Environment Files"
+    Write-Phase "Creating Environment Files" 3
     
     # Create service environment files
     Write-Step "Creating service environment files..."
     
     $serviceCreationErrors = 0
+    $servicesProcessed = 0
+    $servicesCreated = 0
+    $servicesSkipped = 0
     
     foreach ($service in $Services.Keys) {
         $port = $Services[$service]
+        $servicesProcessed++
         
-        if (-not (New-ServiceEnvironmentFile $service $port)) {
+        if (New-ServiceEnvironmentFile $service $port) {
+            $envFile = Join-Path $service ".env"
+            if ((-not (Test-Path $envFile)) -or ($script:CreatedFiles -contains $envFile)) {
+                $servicesCreated++
+            } else {
+                $servicesSkipped++
+            }
+        } else {
             $serviceCreationErrors++
         }
     }
     
     # Create microservices environment file
     Write-Step "Creating microservices environment file..."
+    Write-SubStep "Setting up microservices with dummy mail configuration..."
     
-    if (-not (New-MicroservicesEnvironmentFile)) {
+    if (New-MicroservicesEnvironmentFile) {
+        $microEnvFile = "microservices\.env"
+        if ($script:CreatedFiles -contains $microEnvFile) {
+            $servicesCreated++
+        } else {
+            $servicesSkipped++
+        }
+    } else {
         $serviceCreationErrors++
     }
     
-    # Report summary
+    # Report detailed summary
+    Write-Host ""
+    Write-Host "Environment File Summary:" -ForegroundColor Blue
+    Write-Host "  • Services processed: $servicesProcessed"
+    Write-Host "  • Files created: $servicesCreated"
+    Write-Host "  • Files skipped (already exist): $servicesSkipped"
+    Write-Host "  • Errors encountered: $serviceCreationErrors"
+    
     if ($serviceCreationErrors -gt 0) {
         Write-Warning "$serviceCreationErrors environment file(s) could not be created"
+        Write-Troubleshooting "Some environment files failed to create"
+        Write-Host "  • You may need to create these files manually"
+        Write-Host "  • Check the error messages above for specific guidance"
+        Write-Host "  • The setup can continue, but affected services may not start properly"
     }
     
     if ($script:CreatedFiles.Count -gt 0) {
         Write-Success "Environment file creation phase completed"
-    }
-    else {
-        Write-Warning "No new environment files were created (all files already exist or errors occurred)"
+        Write-Host "  → Created $($script:CreatedFiles.Count) new environment file(s)" -ForegroundColor Green
+    } else {
+        if ($servicesSkipped -gt 0) {
+            Write-Success "Environment file phase completed (all files already existed)"
+        } else {
+            Write-Warning "No new environment files were created due to errors"
+        }
     }
 }
 
 # Phase 4: Database Setup
 function Initialize-Database {
-    Write-Phase "Setting Up Database"
+    Write-Phase "Setting Up Database" 4
     
-    Write-Step "Running database migrations..."
+    Write-Step "Initializing database schema and data..."
+    Write-SubStep "This will create SQLite databases and populate them with initial data..."
     
     # Database migration commands
     $migrations = @(
@@ -345,48 +565,145 @@ function Initialize-Database {
     )
     
     $migrationResults = @()
+    $successfulMigrations = 0
+    $failedMigrations = 0
+    
+    # Check if database directory exists
+    if (-not (Test-Path "database")) {
+        Write-Error "Database directory not found"
+        Write-Troubleshooting "Missing database directory"
+        Write-Host "  • Ensure you have cloned the complete repository"
+        Write-Host "  • Check if 'database' directory exists in project root"
+        return
+    }
     
     foreach ($migration in $migrations) {
-        Write-Step "Executing $migration..."
+        Write-SubStep "Executing $migration..."
         
         try {
-            $process = Start-Process -FilePath "npm" -ArgumentList "run", $migration -Wait -PassThru -NoNewWindow
-            if ($process.ExitCode -eq 0) {
+            # Capture migration output for better error reporting
+            $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+            $processInfo.FileName = "npm"
+            $processInfo.Arguments = "run $migration"
+            $processInfo.RedirectStandardOutput = $true
+            $processInfo.RedirectStandardError = $true
+            $processInfo.UseShellExecute = $false
+            $processInfo.CreateNoWindow = $true
+            
+            $process = New-Object System.Diagnostics.Process
+            $process.StartInfo = $processInfo
+            $process.Start() | Out-Null
+            
+            $stdout = $process.StandardOutput.ReadToEnd()
+            $stderr = $process.StandardError.ReadToEnd()
+            $process.WaitForExit()
+            
+            $migrationOutput = $stdout + $stderr
+            $exitCode = $process.ExitCode
+            
+            if ($exitCode -eq 0) {
                 Write-Success "Migration $migration completed successfully"
                 $migrationResults += "$migration`: SUCCESS"
+                $successfulMigrations++
+                Write-Host "    ✓ Database schema updated" -ForegroundColor Green
             }
             else {
-                throw "Migration failed with exit code $($process.ExitCode)"
+                throw "Migration failed with exit code $exitCode"
             }
         }
         catch {
-            Write-Error "Migration $migration failed: $_"
+            Write-Error "Migration $migration failed (exit code: $exitCode)"
             $migrationResults += "$migration`: FAILED"
+            $failedMigrations++
+            
+            # Provide specific troubleshooting for database issues
+            if ($migrationOutput -match "ENOENT|not found") {
+                Write-Troubleshooting "Migration script not found"
+                Write-Host "  • Check if package.json contains the script: npm run" -ForegroundColor Green
+                Write-Host "  • Verify database directory structure"
+            }
+            elseif ($migrationOutput -match "SQLITE_|database") {
+                Write-Troubleshooting "Database error detected"
+                Write-Host "  • Check if .db directory exists and is writable"
+                Write-Host "  • Verify SQLite is available (usually bundled with Node.js)"
+                Write-Host "  • Check database file permissions"
+            }
+            else {
+                Write-Troubleshooting "Migration execution failed"
+                Write-Host "  • Check the migration output above for details"
+                Write-Host "  • Verify all dependencies are installed"
+            }
+            
+            # Show last few lines of error output
+            Write-Host "    Error details:" -ForegroundColor Red
+            $migrationOutput.Split("`n") | Select-Object -Last 5 | ForEach-Object { 
+                if ($_.Trim()) { Write-Host "    $_" }
+            }
+            
             # Continue with other migrations instead of exiting
+            Write-Warning "Continuing with remaining migrations..."
         }
     }
     
     # Run database seeding
     Write-Step "Seeding database with initial data..."
+    Write-SubStep "Populating databases with sample data..."
     
     try {
-        $process = Start-Process -FilePath "npm" -ArgumentList "run", "database:seed" -Wait -PassThru -NoNewWindow
-        if ($process.ExitCode -eq 0) {
+        $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $processInfo.FileName = "npm"
+        $processInfo.Arguments = "run database:seed"
+        $processInfo.RedirectStandardOutput = $true
+        $processInfo.RedirectStandardError = $true
+        $processInfo.UseShellExecute = $false
+        $processInfo.CreateNoWindow = $true
+        
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $processInfo
+        $process.Start() | Out-Null
+        
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        
+        $seedOutput = $stdout + $stderr
+        $exitCode = $process.ExitCode
+        
+        if ($exitCode -eq 0) {
             Write-Success "Database seeding completed successfully"
             $migrationResults += "database:seed: SUCCESS"
+            Write-Host "    ✓ Sample data loaded" -ForegroundColor Green
         }
         else {
-            throw "Database seeding failed with exit code $($process.ExitCode)"
+            throw "Database seeding failed with exit code $exitCode"
         }
     }
     catch {
-        Write-Error "Database seeding failed: $_"
+        Write-Error "Database seeding failed (exit code: $exitCode)"
         $migrationResults += "database:seed: FAILED"
+        
+        Write-Troubleshooting "Database seeding failed"
+        Write-Host "  • This is often non-critical - the application may still work"
+        Write-Host "  • Check if migrations completed successfully first"
+        Write-Host "  • You can manually run: npm run database:seed" -ForegroundColor Green
+        Write-Host "  • Or populate data through the application interface"
+        
+        # Show error details
+        Write-Host "    Seed error details:" -ForegroundColor Red
+        $seedOutput.Split("`n") | Select-Object -Last 5 | ForEach-Object { 
+            if ($_.Trim()) { Write-Host "    $_" }
+        }
     }
     
-    # Display migration summary
+    # Display comprehensive migration summary
     Write-Host ""
-    Write-Host "Migration Summary:" -ForegroundColor Blue
+    Write-Host "Database Setup Summary:" -ForegroundColor Blue
+    Write-Host "  • Successful migrations: $successfulMigrations"
+    Write-Host "  • Failed migrations: $failedMigrations"
+    Write-Host "  • Total operations: $($migrations.Count + 1)"
+    
+    Write-Host ""
+    Write-Host "Detailed Results:" -ForegroundColor Blue
     foreach ($result in $migrationResults) {
         if ($result -like "*SUCCESS*") {
             Write-Host "  ✓ $result" -ForegroundColor Green
@@ -395,59 +712,202 @@ function Initialize-Database {
             Write-Host "  ✗ $result" -ForegroundColor Red
         }
     }
+    
+    # Provide guidance based on results
+    if ($failedMigrations -eq 0) {
+        Write-Success "All database operations completed successfully"
+    }
+    elseif ($successfulMigrations -gt 0) {
+        Write-Warning "Database setup completed with some failures"
+        Write-Host "  → Some services may not function properly" -ForegroundColor Yellow
+        Write-Host "  → Check error messages above and consider manual intervention" -ForegroundColor Yellow
+    }
+    else {
+        Write-Error "All database operations failed"
+        Write-Host "  → The application may not start properly" -ForegroundColor Red
+        Write-Host "  → Review error messages and fix issues before proceeding" -ForegroundColor Red
+    }
 }
 
 # Phase 5: Completion and Summary
 function Complete-Setup {
-    Write-Phase "Setup Complete"
+    Write-Phase "Setup Complete" 5
     
-    # Display summary
-    Write-Host ""
-    Write-Host "🎉 Developer environment setup completed!" -ForegroundColor Green
-    Write-Host ""
+    # Calculate setup success rate
+    $totalOperations = 4  # dependencies, env files, database, completion
+    $successfulOperations = 0
+    $criticalErrors = 0
     
+    # Check if dependencies were installed (no errors in that phase means success)
+    if (($script:Errors.Count -eq 0) -or -not ($script:Errors -match "Failed to install dependencies")) {
+        $successfulOperations++
+    } else {
+        $criticalErrors++
+    }
+    
+    # Check if any environment files were created or already existed
+    if (($script:CreatedFiles.Count -gt 0) -or ($script:Warnings -match "already exists")) {
+        $successfulOperations++
+    }
+    
+    # Check if any database operations succeeded
+    if (-not ($script:Errors -match "All database operations failed")) {
+        $successfulOperations++
+    }
+    
+    # Completion phase is always successful if we reach here
+    $successfulOperations++
+    
+    # Display setup status
+    $successRate = [math]::Round(($successfulOperations * 100 / $totalOperations), 0)
+    
+    if (($successRate -eq 100) -and ($script:Errors.Count -eq 0)) {
+        Write-Host ""
+        Write-Host "🎉 Developer environment setup completed successfully!" -ForegroundColor Green
+        Write-Host "   All operations completed without errors" -ForegroundColor Green
+        Write-Host ""
+    }
+    elseif ($successRate -ge 75) {
+        Write-Host ""
+        Write-Host "⚠️  Developer environment setup completed with warnings" -ForegroundColor Yellow
+        Write-Host "   Setup success rate: $successRate%" -ForegroundColor Yellow
+        Write-Host ""
+    }
+    else {
+        Write-Host ""
+        Write-Host "❌ Developer environment setup completed with significant issues" -ForegroundColor Red
+        Write-Host "   Setup success rate: $successRate%" -ForegroundColor Red
+        Write-Host ""
+    }
+    
+    # Detailed summary sections
     if ($script:CreatedFiles.Count -gt 0) {
-        Write-Host "Created Files:" -ForegroundColor Blue
+        Write-Host "✅ Successfully Created Files:" -ForegroundColor Blue
         foreach ($file in $script:CreatedFiles) {
-            Write-Host "  • $file"
+            Write-Host "  • $file" -ForegroundColor Green
         }
         Write-Host ""
     }
     
     if ($script:Warnings.Count -gt 0) {
-        Write-Host "Warnings:" -ForegroundColor Yellow
+        Write-Host "⚠️  Warnings (Non-Critical Issues):" -ForegroundColor Yellow
         foreach ($warning in $script:Warnings) {
-            Write-Host "  • $warning"
+            Write-Host "  • $warning" -ForegroundColor Yellow
         }
         Write-Host ""
     }
     
     if ($script:Errors.Count -gt 0) {
-        Write-Host "Errors encountered:" -ForegroundColor Red
+        Write-Host "❌ Errors Encountered:" -ForegroundColor Red
         foreach ($error in $script:Errors) {
-            Write-Host "  • $error"
+            Write-Host "  • $error" -ForegroundColor Red
         }
+        Write-Host ""
+        Write-Host "💡 Recommendation: Review errors above and consider manual fixes" -ForegroundColor Yellow
         Write-Host ""
     }
     
-    # Display next steps
-    Write-Host "Next Steps:" -ForegroundColor Blue
-    Write-Host "  1. Start the development environment:"
-    Write-Host "     run.sh" -ForegroundColor Green
+    # Environment status check
+    Write-Host "🔧 Environment Status Check:" -ForegroundColor Blue
+    
+    # Check service directories and .env files
+    $servicesReady = 0
+    $totalServices = 3
+    
+    foreach ($service in $Services.Keys) {
+        $envFile = Join-Path $service ".env"
+        if (Test-Path $envFile) {
+            Write-Host "  ✓ $service service configured (PORT=$($Services[$service]))" -ForegroundColor Green
+            $servicesReady++
+        } else {
+            Write-Host "  ✗ $service service missing .env file" -ForegroundColor Red
+        }
+    }
+    
+    # Check microservices
+    if (Test-Path "microservices\.env") {
+        Write-Host "  ✓ microservices configured" -ForegroundColor Green
+    } else {
+        Write-Host "  ✗ microservices missing .env file" -ForegroundColor Red
+    }
+    
+    # Check database files
+    $dbFilesExist = $false
+    if (Test-Path ".db") {
+        $dbFiles = Get-ChildItem ".db" -Filter "*.sqlite*" -ErrorAction SilentlyContinue
+        if ($dbFiles.Count -gt 0) {
+            Write-Host "  ✓ Database files created ($($dbFiles.Count) database(s))" -ForegroundColor Green
+            $dbFilesExist = $true
+        } else {
+            Write-Host "  ⚠ Database directory exists but no database files found" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "  ✗ Database directory not found" -ForegroundColor Red
+    }
+    
     Write-Host ""
-    Write-Host "  2. Or start services individually:"
-    Write-Host "     npm run app:dev     # Start main app service (port 3001)" -ForegroundColor Green
-    Write-Host "     npm run auth:dev    # Start auth service (port 3000)" -ForegroundColor Green
-    Write-Host "     npm run cat:dev     # Start catalog service (port 3002)" -ForegroundColor Green
-    Write-Host "     npm run web:dev     # Start web frontend" -ForegroundColor Green
+    
+    # Readiness assessment
+    if (($servicesReady -eq $totalServices) -and $dbFilesExist -and ($script:Errors.Count -eq 0)) {
+        Write-Host "🚀 Environment Status: READY" -ForegroundColor Green
+        Write-Host "   Your development environment is fully configured and ready to use!"
+    }
+    elseif ($servicesReady -ge 2) {
+        Write-Host "⚠️  Environment Status: PARTIALLY READY" -ForegroundColor Yellow
+        Write-Host "   Most services are configured, but some issues may affect functionality"
+    }
+    else {
+        Write-Host "❌ Environment Status: NEEDS ATTENTION" -ForegroundColor Red
+        Write-Host "   Several critical issues need to be resolved before development"
+    }
+    
     Write-Host ""
-    Write-Host "  3. Access the application:"
-    Write-Host "     • Frontend: http://localhost:5173 (or as shown by Vite)"
-    Write-Host "     • Auth API: http://localhost:3000"
-    Write-Host "     • App API: http://localhost:3001"
-    Write-Host "     • Catalog API: http://localhost:3002"
+    
+    # Next steps with conditional guidance
+    Write-Host "📋 Next Steps:" -ForegroundColor Blue
+    
+    if ($script:Errors.Count -gt 0) {
+        Write-Host "  1. FIRST: Resolve the errors listed above" -ForegroundColor Red
+        Write-Host "     • Review error messages and troubleshooting tips"
+        Write-Host "     • Fix critical issues before starting services"
+        Write-Host ""
+        Write-Host "  2. After fixing errors, start the development environment:" -ForegroundColor Blue
+    } else {
+        Write-Host "  1. Start the development environment:" -ForegroundColor Blue
+    }
+    
+    Write-Host "     .\run.sh                    # Start web + app services together" -ForegroundColor Green
     Write-Host ""
-    Write-Host "Happy coding! 🚀" -ForegroundColor Green
+    Write-Host "  2. Or start services individually:" -ForegroundColor Blue
+    Write-Host "     npm run app:dev             # Main app service (port 3001)" -ForegroundColor Green
+    Write-Host "     npm run auth:dev            # Auth service (port 3000)" -ForegroundColor Green
+    Write-Host "     npm run cat:dev             # Catalog service (port 3002)" -ForegroundColor Green
+    Write-Host "     npm run web:dev             # Web frontend (Vite dev server)" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  3. Access the application:" -ForegroundColor Blue
+    Write-Host "     • Frontend:    http://localhost:5173 (or as shown by Vite)" -ForegroundColor Green
+    Write-Host "     • Auth API:    http://localhost:3000" -ForegroundColor Green
+    Write-Host "     • App API:     http://localhost:3001" -ForegroundColor Green
+    Write-Host "     • Catalog API: http://localhost:3002" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  4. Useful development commands:" -ForegroundColor Blue
+    Write-Host "     npm run database:migrate-*  # Run specific migrations" -ForegroundColor Green
+    Write-Host "     npm run database:seed       # Populate sample data" -ForegroundColor Green
+    Write-Host "     npm test                    # Run tests" -ForegroundColor Green
+    Write-Host ""
+    
+    # Final message based on setup status
+    if ($script:Errors.Count -eq 0) {
+        Write-Host "🎉 Happy coding! Your Chinook development environment is ready! 🚀" -ForegroundColor Green
+    } else {
+        Write-Host "💪 Almost there! Fix the issues above and you'll be ready to code! 🚀" -ForegroundColor Yellow
+    }
+    
+    Write-Host ""
+    Write-Host "📚 For more help:" -ForegroundColor Blue
+    Write-Host "   • Check the project README.md for detailed documentation"
+    Write-Host "   • Review individual service README files in their directories"
+    Write-Host "   • Run this script again if you need to reconfigure"
 }
 
 # Main execution flow
