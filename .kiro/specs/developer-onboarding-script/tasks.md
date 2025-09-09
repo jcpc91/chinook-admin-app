@@ -2,9 +2,6 @@
 
 - [x] 1. Create enhanced shell script (init.sh) with core functionality
 
-
-
-
   - Implement main script structure with phase-based execution
   - Add dependency installation logic with error handling
   - Create environment file generation for services (auth, app, catalogos)
@@ -13,7 +10,9 @@
   - Add comprehensive progress reporting and error handling
   - _Requirements: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 2. Create enhanced PowerShell script (init.ps1) with equivalent functionality
+- [x] 2. Create enhanced PowerShell script (init.ps1) with equivalent functionality
+
+
   - Implement PowerShell version of main script structure
   - Add Windows-compatible dependency installation logic
   - Create PowerShell environment file generation for all services
@@ -23,6 +22,7 @@
   - _Requirements: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 6.5_
 
 - [ ] 3. Implement environment file template processing
+
   - Create function to read .env.development.example template
   - Add logic to substitute PORT values for each service
   - Implement .env.microservice.example processing with dummy values
@@ -31,6 +31,7 @@
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 3.3, 3.4_
 
 - [ ] 4. Add comprehensive error handling and user feedback
+
   - Implement progress indicators for each major phase
   - Add specific error messages with troubleshooting guidance
   - Create success confirmation messages and next steps display
