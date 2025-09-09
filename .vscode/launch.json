@@ -63,6 +63,21 @@
             "type": "node",
             "cwd": "${workspaceFolder}",
             "sourceMaps": true
+        },
+        {
+            "name": "Launch inv",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "inversiones:dev"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "cwd": "${workspaceFolder}",
+            "sourceMaps": true
         }
     ]
 }
