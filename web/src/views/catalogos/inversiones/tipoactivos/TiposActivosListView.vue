@@ -4,7 +4,7 @@
       <Button label="Nuevo" @click="router.push({ name: 'inversiones-tiposactivos-new' })"></Button>
     </template>
     <RouterView name="top" />
-    <TipoActivosDataTable  :items="store.getItems" @click-row="on_row_clicked" />
+    <TipoActivosDataTable :items="store.items" @click-row="on_row_clicked" />
     <RouterView name="bottom" />
   </Panel>
 </template>

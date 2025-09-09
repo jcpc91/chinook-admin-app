@@ -18,7 +18,7 @@
         <!--valormercado-->
         <div class="lg:flex lg:flex-row gap-3">
             <Label label="Valor Mercado:" name="valormercado" class="lg:w-2xs" />
-            <InputText name="valormercado" v-model="form.valormercado" required class="basis-full" />
+            <InputText name="valormercado" type="number" v-model.number="form.valormercado" required class="basis-full" />
         </div>
         <div class="col-span-1 lg:col-span-2">
             <div class="flex justify-end">
@@ -54,12 +54,12 @@ const form = reactive({
 
 const on_submit = async () => {
     try {
-        if (route.meta.type === 'create') {
-            store.addItem(form.value)
+        if (route.meta.mode === 'create') {
+            await store.addItem(form)
             await router.push({ name: 'inversiones-activos-detalle', params: { ticker: form.value.ticker } })
-        } else if (route.meta.type === 'update') {
+        } else if (route.meta.mode === 'update') {
             store.updateItem(form.value)
-            await router.back()
+            router.back()
         }
     } catch (error) {
         console.error('Error al guardar el activo:', error);
@@ -68,6 +68,7 @@ const on_submit = async () => {
 
 onMounted(() => {
     if (route.meta.type === 'update') {
+
         // TODO: Cargar datos existentes del activo
         // form.codigo = datosExistentes.codigo;
         // form.categoria_principal = datosExistentes.categoria_principal;

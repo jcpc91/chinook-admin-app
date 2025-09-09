@@ -8,21 +8,23 @@ export const useActivosStore = defineStore('activosStore', () => {
     const fetchItems = () => {
         items.splice(0, items.length)
         return useInversionesFetch('activos')
-          .get()
-          .json()
-          .then(({ data }) => items.push(...data.value))
+            .get()
+            .json()
+            .then(({ data }) => items.push(...data.value))
     }
     const fetchItemById = (ticker) => {
         return items.find((item) => item.ticker == ticker)
     }
     const addItem = (item) => {
         return useInversionesFetch('activos')
-          .post(item)
-          .json()
-          .then(({ data }) => {
-            items.push(data.value)
-            return data.value
-          })
+            .post(item)
+            .json()
+            .then(({ data, error, response, statusCode }) => {
+                if (statusCode.value >= 400) throw new Error(error.value)
+
+                items.push(data.value)
+                return data.value
+            })
     }
     const updateItem = (item) => {
         const index = items.findIndex((i) => i.ticker == item.ticker)
