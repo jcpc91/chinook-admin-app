@@ -3,7 +3,7 @@
 
 # Set strict mode for better error handling
 Set-StrictMode -Version Latest
-$ErrorActionPreference = "Continue"  # Changed to Continue to handle non-critical errors
+$ErrorActionPreference = "Continue"
 
 # Global variables
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -72,6 +72,155 @@ function Handle-Error {
         Write-Host "Setup failed. Please check the errors above and try again." -ForegroundColor Red
         Write-Host "For troubleshooting help, please refer to the project documentation." -ForegroundColor Yellow
         exit 1
+    }
+}
+
+# Template processing functions
+function Read-TemplateFile {
+    param([string]$TemplateFile)
+    
+    if (-not (Test-Path $TemplateFile)) {
+        Write-Error "Template file not found: $TemplateFile"
+        return $null
+    }
+    
+    try {
+        $content = Get-Content $TemplateFile -Raw -ErrorAction Stop
+        return $content
+    }
+    catch {
+        Write-Error "Failed to read template file $TemplateFile`: $_"
+        return $null
+    }
+}
+
+function Set-PortValue {
+    param([string]$TemplateContent, [int]$Port)
+    
+    # Replace PORT= with PORT=<port_value>, handling various formats including empty values
+    $result = $TemplateContent -replace "PORT=.*", "PORT=$Port"
+    return $result
+}
+
+function ConvertFrom-MicroserviceTemplate {
+    param([string]$TemplateFile)
+    
+    if (-not (Test-Path $TemplateFile)) {
+        Write-Error "Microservice template file not found: $TemplateFile"
+        return $null
+    }
+    
+    try {
+        # Read template content
+        $templateContent = Get-Content $TemplateFile -Raw -ErrorAction Stop
+        
+        # Substitute each variable with dummy values
+        $envContent = $templateContent -replace "MAIL_HOST=.*", "MAIL_HOST=localhost"
+        $envContent = $envContent -replace "MAIL_PORT=.*", "MAIL_PORT=587"
+        $envContent = $envContent -replace "MAIL_USER=.*", "MAIL_USER=dummy@example.com"
+        $envContent = $envContent -replace "MAIL_PASSWORD=.*", "MAIL_PASSWORD=dummypassword"
+        
+        return $envContent
+    }
+    catch {
+        Write-Error "Failed to process microservice template $TemplateFile`: $_"
+        return $null
+    }
+}
+
+function Test-FileExists {
+    param([string]$FilePath, [string]$ServiceName)
+    
+    if (Test-Path $FilePath) {
+        Write-Warning "Environment file already exists for $ServiceName, skipping creation: $FilePath"
+        return $true
+    }
+    
+    return $false
+}
+
+function New-ServiceEnvironmentFile {
+    param([string]$Service, [int]$Port)
+    
+    $serviceDir = $Service
+    $envFile = Join-Path $serviceDir ".env"
+    $templateFile = ".env.development.example"
+    
+    # Check if file already exists
+    if (Test-FileExists $envFile "$Service service") {
+        return $true
+    }
+    
+    # Read template file
+    $templateContent = Read-TemplateFile $templateFile
+    if ($null -eq $templateContent) {
+        return $false
+    }
+    
+    # Substitute PORT value
+    $envContent = Set-PortValue $templateContent $Port
+    
+    try {
+        # Create service directory if it doesn't exist
+        if (-not (Test-Path $serviceDir)) {
+            New-Item -ItemType Directory -Path $serviceDir -Force | Out-Null
+        }
+        
+        # Write environment file with UTF8 encoding (no BOM)
+        $fullPath = if (Test-Path $envFile) { (Resolve-Path $envFile).Path } else { $envFile }
+        [System.IO.File]::WriteAllText($fullPath, $envContent, [System.Text.UTF8Encoding]::new($false))
+        
+        Write-Success "Created environment file for $Service service (PORT=$Port)"
+        $script:CreatedFiles += $envFile
+        return $true
+    }
+    catch [System.UnauthorizedAccessException] {
+        Write-Error "Permission denied creating environment file for $Service service. Try running PowerShell as Administrator."
+        return $false
+    }
+    catch {
+        Write-Error "Failed to create environment file for $Service service: $_"
+        return $false
+    }
+}
+
+function New-MicroservicesEnvironmentFile {
+    $microservicesDir = "microservices"
+    $envFile = Join-Path $microservicesDir ".env"
+    $templateFile = ".env.microservice.example"
+    
+    # Check if file already exists
+    if (Test-FileExists $envFile "microservices") {
+        return $true
+    }
+    
+    # Process microservice template
+    $envContent = ConvertFrom-MicroserviceTemplate $templateFile
+    if ($null -eq $envContent) {
+        return $false
+    }
+    
+    try {
+        # Create microservices directory if it doesn't exist
+        if (-not (Test-Path $microservicesDir)) {
+            New-Item -ItemType Directory -Path $microservicesDir -Force | Out-Null
+        }
+        
+        # Write environment file with UTF8 encoding (no BOM)
+        $fullPath = if (Test-Path $envFile) { (Resolve-Path $envFile).Path } else { $envFile }
+        [System.IO.File]::WriteAllText($fullPath, $envContent, [System.Text.UTF8Encoding]::new($false))
+        
+        Write-Success "Created microservices environment file with dummy values"
+        $script:CreatedFiles += $envFile
+        return $true
+    }
+    catch [System.UnauthorizedAccessException] {
+        Write-Error "Permission denied creating microservices environment file. Try running PowerShell as Administrator."
+        return $false
+    }
+    catch {
+        Write-Error "Failed to create microservices environment file: $_"
+        return $false
     }
 }
 
@@ -152,91 +301,33 @@ function New-EnvironmentFiles {
     # Create service environment files
     Write-Step "Creating service environment files..."
     
+    $serviceCreationErrors = 0
+    
     foreach ($service in $Services.Keys) {
-        $serviceDir = $service
-        $envFile = Join-Path $serviceDir ".env"
         $port = $Services[$service]
         
-        if (Test-Path $envFile) {
-            Write-Warning "Environment file already exists for $service service, skipping: $envFile"
-            continue
-        }
-        
-        if (-not (Test-Path ".env.development.example")) {
-            Write-Error "Template file .env.development.example not found"
-            continue
-        }
-        
-        # Create service directory if it doesn't exist
-        if (-not (Test-Path $serviceDir)) {
-            New-Item -ItemType Directory -Path $serviceDir -Force | Out-Null
-        }
-        
-        try {
-            # Read template and replace PORT value
-            $templateContent = Get-Content ".env.development.example" -Raw -ErrorAction Stop
-            $envContent = $templateContent -replace "PORT=\s*$", "PORT=$port"
-            
-            # Ensure directory exists
-            $envDir = Split-Path $envFile -Parent
-            if (-not (Test-Path $envDir)) {
-                New-Item -ItemType Directory -Path $envDir -Force | Out-Null
-            }
-            
-            # Write to service .env file with UTF8 encoding (no BOM)
-            [System.IO.File]::WriteAllText((Resolve-Path $envFile -ErrorAction SilentlyContinue).Path ?? $envFile, $envContent, [System.Text.UTF8Encoding]::new($false))
-            
-            Write-Success "Created environment file for $service service (PORT=$port)"
-            $script:CreatedFiles += $envFile
-        }
-        catch [System.UnauthorizedAccessException] {
-            Write-Error "Permission denied creating environment file for $service service. Try running PowerShell as Administrator."
-        }
-        catch {
-            Write-Error "Failed to create environment file for $service service: $_"
+        if (-not (New-ServiceEnvironmentFile $service $port)) {
+            $serviceCreationErrors++
         }
     }
     
     # Create microservices environment file
     Write-Step "Creating microservices environment file..."
     
-    $microservicesEnv = Join-Path "microservices" ".env"
+    if (-not (New-MicroservicesEnvironmentFile)) {
+        $serviceCreationErrors++
+    }
     
-    if (Test-Path $microservicesEnv) {
-        Write-Warning "Microservices environment file already exists, skipping: $microservicesEnv"
+    # Report summary
+    if ($serviceCreationErrors -gt 0) {
+        Write-Warning "$serviceCreationErrors environment file(s) could not be created"
+    }
+    
+    if ($script:CreatedFiles.Count -gt 0) {
+        Write-Success "Environment file creation phase completed"
     }
     else {
-        if (-not (Test-Path ".env.microservice.example")) {
-            Write-Error "Template file .env.microservice.example not found"
-        }
-        else {
-            try {
-                # Create microservices directory if it doesn't exist
-                $microservicesDir = "microservices"
-                if (-not (Test-Path $microservicesDir)) {
-                    New-Item -ItemType Directory -Path $microservicesDir -Force | Out-Null
-                }
-                
-                # Create .env file with dummy values
-                $microservicesContent = @"
-MAIL_HOST=localhost
-MAIL_PORT=587
-MAIL_USER=dummy@example.com
-MAIL_PASSWORD=dummypassword
-"@
-                
-                [System.IO.File]::WriteAllText((Resolve-Path $microservicesEnv -ErrorAction SilentlyContinue).Path ?? $microservicesEnv, $microservicesContent, [System.Text.UTF8Encoding]::new($false))
-                
-                Write-Success "Created microservices environment file with dummy values"
-                $script:CreatedFiles += $microservicesEnv
-            }
-            catch [System.UnauthorizedAccessException] {
-                Write-Error "Permission denied creating microservices environment file. Try running PowerShell as Administrator."
-            }
-            catch {
-                Write-Error "Failed to create microservices environment file: $_"
-            }
-        }
+        Write-Warning "No new environment files were created (all files already exist or errors occurred)"
     }
 }
 
@@ -262,7 +353,7 @@ function Initialize-Database {
             $process = Start-Process -FilePath "npm" -ArgumentList "run", $migration -Wait -PassThru -NoNewWindow
             if ($process.ExitCode -eq 0) {
                 Write-Success "Migration $migration completed successfully"
-                $migrationResults += "$migration: SUCCESS"
+                $migrationResults += "$migration`: SUCCESS"
             }
             else {
                 throw "Migration failed with exit code $($process.ExitCode)"
@@ -270,7 +361,7 @@ function Initialize-Database {
         }
         catch {
             Write-Error "Migration $migration failed: $_"
-            $migrationResults += "$migration: FAILED"
+            $migrationResults += "$migration`: FAILED"
             # Continue with other migrations instead of exiting
         }
     }
@@ -342,22 +433,13 @@ function Complete-Setup {
     # Display next steps
     Write-Host "Next Steps:" -ForegroundColor Blue
     Write-Host "  1. Start the development environment:"
-    Write-Host "     " -NoNewline
-    Write-Host "./run.sh" -ForegroundColor Green
+    Write-Host "     run.sh" -ForegroundColor Green
     Write-Host ""
     Write-Host "  2. Or start services individually:"
-    Write-Host "     " -NoNewline
-    Write-Host "npm run app:dev" -ForegroundColor Green -NoNewline
-    Write-Host "     # Start main app service (port 3001)"
-    Write-Host "     " -NoNewline
-    Write-Host "npm run auth:dev" -ForegroundColor Green -NoNewline
-    Write-Host "    # Start auth service (port 3000)"
-    Write-Host "     " -NoNewline
-    Write-Host "npm run cat:dev" -ForegroundColor Green -NoNewline
-    Write-Host "     # Start catalog service (port 3002)"
-    Write-Host "     " -NoNewline
-    Write-Host "npm run web:dev" -ForegroundColor Green -NoNewline
-    Write-Host "     # Start web frontend"
+    Write-Host "     npm run app:dev     # Start main app service (port 3001)" -ForegroundColor Green
+    Write-Host "     npm run auth:dev    # Start auth service (port 3000)" -ForegroundColor Green
+    Write-Host "     npm run cat:dev     # Start catalog service (port 3002)" -ForegroundColor Green
+    Write-Host "     npm run web:dev     # Start web frontend" -ForegroundColor Green
     Write-Host ""
     Write-Host "  3. Access the application:"
     Write-Host "     • Frontend: http://localhost:5173 (or as shown by Vite)"

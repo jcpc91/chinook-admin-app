@@ -113,6 +113,136 @@ install_dependencies() {
     fi
 }
 
+# Template processing functions
+read_template_file() {
+    local template_file="$1"
+    
+    if [[ ! -f "$template_file" ]]; then
+        print_error "Template file not found: $template_file"
+        return 1
+    fi
+    
+    if [[ ! -r "$template_file" ]]; then
+        print_error "Template file is not readable: $template_file"
+        return 1
+    fi
+    
+    cat "$template_file"
+}
+
+substitute_port_value() {
+    local template_content="$1"
+    local port="$2"
+    
+    # Replace PORT= with PORT=<port_value>, handling various formats including empty values
+    echo "$template_content" | sed "s/PORT=.*/PORT=$port/"
+}
+
+process_microservice_template() {
+    local template_file="$1"
+    
+    if [[ ! -f "$template_file" ]]; then
+        print_error "Microservice template file not found: $template_file"
+        return 1
+    fi
+    
+    # Read template and substitute dummy values
+    local template_content
+    template_content=$(cat "$template_file")
+    
+    # Substitute each variable with dummy values
+    template_content=$(echo "$template_content" | sed 's/MAIL_HOST=.*/MAIL_HOST=localhost/')
+    template_content=$(echo "$template_content" | sed 's/MAIL_PORT=.*/MAIL_PORT=587/')
+    template_content=$(echo "$template_content" | sed 's/MAIL_USER=.*/MAIL_USER=dummy@example.com/')
+    template_content=$(echo "$template_content" | sed 's/MAIL_PASSWORD=.*/MAIL_PASSWORD=dummypassword/')
+    
+    echo "$template_content"
+}
+
+check_file_exists() {
+    local file_path="$1"
+    local service_name="$2"
+    
+    if [[ -f "$file_path" ]]; then
+        print_warning "Environment file already exists for $service_name, skipping creation: $file_path"
+        return 0  # File exists
+    fi
+    
+    return 1  # File doesn't exist
+}
+
+create_service_env_file() {
+    local service="$1"
+    local port="$2"
+    local service_dir="$service"
+    local env_file="$service_dir/.env"
+    local template_file=".env.development.example"
+    
+    # Check if file already exists
+    if check_file_exists "$env_file" "$service service"; then
+        return 0
+    fi
+    
+    # Read template file
+    local template_content
+    if ! template_content=$(read_template_file "$template_file"); then
+        return 1
+    fi
+    
+    # Substitute PORT value
+    local env_content
+    env_content=$(substitute_port_value "$template_content" "$port")
+    
+    # Create service directory if it doesn't exist
+    if ! mkdir -p "$service_dir"; then
+        print_error "Failed to create directory: $service_dir"
+        return 1
+    fi
+    
+    # Write environment file
+    if echo "$env_content" > "$env_file"; then
+        print_success "Created environment file for $service service (PORT=$port)"
+        CREATED_FILES+=("$env_file")
+        return 0
+    else
+        print_error "Failed to create environment file: $env_file"
+        return 1
+    fi
+}
+
+create_microservices_env_file() {
+    local microservices_dir="microservices"
+    local env_file="$microservices_dir/.env"
+    local template_file=".env.microservice.example"
+    
+    # Check if file already exists
+    if check_file_exists "$env_file" "microservices"; then
+        return 0
+    fi
+    
+    # Process microservice template
+    local env_content
+    if ! env_content=$(process_microservice_template "$template_file"); then
+        return 1
+    fi
+    
+    # Create microservices directory if it doesn't exist
+    if ! mkdir -p "$microservices_dir"; then
+        print_error "Failed to create directory: $microservices_dir"
+        return 1
+    fi
+    
+    # Write environment file
+    if echo "$env_content" > "$env_file"; then
+        print_success "Created microservices environment file with dummy values"
+        CREATED_FILES+=("$env_file")
+        return 0
+    else
+        print_error "Failed to create microservices environment file: $env_file"
+        return 1
+    fi
+}
+
 # Phase 3: Environment File Generation
 create_environment_files() {
     print_phase "Creating Environment Files"
@@ -120,56 +250,32 @@ create_environment_files() {
     # Create service environment files
     print_step "Creating service environment files..."
     
+    local service_creation_errors=0
+    
     for service in "${!SERVICES[@]}"; do
-        local service_dir="$service"
-        local env_file="$service_dir/.env"
         local port="${SERVICES[$service]}"
         
-        if [[ -f "$env_file" ]]; then
-            print_warning "Environment file already exists for $service service, skipping: $env_file"
-            continue
+        if ! create_service_env_file "$service" "$port"; then
+            ((service_creation_errors++))
         fi
-        
-        if [[ ! -f ".env.development.example" ]]; then
-            print_error "Template file .env.development.example not found"
-            continue
-        fi
-        
-        # Create service directory if it doesn't exist
-        mkdir -p "$service_dir"
-        
-        # Create .env file from template with assigned port
-        sed "s/PORT=/PORT=$port/" ".env.development.example" > "$env_file"
-        
-        print_success "Created environment file for $service service (PORT=$port)"
-        CREATED_FILES+=("$env_file")
     done
     
     # Create microservices environment file
     print_step "Creating microservices environment file..."
     
-    local microservices_env="microservices/.env"
+    if ! create_microservices_env_file; then
+        ((service_creation_errors++))
+    fi
     
-    if [[ -f "$microservices_env" ]]; then
-        print_warning "Microservices environment file already exists, skipping: $microservices_env"
+    # Report summary
+    if [[ $service_creation_errors -gt 0 ]]; then
+        print_warning "$service_creation_errors environment file(s) could not be created"
+    fi
+    
+    if [[ ${#CREATED_FILES[@]} -gt 0 ]]; then
+        print_success "Environment file creation phase completed"
     else
-        if [[ ! -f ".env.microservice.example" ]]; then
-            print_error "Template file .env.microservice.example not found"
-        else
-            # Create microservices directory if it doesn't exist
-            mkdir -p "microservices"
-            
-            # Create .env file with dummy values
-            cat > "$microservices_env" << EOF
-MAIL_HOST=localhost
-MAIL_PORT=587
-MAIL_USER=dummy@example.com
-MAIL_PASSWORD=dummypassword
-EOF
-            
-            print_success "Created microservices environment file with dummy values"
-            CREATED_FILES+=("$microservices_env")
-        fi
+        print_warning "No new environment files were created (all files already exist or errors occurred)"
     fi
 }
 
