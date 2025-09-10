@@ -2,21 +2,27 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../../../share/middelware/rolles.js");
+const TipoActivosService = require('../../../share/repositories/service/TipoActivosService.js')
+const TipoActivosRepository = require('../../../share/repositories/inMemory/tiposactivos.repository.js')
 
-const tiposactivos = []
+const service = new TipoActivosService(new TipoActivosRepository())
+
 router.get("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
-    res.json(tiposactivos)
+    service.get()
+    .then(data => res.json(data))
+    .catch(err => res.status(500).json(err))
+
 });
 
 router.post("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
-    tiposactivos.push(req.body)
-    res.status(201).json(req.body)
+    service.add(req.body)
+    .then(data => res.json(data))
+    .catch(err => res.status(500).json(err))
 })
 
 router.put("/", passport.authenticate("jwt", { session: false }), isAdmin, (req, res) => {
-    const index = tiposactivos.findIndex((i) => i.codigo == req.body.codigo)
-    if (index !== -1)
-        tiposactivos[index] = req.body
-    res.status(200).json(req.body)
+    service.update(req.body)
+    .then(data => res.json(data))
+    .catch(err => res.status(500).json(err))
 })
 module.exports = router

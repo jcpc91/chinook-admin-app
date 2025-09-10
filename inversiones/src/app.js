@@ -65,27 +65,24 @@ app.get("/", (_req, res) => {
   });
 });
 
-app.get("/error", (req, res) => {
-  throw "Error test";
-});
 
 const activosRoutes = require("./routes/activos");
 const tiposActivosRoutes = require("./routes/tipoactivos");
 app.use("/activos", activosRoutes);
 app.use("/tiposactivos", tiposActivosRoutes);
 
-app.use((req, res, next) => {
+app.use((req, res, _next) => {
   res.status(404).json({ message: "Resource Not Found" });
 });
 
 // Optional: Global error handling middleware (for other errors)
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error(err); // Log the error for debugging
   res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
 });
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
