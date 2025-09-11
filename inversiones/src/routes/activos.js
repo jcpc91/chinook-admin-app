@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../../../share/middelware/rolles.js");
 const ActivosService = require("../../../share/repositories/service/ActivosService");
-const ActivosRepository = require("../../../share/repositories/inMemory/activos.repository");
+const ActivosRepository = require("../../../share/repositories/sqlite3/activos.respository.js");
 
 const repository = new ActivosService(new ActivosRepository());
 

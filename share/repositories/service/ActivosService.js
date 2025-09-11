@@ -1,4 +1,8 @@
 class ActivosService {
+    /**
+     * @param {import('../../../database/repository/IBaseRepository')} activosRepository
+     * @property {import('../../../database/repository/IBaseRepository')} activosRepository
+     */
     constructor(activosRepository) {
         this.activosRepository = activosRepository;
     }
@@ -12,7 +16,7 @@ class ActivosService {
     }
 
     add(activo) {
-        return this.activosRepository.add(activo);
+        return this.activosRepository.create(activo);
     }
 
     update(id, updatedActivo) {
