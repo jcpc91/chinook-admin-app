@@ -9,14 +9,14 @@ module.exports = {
             client.FindEmployeeByEmail({email: email}, function(err, response) {
 
                 if (err) {
-                    reject(err.details);
+                    reject(err);
 
                 }
-                if(!response){
-                    reject('Employee not found🤷‍♀️');
+                else {
+
+                    resolve(response);
                 }
 
-                resolve(response);
             });
         });
     }

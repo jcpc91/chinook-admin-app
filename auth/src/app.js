@@ -113,33 +113,25 @@ app.post("/register", async (req, res) => {
 
         res.json({ token: jwtToken });
     } catch (err) {
-        console.error(err)
-        res.status(500).json({ error: err });
+
+        if (err.code === 5) {
+            res.status(404).json({ error: "Employee not found 🤷‍♀️" });
+        }else
+            res.status(500).json({ error: err });
     }
 })
 
 app.post('/verify', passport.authenticate("jwt", { session: false }), async(req, res) => {
 
-    const { token } = req.body;
-
+    const key = `employee_${req.user.id}`
     const redisClient = new RedisClient();
     await redisClient.connect();
-    const email = await redisClient.get(token);
-    await redisClient.disconnect();
-    if (email) {
-        let employee = null
-        try {
-
-        } catch (error) {
-            console.log(error)
-        }
-        if (employee) {
-            employee.type= "verify"
-
-        } else {
-            res.status(401).json({ message: "Employee not found" });
-        }
-    } else{
+    const token = await redisClient.hget(key, 'token');
+    if (token !== req.body.token) {
         res.status(401).json({ message: "Invalid token" });
+        return
     }
+
+    await redisClient.disconnect();
+    res.json({ message: "Token verified" });
 })
