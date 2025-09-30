@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const { isAdmin } = require("../../../share/middelware/rolles.js");
 const TipoActivosService = require('../../../share/repositories/service/TipoActivosService.js')
-const TipoActivosRepository = require('../../../share/repositories/inMemory/tiposactivos.repository.js')
+const TipoActivosRepository = require('../../../share/repositories/sqlite3/tiposactivos.repository.js')
 
 const service = new TipoActivosService(new TipoActivosRepository())
 
