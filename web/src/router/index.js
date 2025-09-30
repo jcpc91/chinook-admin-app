@@ -100,12 +100,12 @@ const router = createRouter({
             }
           ]
 
-              
-              
+
+
             },
           ],
-        
-      
+
+
     },
     {
       path: '/empleados',
@@ -176,6 +176,21 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+        path: '/proyectos',
+        name: 'proyectos',
+        component: () => import('../views/proyectos/IndexView.vue'),
+        meta: { requiresAuth: true },
+        redirect: { name: 'xstate' },
+        children: [
+            {
+                path: 'xstate',
+                name: 'xstate',
+                component: () => import('../views/proyectos/XstateView.vue'),
+                meta: { requiresAuth: true }
+            }
+        ]
     },
     {
       path: '/about',

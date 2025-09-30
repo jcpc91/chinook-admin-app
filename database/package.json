@@ -7,7 +7,8 @@
     "migrate-app": "knex migrate:latest --cwd app",
     "migrate-auth": "knex migrate:latest --cwd auth",
     "migrate-cat": "knex migrate:latest --cwd catalogos",
-    "up": "knex migrate:up"
+    "up": "knex migrate:up",
+    "aut:seed": "knex seed:run --cwd auth"
   },
   "author": "",
   "license": "ISC",

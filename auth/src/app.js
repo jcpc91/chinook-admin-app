@@ -60,3 +60,8 @@ app.post("/", async (req, res) => {
         res.status(401).json({ message: "Invalid credentials" });
     }
 });
+//handler error
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send("Something broke!");
+});
