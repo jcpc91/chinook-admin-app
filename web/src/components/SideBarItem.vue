@@ -1,5 +1,5 @@
 <template>
-    <div class="space-y-1">
+    <div v-if="props.items" class="space-y-1">
         <button
         class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none"
         aria-expanded="true" aria-controls="analytics-dropdown">
@@ -23,12 +23,18 @@
 
         </div>
     </div>
+    <router-link v-else :to="{ name: props.route }"
+          class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white group transition-all duration-200">
+          <slot name="icon"></slot>
+          {{ props.title }}
+        </router-link>
 </template>
 <script setup>
 import { defineProps } from "vue";
 
 const props = defineProps({
     title: String,
+    route: String,
     items: Array
 })
 </script>

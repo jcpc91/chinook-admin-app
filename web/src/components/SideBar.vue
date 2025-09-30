@@ -85,54 +85,22 @@
         </div>
 
         <!-- Team Dropdown -->
-        <div class="space-y-1">
-          <button
-            class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none"
-            aria-expanded="false" aria-controls="team-dropdown">
-            <div class="flex items-center">
-              <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+
+        <side-bar-item title="Team" :items="[
+            {route: 'empleados', name: 'Empleados'},
+            {route: 'clientes', name: 'Clientes'}
+        ]">
+            <template #icon>
+                <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-              Team
-            </div>
-            <svg class="ml-2 h-5 w-5 transform transition-transform duration-200" xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clip-rule="evenodd" />
-            </svg>
-          </button>
-          <div class="space-y-1 pl-11" id="team-dropdown">
-            <router-link :to="{ name: 'empleados' }"
-              class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
-              active-class="bg-gray-800 text-white">
-              Empleados
-            </router-link>
-
-            <router-link :to="{ name: 'clientes' }"
-              class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
-              active-class="bg-gray-800 text-white">
-              Clientes
-            </router-link>
-            <a href="#"
-              class="group flex items-center px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white">
-              Settings
-            </a>
-          </div>
-        </div>
-
+            </template>
+        </side-bar-item>
         <!-- Projects -->
-        <a href="#"
-          class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white group transition-all duration-200">
-          <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-          </svg>
-          Projects
-        </a>
+
+
 
         <SideBarItem title="Proyectos" :items="[{route: 'xstate', name: 'xState'}]">
             <template #icon>
