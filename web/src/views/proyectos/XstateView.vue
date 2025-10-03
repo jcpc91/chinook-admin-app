@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { createMachine, fromPromise, createActor } from 'xstate'
-import StepItem from "@/components/forms/StepItem.vue";
+import StepItem from "@/components/common/StepItem.vue";
 
 const currentStep = ref("")
 const stepsMachine = createMachine({

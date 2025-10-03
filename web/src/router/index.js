@@ -15,8 +15,29 @@ const router = createRouter({
     {
       path: '/register', // Register route
       name: 'register',
-      component: () => import('../views/RegisterView.vue'),
-      meta: { requiresAuth: false } // Does not require authentication
+      component: () => import('../views/register/IndexView.vue'),
+      //redirect: { name: 'register-email' },
+      meta: { requiresAuth: false } ,// Does not require authentication
+      children: [
+        {
+          path: 'email',
+          name: 'register-email',
+          component: () => import('../views/register/EmailView.vue'),
+          meta: { requiresAuth: false } // Does not require authentication
+        },
+        {
+          path: 'token',
+          name: 'register-token',
+          component: () => import('../views/register/TokenVerifyView.vue'),
+          meta: { requiresAuth: false } // Does not require authentication
+        },
+        {
+          path: 'password',
+          name: 'register-password',
+          component: () => import('../views/register/PasswordView.vue'),
+          meta: { requiresAuth: false } // Does not require authentication
+        }
+      ]
     },
     {
       path: '/token', // Token route
@@ -30,18 +51,21 @@ const router = createRouter({
       component: () => import('../views/PasswordView.vue'),
       meta: { requiresAuth: false } // Does not require authentication
     },
+    //home
     {
       path: '/',
       name: 'home',
       component: HomeView,
       meta: { requiresAuth: true } // Requires authentication
     },
+    //albunes
     {
       path: '/albunes',
       name: 'albunes',
       component: () => import('../views/AlbunesView.vue'),
       meta: { requiresAuth: true }
     },
+    //catalogos
     {
       path: '/catalogos',
       redirect: { name: 'mediatypes' },
@@ -107,6 +131,7 @@ const router = createRouter({
 
 
     },
+    //empleados
     {
       path: '/empleados',
       name: 'empleados',
@@ -141,6 +166,7 @@ const router = createRouter({
         }
       ]
     },
+    //clientes
     {
       path: '/clientes',
       name: 'clientes',
@@ -177,6 +203,7 @@ const router = createRouter({
         }
       ]
     },
+    //proyectos
     {
         path: '/proyectos',
         name: 'proyectos',

@@ -13,10 +13,10 @@
             <div v-if="error" class="error-message">{{ error }}</div>
             <div class="flex justify-between">
                 <button type="submit">Login</button>
-                <button type="button" @click="router.push('/register')">Register</button>
-                
+                <button type="button" @click="router.push({name: 'register'})">Register</button>
+
             </div>
-            
+
         </form>
     </div>
 </template>
