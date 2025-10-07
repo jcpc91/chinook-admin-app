@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { createMachine, createActor } from "xstate";
 export const useRegisterStore = defineStore('register', () => {
-    const currentState = ref("")
+    const currentState = ref({})
     const machine = createMachine({
     id: "stepper",
     initial: "register-email",
@@ -50,11 +50,13 @@ export const useRegisterStore = defineStore('register', () => {
         },
       },
     },
+
   })
     const actor = createActor(machine)
     actor.subscribe((state) => {
         console.log("State changed to:", state.value)
-        currentState.value = state.value
+        currentState.value = state
     })
+
     return { actor, currentState }
 })

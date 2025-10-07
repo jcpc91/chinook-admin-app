@@ -4,7 +4,7 @@
     <input
       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline uppercase"
       :id="props.name" :type="props.type || 'text'" :placeholder="props.placeholder" @change="updateValue"
-      :value="props.modelValue" :class="valid" />
+      :value="props.modelValue" :class="valid" :required="required" />
 
   </div>
 </template>
@@ -23,6 +23,10 @@ const props = defineProps({
     type: Boolean,
     default: true
 
+  },
+  required: {
+    type: Boolean,
+    default: false
   }
 })
 
