@@ -40,7 +40,7 @@ class ActivosRepository extends IBaseRepository {
 
             this.db.run(sql, values, (err) => {
                 if (err) reject(err);
-                resolve(this)
+                resolve(entity)
 
             })
         });

@@ -235,11 +235,12 @@ const router = createRouter({
     {
       path: '/inversiones',
       name: 'inversiones-root',
-      component: () => import('../views/inversiones/DashboardView.vue'),
+      component: () => import('../views/inversiones/IndexView.vue'),
+      redirect: { name: 'inversiones-dashboard' },
       meta: { requiresAuth: true },
       children: [
         {
-          path: '', // Dashboard (main)
+          path: 'index', // Dashboard (main)
           name: 'inversiones-dashboard',
           component: () => import('../views/inversiones/DashboardView.vue'),
           meta: { requiresAuth: true },

@@ -2,7 +2,7 @@
     <div class="portafolio-list">
         <h1>Portafolio List</h1>
         <div class="actions">
-            <button @click="addPortafolio">Add Portafolio</button>
+            <button >Add Portafolio</button>
         </div>
         <table>
             <thead>
@@ -17,12 +17,21 @@
                     <td>{{ portafolio.id }}</td>
                     <td>{{ portafolio.name }}</td>
                     <td>
-                        <button @click="viewPortafolio(portafolio.id)">View</button>
-                        <button @click="editPortafolio(portafolio.id)">Edit</button>
-                        <button @click="deletePortafolio(portafolio.id)">Delete</button>
+                        <button >View</button>
+                        <button >Edit</button>
+                        <button >Delete</button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const portafolios = ref([]);
+
+onMounted(() => {
+    console.log('PortafolioListView mounted');
+})
+</script>

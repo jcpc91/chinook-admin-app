@@ -37,7 +37,7 @@ VALUES (?, ?, ?, ?, ?, ?);`;
 
                 if (err) reject(err);
 
-                resolve(this)
+                resolve(item)
 
             })
         })
