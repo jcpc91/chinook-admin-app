@@ -22,8 +22,6 @@ const router = useRouter()
 
 const store = useRegisterStore();
 const subscription = store.actor.subscribe((state) => {
-
-    console.log('ssnapshot', state.toJSON())
     router.push({ name: state.value})
 
 })
@@ -35,8 +33,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    console.log('unmounting index view')
-    //store.$reset()
+    subscription.unsubscribe()
 })
 
 function on_start() {
