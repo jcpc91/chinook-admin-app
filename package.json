@@ -43,7 +43,6 @@
     "auth:dev": "npm run start --workspace=auth",
     "catalogos:dev": "npm run dev --workspace=catalogos",
     "web:dev": "npm run dev --workspace=chinookadminapp",
-    
     "database:migrate-app": "npm run migrate-app --workspace=database",
     "database:migrate-auth": "npm run migrate-auth --workspace=database",
     "database:migrate-cat": "npm run migrate-cat --workspace=database",
@@ -55,6 +54,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^5.0.5",
     "jest": "^30.0.2",
     "knex": "^3.1.0",
     "nodemon": "^3.1.10",

@@ -1,6 +1,6 @@
 <template>
     <StepItem :step="1" title="Register" description="Register with your email ">
-
+        {{ register.isFetching ? 'Fetching' : '' }}
         <form @submit.prevent="handleRegister">
 
             <div class="form-group">
@@ -14,11 +14,9 @@
                 <InputButton label="Back to Login" type="button" @click="router.push('/login')" />
                 <InputButton label="Next" type="submit" />
             </div>
-            <pre >
-                data: {{ payload }}
-            </pre>
-        </form>
 
+        </form>
+        <div>{{ register.data.token }}</div>
     </StepItem>
 </template>
 <script setup>
@@ -28,11 +26,10 @@ import StepItem from "../../components/common/StepItem.vue";
 import InputText from '@/components/forms/InputText.vue';
 import InputButton from '@/components/forms/InputButton.vue';
 import { useRegisterStore } from "../../stores/register";
-import { useJwt } from '@vueuse/integrations/useJwt'
+
 
 const router = useRouter();
-const { actor, Token, register } = useRegisterStore();
-const { header, payload } = useJwt(Token)
+const { actor, reister } = useRegisterStore();
 
 const email = ref('');
 const error = ref('');
@@ -46,14 +43,18 @@ const handleRegister = async () => {
 
 
     try {
-        // TODO: Implement registration API call
-        // For now, just show success message
-        success.value = 'Registration successful! Redirecting to login...';
 
-        setTimeout(() => {
-            register()
-            actor.send({ type: 'next' });
-        }, 2000);
+        register.post({ email: email.value }).json().execute(true)
+        .then((result) => {
+            success.value = 'Registration successful! Redirecting to login...';
+            const e = { type: 'next', feedback: 'Some other feedback'}
+            actor.send(e);
+        })
+        .catch((err) => {
+            error.value = err.message || 'Failed to register. Please try again.';
+            actor.send({type: 'error'})
+        });
+
     } catch (err) {
         error.value = err.message || 'Failed to register. Please try again.';
     }

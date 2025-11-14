@@ -3,11 +3,13 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const ValidUserRepository = require("../../database/repository/sqliteRepository/ValidUserRepository");
 const ValidUserService = require('../../database/repository/service/ValidUserService')
+const registerRouter = require("./routes/register");
 
 const app = express();
 
 require("dotenv").config();
-console.log("env: ", process.env);
+console.log("__dirname", __dirname);
+console.log(__filename)
 const port = process.env.PORT || 3000;
 const allowedOrigins = process.env.CORS_ORIGIN.split(',')
 const validuser = new ValidUserService(new ValidUserRepository());
@@ -31,7 +33,7 @@ app.use(
 
 // Enable Express to parse JSON request bodies
 app.use(express.json());
-
+app.use("/register", registerRouter);
 app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
 });

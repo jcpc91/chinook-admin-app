@@ -36,6 +36,12 @@ const router = createRouter({
           name: 'register-password',
           component: () => import('../views/register/PasswordView.vue'),
           meta: { requiresAuth: false } // Does not require authentication
+        },
+        {
+            path: 'error',
+            name: 'register-error',
+            component: () => import('../views/register/ErrorView.vue'),
+            meta: { requiresAuth: false }
         }
       ]
     },
